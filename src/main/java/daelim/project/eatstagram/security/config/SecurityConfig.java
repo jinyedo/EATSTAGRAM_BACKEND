@@ -43,7 +43,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.oauth2Login()// 로그인 시에 OAuth 를 사용한 로그인이 가능하도록
                 .loginPage("/")
                 .failureUrl("/loginFail") // 인가/인증에 문제시 로그인 화면으로 이동
-                .defaultSuccessUrl("/join/mail", true)
+                .defaultSuccessUrl("/loginSuccess", true)
                 .failureHandler(loginFailureHandler());
 
         // 자동 로그인 설정

@@ -1,5 +1,6 @@
 package daelim.project.eatstagram.controller;
 
+import com.fasterxml.jackson.core.JsonParser;
 import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
@@ -7,6 +8,9 @@ import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
 import daelim.project.eatstagram.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,7 +18,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,18 +33,15 @@ public class MemberController {
 
     @RequestMapping("loginSuccess")
     @ResponseBody
-    public ResponseEntity<String> loginSuccess() {
-        return new ResponseEntity<>("{response: ok}", HttpStatus.OK);
+    public ResponseEntity<String> loginSuccess() throws Exception {
+        return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
     }
 
     @RequestMapping("loginFail")
     @ResponseBody
-    public ResponseEntity<String> loginFail(String msg) {
-        log.info(msg);
-        log.info("테스트123");
-        log.info("진예도");
-        log.info("박상준");
-        return new ResponseEntity<>("{response: fail}", HttpStatus.OK);
+    public ResponseEntity<String> loginFail(HttpServletRequest request) {
+        String msg = (String) request.getAttribute("msg");
+        return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"" + msg + "\"}", HttpStatus.OK);
     }
 
     // 사용자 아이디 중복확인
