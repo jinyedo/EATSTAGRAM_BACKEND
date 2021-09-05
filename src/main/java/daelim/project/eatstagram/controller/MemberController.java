@@ -36,6 +36,7 @@ public class MemberController {
     public ResponseEntity<String> loginFail(String msg) {
         log.info(msg);
         log.info("테스트123");
+        log.info("진예도");
         return new ResponseEntity<>("{response: fail}", HttpStatus.OK);
     }
 
