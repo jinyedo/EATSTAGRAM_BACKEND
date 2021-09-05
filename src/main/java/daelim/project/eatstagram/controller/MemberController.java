@@ -1,5 +1,6 @@
 package daelim.project.eatstagram.controller;
 
+import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,19 @@ public class MemberController {
     private final MemberService memberService;
     private final EmailAuthService emailAuthService;
     private ValidationMemberDTO validationMemberDTO;
+
+    @RequestMapping("loginSuccess")
+    @ResponseBody
+    public ResponseEntity<String> loginSuccess() {
+        return new ResponseEntity<>("{response: ok}", HttpStatus.OK);
+    }
+
+    @RequestMapping("loginFail")
+    @ResponseBody
+    public ResponseEntity<String> loginFail(String msg) {
+        log.info(msg);
+        return new ResponseEntity<>("{response: fail}", HttpStatus.OK);
+    }
 
     // 사용자 아이디 중복확인
     @RequestMapping("/checkUsername")
