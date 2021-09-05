@@ -1,5 +1,6 @@
 package daelim.project.eatstagram.controller;
 
+import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
@@ -8,12 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -34,7 +33,11 @@ public class MemberController {
 
     @RequestMapping("loginFail")
     @ResponseBody
-    public ResponseEntity<String> loginFail(String msg){
+    public ResponseEntity<String> loginFail(String msg) {
+        log.info(msg);
+        log.info("테스트123");
+        log.info("진예도");
+        log.info("박상준");
         return new ResponseEntity<>("{response: fail}", HttpStatus.OK);
     }
 
