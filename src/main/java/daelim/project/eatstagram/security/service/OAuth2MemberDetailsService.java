@@ -94,7 +94,6 @@ public class OAuth2MemberDetailsService extends DefaultOAuth2UserService {
                 .build();
 
         member.addMemberRole(MemberRole.USER);
-        log.info(member.toString());
         memberRepository.save(member);
 
         return member;

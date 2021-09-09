@@ -28,7 +28,6 @@ public class AuthMemberDetailsService implements UserDetailsService {
         Optional<Member> result = memberRepository.findByUsernameAndFormSocial(username,false);
         if (result.isPresent()) {
             Member member = result.get();
-            log.info("Member : " + member);
 
             return new AuthMemberDTO(
                     member.getUsername(),
