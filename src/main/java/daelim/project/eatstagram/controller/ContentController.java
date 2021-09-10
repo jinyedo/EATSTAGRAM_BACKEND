@@ -18,11 +18,6 @@ public class ContentController {
 
     private final ContentService contentService;
 
-    @GetMapping("/test2")
-    public String test() {
-        return "test2";
-    }
-
     @GetMapping(value = "/stream/{contentName}")
     public void stream(@PathVariable("contentName")String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         contentService.videoStream(contentName, request, response);

@@ -1,5 +1,6 @@
 package daelim.project.eatstagram.service.content;
 
+import daelim.project.eatstagram.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +11,7 @@ import java.util.Arrays;
 
 @Service
 @Slf4j
-public class ContentService {
+public class ContentService extends BaseService<String, ContentEntity, ContentDTO, ContentRepository> {
 
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("----------콘텐츠 불러오기----------");
