@@ -1,6 +1,6 @@
 package daelim.project.eatstagram.service.member;
 
-import daelim.project.eatstagram.security.role.MemberRole;
+import daelim.project.eatstagram.service.member.MemberRole;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
 import lombok.RequiredArgsConstructor;

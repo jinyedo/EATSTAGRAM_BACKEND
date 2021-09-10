@@ -1,6 +1,6 @@
 package daelim.project.eatstagram.security.service;
 
-import daelim.project.eatstagram.security.role.MemberRole;
+import daelim.project.eatstagram.service.member.MemberRole;
 import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.service.member.Member;
 import daelim.project.eatstagram.service.member.MemberRepository;
