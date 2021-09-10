@@ -1,23 +1,96 @@
 package daelim.project.eatstagram.service.content;
 
 import daelim.project.eatstagram.service.base.BaseService;
+import daelim.project.eatstagram.service.contentCategory.ContentCategoryDTO;
+import daelim.project.eatstagram.service.contentCategory.ContentCategoryService;
+import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
+import daelim.project.eatstagram.service.contentFile.ContentFileService;
+import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
+import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
+import daelim.project.eatstagram.storage.StorageRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class ContentService extends BaseService<String, ContentEntity, ContentDTO, ContentRepository> {
+
+    private final String CONTENT_FILE_FOLDER_NAME = "content";
+
+    private final ContentFileService contentFileService;
+    private final ContentHashtagService contentHashtagService;
+    private final ContentCategoryService contentCategoryService;
+    private final StorageRepository storageRepository;
+
+    public ResponseEntity<Objects> add(ContentDTO contentDTO, MultipartFile[] uploadFiles) {
+
+        ContentDTO result = save(contentDTO);
+        for (ContentHashtagDTO contentHashtagDTO : contentDTO.getContentHashtagDTOList()) {
+            contentHashtagDTO.setContentId(result.getContentId());
+            contentHashtagService.save(contentHashtagDTO);
+        }
+        for (ContentCategoryDTO contentCategoryDTO : contentDTO.getContentCategoryDTOList()) {
+            contentCategoryDTO.setContentId(result.getContentId());
+            contentCategoryService.save(contentCategoryDTO);
+        }
+        Path folderPath = storageRepository.makeFolder(CONTENT_FILE_FOLDER_NAME);
+
+        for (MultipartFile uploadFile : uploadFiles) {
+
+            String fileType = uploadFile.getContentType();
+            assert fileType != null;
+            // "이미지" 와 "동영상" 파일만 업로드 가능
+            if (!(fileType.startsWith("image") || fileType.startsWith("video"))) {
+                log.warn("this file is not image or video type");
+                // HTTP 403 Forbidden 클라이언트 오류 상태 응답 코드는 서버에 요청이 전달되었지만, 권한 때문에 거절되었다는 것을 의미
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+            }
+
+            // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
+            String originalName = uploadFile.getOriginalFilename();
+            assert originalName != null;
+            String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+
+            String uuid = UUID.randomUUID().toString();
+            String saveName = folderPath + File.separator + uuid + "_" + fileName;
+            Path savePath = Paths.get(saveName);
+
+            ContentFileDTO contentFileDTO = ContentFileDTO.builder()
+                    .name(fileName)
+                    .type(fileType)
+                    .path(savePath.normalize().toAbsolutePath().toString())
+                    .contentId(result.getContentId())
+                    .build();
+            contentFileService.save(contentFileDTO);
+
+            try {
+                uploadFile.transferTo(savePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("----------콘텐츠 불러오기----------");
         log.info("contentName : " + contentName);
-        String path = "./upload-dir/";
-
+        String path =
+                storageRepository.getRootLocation().toString() + File.separator + CONTENT_FILE_FOLDER_NAME + File.separator;
         // 확장자 확인
         String[] filenameSeparate = contentName.split("\\.");
         log.info("파일 확장자 확인 : " + Arrays.toString(filenameSeparate));

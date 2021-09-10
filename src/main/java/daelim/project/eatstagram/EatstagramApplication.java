@@ -16,11 +16,11 @@ public class EatstagramApplication {
         SpringApplication.run(EatstagramApplication.class, args);
     }
 
-//    @Bean
-//    CommandLineRunner init(StorageRepository storageRepository) {
-//        return (args) -> {
-//            storageRepository.deleteAll();
-//            storageRepository.init();
-//        };
-//    }
+    @Bean
+    CommandLineRunner init(StorageRepository storageRepository) {
+        return (args) -> {
+            // storageRepository.deleteAll();
+            storageRepository.init();
+        };
+    }
 }

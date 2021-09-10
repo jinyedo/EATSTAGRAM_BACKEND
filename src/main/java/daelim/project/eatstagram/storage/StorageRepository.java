@@ -1,5 +1,7 @@
 package daelim.project.eatstagram.storage;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.socket.BinaryMessage;
@@ -9,11 +11,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Repository
+@Getter @Setter
 public class StorageRepository {
 
     private final Path rootLocation;
@@ -23,16 +25,22 @@ public class StorageRepository {
     }
 
     public void init() {
-        try {
-            Files.createDirectories(rootLocation);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+        File uploadPathFolder = new File(String.valueOf(rootLocation));
+        if (!uploadPathFolder.exists()) {
+            uploadPathFolder.mkdirs();
         }
     }
 
     public void deleteAll() {
         FileSystemUtils.deleteRecursively(rootLocation.toFile());
+    }
+
+    public Path makeFolder(String folderName) {
+        File uploadPathFolder = new File(String.valueOf(rootLocation), folderName);
+        if (!uploadPathFolder.exists()) {
+            uploadPathFolder.mkdirs();
+        }
+        return uploadPathFolder.toPath();
     }
 
     public ByteBuffer save(String filename, BinaryMessage message) {
