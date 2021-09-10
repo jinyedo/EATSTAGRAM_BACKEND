@@ -25,7 +25,8 @@ public class ContentController {
     private final ContentService contentService;
 
     @RequestMapping("/add")
-    public ResponseEntity<Objects> add(@ModelAttribute ContentDTO contentDTO, MultipartFile[] uploadFiles) {
+    public ResponseEntity<String> add(@ModelAttribute ContentDTO contentDTO, MultipartFile[] uploadFiles) {
+        log.info(uploadFiles.toString());
         return contentService.add(contentDTO, uploadFiles);
     }
 

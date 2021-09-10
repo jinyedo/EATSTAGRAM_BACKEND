@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +37,8 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
     private final ContentCategoryService contentCategoryService;
     private final StorageRepository storageRepository;
 
-    public ResponseEntity<Objects> add(ContentDTO contentDTO, MultipartFile[] uploadFiles) {
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<String> add(ContentDTO contentDTO, MultipartFile[] uploadFiles) {
 
         ContentDTO result = save(contentDTO);
         for (ContentHashtagDTO contentHashtagDTO : contentDTO.getContentHashtagDTOList()) {
@@ -57,7 +59,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             if (!(fileType.startsWith("image") || fileType.startsWith("video"))) {
                 log.warn("this file is not image or video type");
                 // HTTP 403 Forbidden 클라이언트 오류 상태 응답 코드는 서버에 요청이 전달되었지만, 권한 때문에 거절되었다는 것을 의미
-                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.FORBIDDEN);
             }
 
             // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
@@ -81,9 +83,10 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
                 uploadFile.transferTo(savePath);
             } catch (IOException e) {
                 e.printStackTrace();
+                return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.OK);
             }
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
     }
 
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
