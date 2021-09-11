@@ -89,6 +89,7 @@ public class OAuth2MemberDetailsService extends DefaultOAuth2UserService {
                 .username(username)
                 .password(passwordEncoder.encode("1111"))
                 .name(name)
+                .nickname(username)
                 .formSocial(true)
                 .socialType(socialType)
                 .build();

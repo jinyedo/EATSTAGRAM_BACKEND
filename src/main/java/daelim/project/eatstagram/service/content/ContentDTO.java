@@ -1,6 +1,5 @@
 package daelim.project.eatstagram.service.content;
 
-import com.querydsl.jpa.JPQLQuery;
 import daelim.project.eatstagram.service.contentCategory.ContentCategoryDTO;
 import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
@@ -16,7 +15,10 @@ import java.util.List;
 @ToString
 public class ContentDTO extends Content {
 
+    @Builder.Default
     private List<ContentHashtagDTO> contentHashtagDTOList = new ArrayList<>();
+    @Builder.Default
     private List<ContentCategoryDTO> contentCategoryDTOList = new ArrayList<>();
+    @Builder.Default
     private List<ContentFileDTO> contentFileDTOList = new ArrayList<>();
 }

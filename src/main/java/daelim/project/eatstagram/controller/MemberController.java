@@ -27,23 +27,25 @@ public class MemberController {
     private final EmailAuthService emailAuthService;
     private ValidationMemberDTO validationMemberDTO;
 
+    // 로그인 성공
     @RequestMapping("loginSuccess")
     @ResponseBody
     public ResponseEntity<String> loginSuccess() {
         return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
     }
 
+    // 로그인 실패
     @RequestMapping("loginFail")
     @ResponseBody
     public ResponseEntity<String> loginFail(HttpServletRequest request) {
-        return new ResponseEntity<>("{\"response\": \"fail\", \"msg: \" " + request.getAttribute("msg") + " \"}", HttpStatus.OK);
+        return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"" + request.getAttribute("msg") + "\"}", HttpStatus.OK);
     }
 
     // 사용자 아이디 중복확인
     @RequestMapping("/checkUsername")
     @ResponseBody
     public ResponseEntity<String> checkUsername(String username) {
-        return new ResponseEntity<>("{\"response\": " + "\"" + memberService.checkUsername(username) + "\"}" , HttpStatus.OK);
+        return new ResponseEntity<>("{\"response\": \"" + memberService.checkUsername(username) + "\"}" , HttpStatus.OK);
     }
 
     // 사용자 닉네임 중복확인
@@ -63,7 +65,7 @@ public class MemberController {
                 log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
             }
             log.info("------------------------------------");
-            return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.BAD_REQUEST);
         } else {
             this.validationMemberDTO = validationMemberDTO;
             return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
@@ -85,8 +87,7 @@ public class MemberController {
     @RequestMapping("/join/step/three")
     @ResponseBody
     public ResponseEntity<ValidationMemberDTO> joinStepThree(String emailAuthId) {
-        ValidationMemberDTO result = memberService.join(validationMemberDTO);
         emailAuthService.confirmEmail(emailAuthId);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return new ResponseEntity<>(memberService.join(validationMemberDTO), HttpStatus.OK);
     }
 }

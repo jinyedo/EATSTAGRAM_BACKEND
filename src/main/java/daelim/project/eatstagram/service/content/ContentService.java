@@ -10,12 +10,14 @@ import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,6 +56,9 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
 
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> add(ContentDTO contentDTO, MultipartFile[] uploadFiles) {
+        if (uploadFiles.length <= 0 || contentDTO.getContentCategoryDTOList().size() <= 0 || StringUtils.isEmpty(contentDTO.text))
+            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.BAD_REQUEST);
+
         ContentDTO result = save(contentDTO);
         for (ContentHashtagDTO contentHashtagDTO : contentDTO.getContentHashtagDTOList()) {
             contentHashtagDTO.setContentId(result.getContentId());
@@ -63,6 +68,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             contentCategoryDTO.setContentId(result.getContentId());
             contentCategoryService.save(contentCategoryDTO);
         }
+
         Path folderPath = storageRepository.makeFolder(CONTENT_FILE_FOLDER_NAME);
 
         for (MultipartFile uploadFile : uploadFiles) {
@@ -72,8 +78,9 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             // "이미지" 와 "동영상" 파일만 업로드 가능
             if (!(fileType.startsWith("image") || fileType.startsWith("video"))) {
                 log.warn("this file is not image or video type");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
                 // HTTP 403 Forbidden 클라이언트 오류 상태 응답 코드는 서버에 요청이 전달되었지만, 권한 때문에 거절되었다는 것을 의미
-                return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.FORBIDDEN);
             }
 
             // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
@@ -97,7 +104,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
                 uploadFile.transferTo(savePath);
             } catch (IOException e) {
                 e.printStackTrace();
-                return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.OK);
+                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
