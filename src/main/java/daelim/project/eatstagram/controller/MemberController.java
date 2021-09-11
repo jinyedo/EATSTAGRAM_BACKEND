@@ -65,7 +65,7 @@ public class MemberController {
                 log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
             }
             log.info("------------------------------------");
-            return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.BAD_REQUEST);
         } else {
             this.validationMemberDTO = validationMemberDTO;
             return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);

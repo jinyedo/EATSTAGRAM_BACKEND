@@ -69,7 +69,8 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             contentCategoryService.save(contentCategoryDTO);
         }
 
-        Path folderPath = storageRepository.makeFolder(CONTENT_FILE_FOLDER_NAME);
+        //Path folderPath = storageRepository.makeFolder(CONTENT_FILE_FOLDER_NAME);
+        Path folderPath = storageRepository.getRootLocation();
 
         for (MultipartFile uploadFile : uploadFiles) {
 
@@ -89,7 +90,8 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
 
             String uuid = UUID.randomUUID().toString();
-            String saveName = folderPath + File.separator + uuid + "_" + fileName;
+            fileName =  uuid + "_" + fileName;
+            String saveName = folderPath + File.separator + fileName;
             Path savePath = Paths.get(saveName);
 
             ContentFileDTO contentFileDTO = ContentFileDTO.builder()
@@ -113,8 +115,8 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("----------콘텐츠 불러오기----------");
         log.info("contentName : " + contentName);
-        String path =
-                storageRepository.getRootLocation().toString() + File.separator + CONTENT_FILE_FOLDER_NAME + File.separator;
+        //String path = storageRepository.getRootLocation().toString() + File.separator + CONTENT_FILE_FOLDER_NAME + File.separator;
+        String path = storageRepository.getRootLocation().toString() + File.separator;
         // 확장자 확인
         String[] filenameSeparate = contentName.split("\\.");
         log.info("파일 확장자 확인 : " + Arrays.toString(filenameSeparate));
