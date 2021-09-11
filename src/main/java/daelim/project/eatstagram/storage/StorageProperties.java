@@ -8,5 +8,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter @Setter
 public class StorageProperties {
 
-    private String location = "upload-dir/";
+    private String location = "C:/Eatstagram/public/images/";
 }
