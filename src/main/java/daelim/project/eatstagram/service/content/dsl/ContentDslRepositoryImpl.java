@@ -27,6 +27,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                         contentEntity.location,
                         contentEntity.username
                 ))
+                .orderBy(contentEntity.contentId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

@@ -30,7 +30,7 @@ public class ContentController {
 
     // 콘텐츠 추가
     @RequestMapping("/add")
-    public ResponseEntity<String> add(@ModelAttribute ContentDTO contentDTO, MultipartFile[] uploadFiles) throws Exception {
+    public ResponseEntity<String> add(@ModelAttribute ContentDTO contentDTO, MultipartFile[] uploadFiles) {
         return contentService.add(contentDTO, uploadFiles);
     }
 

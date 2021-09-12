@@ -17,8 +17,13 @@ public class ContentDTO extends Content {
 
     @Builder.Default
     private List<ContentHashtagDTO> contentHashtagDTOList = new ArrayList<>();
+
     @Builder.Default
     private List<ContentCategoryDTO> contentCategoryDTOList = new ArrayList<>();
+
     @Builder.Default
     private List<ContentFileDTO> contentFileDTOList = new ArrayList<>();
+
+    private long likeCount;
+    private boolean likeCheck;
 }

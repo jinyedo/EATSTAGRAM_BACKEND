@@ -7,6 +7,7 @@ import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
 import daelim.project.eatstagram.service.contentFile.ContentFileService;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
+import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +35,13 @@ import java.util.UUID;
 @Slf4j
 public class ContentService extends BaseService<String, ContentEntity, ContentDTO, ContentRepository> {
 
-    private final String CONTENT_FILE_FOLDER_NAME = "content";
+    // private final String CONTENT_FILE_FOLDER_NAME = "content";
+    private final String CONTENT_FILE_FOLDER_NAME = "images";
 
     private final ContentFileService contentFileService;
     private final ContentHashtagService contentHashtagService;
     private final ContentCategoryService contentCategoryService;
+    private final ContentLikeService contentLikeService;
     private final StorageRepository storageRepository;
 
     public Page<ContentDTO> getPagingList(Pageable pageable) {
@@ -47,9 +50,13 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentDTO.getContentId());
             List<ContentHashtagDTO> contentHashtagList = contentHashtagService.getRepository().getListByContentId(contentDTO.getContentId());
             List<ContentCategoryDTO> contentCategoryList = contentCategoryService.getRepository().getListByContentId(contentDTO.getContentId());
+            long likeCount = contentLikeService.getRepository().countByContentId(contentDTO.getContentId());
+            boolean likeCheck = contentLikeService.getRepository().findByUsernameAndContentId(contentDTO.getUsername(), contentDTO.getContentId()) != null;
             contentDTO.setContentFileDTOList(contentFileList);
             contentDTO.setContentHashtagDTOList(contentHashtagList);
             contentDTO.setContentCategoryDTOList(contentCategoryList);
+            contentDTO.setLikeCount(likeCount);
+            contentDTO.setLikeCheck(likeCheck);
         }
         return pagingList;
     }
@@ -57,7 +64,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> add(ContentDTO contentDTO, MultipartFile[] uploadFiles) {
         if (uploadFiles.length <= 0 || contentDTO.getContentCategoryDTOList().size() <= 0 || StringUtils.isEmpty(contentDTO.text))
-            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
 
         ContentDTO result = save(contentDTO);
         for (ContentHashtagDTO contentHashtagDTO : contentDTO.getContentHashtagDTOList()) {
@@ -69,8 +76,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             contentCategoryService.save(contentCategoryDTO);
         }
 
-        //Path folderPath = storageRepository.makeFolder(CONTENT_FILE_FOLDER_NAME);
-        Path folderPath = storageRepository.getRootLocation();
+        Path folderPath = storageRepository.makeFolder(CONTENT_FILE_FOLDER_NAME);
 
         for (MultipartFile uploadFile : uploadFiles) {
 
@@ -80,8 +86,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
             if (!(fileType.startsWith("image") || fileType.startsWith("video"))) {
                 log.warn("this file is not image or video type");
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                // HTTP 403 Forbidden 클라이언트 오류 상태 응답 코드는 서버에 요청이 전달되었지만, 권한 때문에 거절되었다는 것을 의미
-                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
             }
 
             // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
@@ -106,7 +111,7 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
                 uploadFile.transferTo(savePath);
             } catch (IOException e) {
                 e.printStackTrace();
-                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
             }
         }
         return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
@@ -115,12 +120,12 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("----------콘텐츠 불러오기----------");
         log.info("contentName : " + contentName);
-        //String path = storageRepository.getRootLocation().toString() + File.separator + CONTENT_FILE_FOLDER_NAME + File.separator;
-        String path = storageRepository.getRootLocation().toString() + File.separator;
+        String path = storageRepository.getRootLocation().toString() + File.separator + CONTENT_FILE_FOLDER_NAME + File.separator;
+
         // 확장자 확인
         String[] filenameSeparate = contentName.split("\\.");
         log.info("파일 확장자 확인 : " + Arrays.toString(filenameSeparate));
-        // 확장자 명이 없거나 mp3 형식이 아니라면 예외 발생
+        // 확장자 명이 없거나 mp4 형식이 아니라면 예외 발생
         if (filenameSeparate.length <= 1 || !filenameSeparate[1].equals("mp4"))
             throw new RuntimeException("ERROR!!! 파일 형식 오류");
 
