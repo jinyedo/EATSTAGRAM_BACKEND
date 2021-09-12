@@ -2,23 +2,23 @@ package daelim.project.eatstagram.service.contentLike.dsl;
 
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.contentLike.ContentLikeDTO;
-import daelim.project.eatstagram.service.like.QLikeEntity;
+import daelim.project.eatstagram.service.contentLike.QContentLikeEntity;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import static daelim.project.eatstagram.service.like.QLikeEntity.*;
+import static daelim.project.eatstagram.service.contentLike.QContentLikeEntity.contentLikeEntity;
 
 public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport implements ContentLikeDslRepository {
 
     public ContentLikeDslRepositoryImpl() {
-        super(QLikeEntity.class);
+        super(QContentLikeEntity.class);
     }
 
     @Override
     public ContentLikeDTO findByUsernameAndContentId(String username, String contentId) {
-        return from(likeEntity)
+        return from(contentLikeEntity)
                 .where(
-                        likeEntity.username.eq(username),
-                        likeEntity.contentId.eq(contentId)
+                        contentLikeEntity.username.eq(username),
+                        contentLikeEntity.contentId.eq(contentId)
                 )
                 .select(Projections.bean(ContentLikeDTO.class))
                 .fetchOne();
@@ -26,8 +26,8 @@ public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport impl
 
     @Override
     public long countByContentId(String contentId) {
-        return from(likeEntity)
-                .where(likeEntity.contentId.eq(contentId))
+        return from(contentLikeEntity)
+                .where(contentLikeEntity.contentId.eq(contentId))
                 .fetchCount();
     }
 

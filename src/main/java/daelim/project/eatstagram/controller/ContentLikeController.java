@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ContentLikeController {
 
-    private final ContentLikeService likeService;
+    private final ContentLikeService contentLikeService;
 
     @RequestMapping("/save")
-    public ResponseEntity<String> save(@RequestBody ContentLikeDTO likeDTO) {
-        return likeService.save(likeDTO);
+    public ResponseEntity<String> save(@RequestBody ContentLikeDTO contentLikeDTO) {
+        return contentLikeService.save(contentLikeDTO);
     }
 }

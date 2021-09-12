@@ -17,7 +17,7 @@ import javax.persistence.MappedSuperclass;
 @Getter @Setter
 public class ContentLike extends BaseEntity {
 
-    @Id @DTOKey("L")
+    @Id @DTOKey("CL")
     protected String likeId;
     protected String username;
     protected String contentId;
