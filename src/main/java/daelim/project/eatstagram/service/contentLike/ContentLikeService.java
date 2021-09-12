@@ -16,11 +16,11 @@ public class ContentLikeService extends BaseService<String, ContentLikeEntity, C
                     .username(likeDTO.getUsername())
                     .contentId(likeDTO.getContentId())
                     .build());
-            return new ResponseEntity<>("{\"response\": \"ok\", \"likeCount\": \"" + getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"likeCheck\": \"" + true + "\", \"likeCount\": \"" + getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
 
         } else { // 좋아요를 누른적이 있따면 좋아요 취소
             getRepository().deleteById(findLike.getLikeId());
-            return new ResponseEntity<>("{\"response\": \"fail\", \"likeCount\": \"" + getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"likeCheck\": \"" + false + "\", \"likeCount\": \"" + getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
         }
     }
 }
