@@ -1,5 +1,6 @@
 package daelim.project.eatstagram.controller;
 
+import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
@@ -8,12 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -58,7 +57,7 @@ public class MemberController {
     // 회원가입 1단계 : 회원 정보 유효성 검사
     @RequestMapping("/join/step/one")
     @ResponseBody
-    public ResponseEntity<Object> joinStepOne(@RequestBody @Valid ValidationMemberDTO validationMemberDTO, Errors errors) {
+    public ResponseEntity<Object> joinStepOne(@ModelAttribute @Valid ValidationMemberDTO validationMemberDTO, Errors errors) {
         if (errors.hasErrors()) {
             log.info("-----회원가입 유효성 검사 오류 종류-----");
             for (FieldError error : errors.getFieldErrors()) {
@@ -89,5 +88,11 @@ public class MemberController {
     public ResponseEntity<ValidationMemberDTO> joinStepThree(String emailAuthId) {
         emailAuthService.confirmEmail(emailAuthId);
         return new ResponseEntity<>(memberService.join(validationMemberDTO), HttpStatus.OK);
+    }
+
+    @RequestMapping("/getUser")
+    @ResponseBody
+    public ResponseEntity<AuthMemberDTO> getUser(@AuthenticationPrincipal AuthMemberDTO authMemberDTO) {
+        return new ResponseEntity<>(authMemberDTO, HttpStatus.OK);
     }
 }

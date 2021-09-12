@@ -20,7 +20,11 @@ public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport impl
                         contentLikeEntity.username.eq(username),
                         contentLikeEntity.contentId.eq(contentId)
                 )
-                .select(Projections.bean(ContentLikeDTO.class))
+                .select(Projections.bean(ContentLikeDTO.class,
+                        contentLikeEntity.likeId,
+                        contentLikeEntity.username,
+                        contentLikeEntity.contentId
+                ))
                 .fetchOne();
     }
 
