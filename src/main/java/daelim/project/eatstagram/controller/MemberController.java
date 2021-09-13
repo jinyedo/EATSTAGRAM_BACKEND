@@ -29,8 +29,8 @@ public class MemberController {
     // 로그인 성공
     @RequestMapping("loginSuccess")
     @ResponseBody
-    public ResponseEntity<String> loginSuccess() {
-        return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
+    public ResponseEntity<String> loginSuccess(@AuthenticationPrincipal AuthMemberDTO authMemberDTO) {
+        return new ResponseEntity<>("{\"response\": \"ok\", \"username\": \"" + authMemberDTO.getUsername() + "\"}", HttpStatus.OK);
     }
 
     // 로그인 실패
