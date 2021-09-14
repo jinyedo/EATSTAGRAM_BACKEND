@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <input type="file" name="uploadFiles" class="custom-file-input files" multiple />
+    <input type="button" value="업로드" onclick="upload()"/>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script>
+
+        let data;
+        const regex = new RegExp("(.*?)\.(exe|sh|zip|alz|tiff)$");
+        //const maxSize = 10485760; // 10MB
+
+        // 업로드 가능 여부 확인
+        function checkExtension(fileName, fileSize) {
+            // if (fileSize >= maxSize) {
+            //     alert("파일 용량 초과");
+            //     return false;
+            // }
+
+            if (regex.test(fileName)) {
+                alert("해당 종류의 파일은 업로드할 수 없습니다.");
+                return false;
+            }
+            return true;
+        }
+
+        $(".custom-file-input").on("change", function () {
+            const formData = new FormData();
+            const inputFile = $(this);
+            const files = inputFile[0].files;
+            let appended = false;
+
+            for (let i=0; i<files.length; i++) {
+                if (!checkExtension(files[i].name, files[i].size)) {
+                    return false;
+                }
+                console.log(files[i]);
+                formData.append("uploadFiles", files[i]);
+                appended = true;
+            }
+
+            // 업로드를 하지 않는다.
+            if (!appended) {return null;}
+
+            for (let value of formData.values()) {
+                console.log(value);
+            }
+
+            const contentHashtagDTOList = {
+                hashtag: 1
+            }
+
+            formData.append("text", "text");
+            formData.append("location", "안양");
+            formData.append("username", "jinyedo");
+            formData.append("contentHashtagDTOList[0].hashtag", "피자");
+            formData.append("contentHashtagDTOList[1].hashtag", "치킨");
+            formData.append("contentHashtagDTOList[2].hashtag", "햄버거");
+            formData.append("contentCategoryDTOList[0].category", "페스트푸드");
+            formData.append("contentCategoryDTOList[1].category", "야식");
+
+            data = formData;
+        });
+
+        function upload() {
+            for (const keyValue of data) {
+                console.log(keyValue);
+            }
+            if (data !== null) {
+                $.ajax({
+                    url: '/content/add',
+                    processData: false,
+                    contentType: false,
+                    data: data,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (result) {
+                        console.log(result);
+                    },
+                    error: function (err) {
+                        console.log(err);
+                    }
+                }); // $.ajax
+            } else {
+                console.log("파일 전송 실패");
+            }
+        }
+</script>
+</body>
+</html>
