@@ -67,7 +67,7 @@ public class MemberController {
             return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
         } else {
             this.validationMemberDTO = validationMemberDTO;
-            return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"joinToken\": \"true\"}", HttpStatus.OK);
         }
     }
 
