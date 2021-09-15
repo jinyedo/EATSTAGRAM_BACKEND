@@ -22,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequestMapping("/content")
 @Slf4j
 @RequiredArgsConstructor
-public class ContentBizController {
+public class ContentController {
 
     private final ContentBizService contentBizService;
     private final ContentFileService contentFileService;
@@ -31,8 +31,8 @@ public class ContentBizController {
     // 콘텐츠 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
-    public Page<ContentDTO> getPagingList(Pageable pageable, @AuthenticationPrincipal AuthMemberDTO authMemberDTO) {
-        return contentBizService.getContentPagingList(pageable, authMemberDTO.getUsername());
+    public Page<ContentDTO> getPagingList(Pageable pageable, String username) {
+        return contentBizService.getContentPagingList(pageable, username);
     }
 
     // 콘텐츠 추가
@@ -47,9 +47,12 @@ public class ContentBizController {
         contentFileService.videoStream(contentName, request, response);
     }
 
+    // 콘테츠 좋아요
     @RequestMapping("/like/save")
     @ResponseBody
     public ResponseEntity<String> likeSave(@ModelAttribute ContentLikeDTO contentLikeDTO) {
         return contentLikeService.save(contentLikeDTO);
     }
+
+
 }
