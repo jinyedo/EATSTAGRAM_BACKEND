@@ -1,5 +1,8 @@
 package daelim.project.eatstagram.websocket;
 
+import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
+import daelim.project.eatstagram.service.contentReply.ContentReplyEntity;
+import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
@@ -22,6 +25,8 @@ import java.util.List;
 public class ContentReplyWebsocketHandler extends TextWebSocketHandler {
 
     List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
+
+    private final ContentReplyService contentReplyService;
 
     @SuppressWarnings("unchecked")
     @Override // 소켓 연결
@@ -60,7 +65,7 @@ public class ContentReplyWebsocketHandler extends TextWebSocketHandler {
         JSONObject obj = new JSONObject();
         obj.put("type", "getId");
         obj.put("sessionId", session.getId());
-        session.sendMessage(new TextMessage(obj.toJSONString()));
+        //session.sendMessage(new TextMessage(obj.toJSONString()));
     }
 
     // 메시지 발송
@@ -72,7 +77,13 @@ public class ContentReplyWebsocketHandler extends TextWebSocketHandler {
 
         HashMap<String, String> msgMap = (HashMap<String, String>) obj;
         String requestRoomId = (String) obj.get("roomId"); // 방의 번호를 받는다.
-        String requestUserId = (String) obj.get("userId"); // 회원의 ID 를 받는다.
+        String requestUsername = (String) obj.get("username"); // 회원의 ID 를 받는다.
+
+        contentReplyService.save(ContentReplyDTO.builder()
+                .reply(msgMap.get("msg"))
+                .contentId(requestRoomId)
+                .username(requestUsername)
+                .build());
 
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
 

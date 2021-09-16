@@ -6,6 +6,8 @@ import daelim.project.eatstagram.service.content.ContentDTO;
 import daelim.project.eatstagram.service.contentFile.ContentFileService;
 import daelim.project.eatstagram.service.contentLike.ContentLikeDTO;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
+import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
+import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,11 +29,12 @@ public class ContentController {
     private final ContentBizService contentBizService;
     private final ContentFileService contentFileService;
     private final ContentLikeService contentLikeService;
+    private final ContentReplyService contentReplyService;
 
     // 콘텐츠 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
-    public Page<ContentDTO> getPagingList(Pageable pageable, String username) {
+    public Page<ContentDTO> getContentPagingList(Pageable pageable, String username) {
         return contentBizService.getContentPagingList(pageable, username);
     }
 
@@ -54,5 +57,9 @@ public class ContentController {
         return contentLikeService.save(contentLikeDTO);
     }
 
-
+    @RequestMapping("/reply/getPagingList")
+    @ResponseBody
+    public Page<ContentReplyDTO> getContentReplyPagingList(Pageable pageable, String contentId) {
+        return contentReplyService.getContentReplyPagingList(pageable, contentId);
+    }
 }

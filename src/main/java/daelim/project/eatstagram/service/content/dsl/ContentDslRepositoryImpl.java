@@ -33,11 +33,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetch();
 
         long total = from(contentEntity)
-                .select(contentEntity.contentId,
-                        contentEntity.text,
-                        contentEntity.location,
-                        contentEntity.username
-                )
+                .select(contentEntity)
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);
