@@ -28,9 +28,9 @@ public class ContentReplyWebsocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
 
-        String url = session.getUri().toString(); // ex) ws://localhost:8080/ws/chatting/1
+        String url = session.getUri().toString();
         log.info("[웹소켓 연결] URL : " + url);
-        String roomId = url.split("/ws/chatting/")[1]; // 연결된 방의 ID
+        String roomId = url.split("/ws/contentReply/")[1]; // 연결된 방의 ID
 
         boolean flag = false;
         int idx = 0;
