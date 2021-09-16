@@ -8,12 +8,22 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
+import javax.annotation.PostConstruct;
+import java.util.Date;
+import java.util.TimeZone;
+
 @EnableConfigurationProperties(StorageProperties.class)
 @SpringBootApplication
 public class EatstagramApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(EatstagramApplication.class, args);
+    }
+
+    @PostConstruct
+    public void started() {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        System.out.println("현재 시간: " + new Date());
     }
 
     @Bean
