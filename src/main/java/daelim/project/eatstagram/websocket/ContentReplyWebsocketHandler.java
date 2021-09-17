@@ -14,6 +14,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -86,6 +87,8 @@ public class ContentReplyWebsocketHandler extends TextWebSocketHandler {
                 .build());
 
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
+
+        obj.put("regDate", LocalDateTime.now().toString());
 
         if (sessionList.size() > 0) {
             for (LinkedHashMap<String, Object> linkedHashMap : sessionList) {

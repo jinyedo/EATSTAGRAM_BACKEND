@@ -28,7 +28,8 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
                         contentReplyEntity.contentReplyId,
                         contentReplyEntity.reply,
                         contentReplyEntity.contentId,
-                        contentReplyEntity.username
+                        contentReplyEntity.username,
+                        contentReplyEntity.regDate
                 ))
                 .orderBy(contentReplyEntity.contentReplyId.desc())
                 .offset(pageable.getOffset())
