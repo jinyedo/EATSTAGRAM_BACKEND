@@ -22,6 +22,7 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                         member.name.contains(condition).or(member.nickname.contains(condition))
                 )
                 .select(Projections.bean(MemberDTO.class,
+                        member.username,
                         member.name,
                         member.nickname
                 ))
