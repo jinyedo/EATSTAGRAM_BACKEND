@@ -13,14 +13,13 @@ import org.springframework.web.socket.server.standard.ServletServerContainerFact
 @RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final ContentReplyWebsocketHandler contentReplyWebsocketHandler;
+    private final WebsocketHandler websocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
-                .addHandler(contentReplyWebsocketHandler, "/ws/contentReply/{contentId}")
-                .setAllowedOrigins("http://localhost:3000");
-
+                .addHandler(websocketHandler, "/ws/{type}/{id}")
+                .setAllowedOrigins("*");
     }
 
     @Bean
@@ -30,6 +29,4 @@ public class WebSocketConfig implements WebSocketConfigurer {
         container.setMaxBinaryMessageBufferSize(500000);
         return container;
     }
-
-
 }
