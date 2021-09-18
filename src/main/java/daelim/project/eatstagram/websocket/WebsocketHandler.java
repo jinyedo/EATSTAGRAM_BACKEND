@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -68,6 +69,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
     // 메시지 발송
     @Override // Text 데이터가 들어오면 실행
+    @Transactional(rollbackFor = Exception.class)
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         log.info("----- request websocket text data -----");
         JSONObject obj = jsonToObjectParse(message.getPayload()); // JSON 데이터를 JSONObject 로 파싱한다.
