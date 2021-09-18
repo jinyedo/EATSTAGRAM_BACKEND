@@ -30,7 +30,8 @@ public class DirectMessageDslRepositoryImpl extends QuerydslRepositorySupport im
                         directMessageEntity.directMessageType,
                         directMessageEntity.directMessage,
                         directMessageEntity.directMessageRoomId,
-                        directMessageEntity.username
+                        directMessageEntity.username,
+                        directMessageEntity.regDate
                 ))
                 .orderBy(directMessageEntity.directMessageId.desc())
                 .offset(pageable.getOffset())
