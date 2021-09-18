@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,5 +57,9 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         } else {
             return "ok";
         }
+    }
+
+    public List<MemberDTO> getListByNameAndNickname(String condition) {
+        return getRepository().getListByNameAndNickname(condition);
     }
 }

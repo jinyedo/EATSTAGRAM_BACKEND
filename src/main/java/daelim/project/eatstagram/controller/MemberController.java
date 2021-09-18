@@ -4,6 +4,7 @@ import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
+import daelim.project.eatstagram.service.member.MemberDTO;
 import daelim.project.eatstagram.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -90,9 +92,9 @@ public class MemberController {
         return new ResponseEntity<>(memberService.join(validationMemberDTO), HttpStatus.OK);
     }
 
-    @RequestMapping("/getUser")
+    @RequestMapping("/getListByNameAndNickname")
     @ResponseBody
-    public ResponseEntity<AuthMemberDTO> getUser(@AuthenticationPrincipal AuthMemberDTO authMemberDTO) {
-        return new ResponseEntity<>(authMemberDTO, HttpStatus.OK);
+    public ResponseEntity<List<MemberDTO>> getListByNameAndNickname(String condition) {
+        return new ResponseEntity<>(memberService.getListByNameAndNickname(condition), HttpStatus.OK);
     }
 }
