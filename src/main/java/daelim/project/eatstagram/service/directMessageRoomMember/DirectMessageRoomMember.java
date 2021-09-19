@@ -19,6 +19,7 @@ public class DirectMessageRoomMember extends BaseEntity {
 
     @Id @DTOKey("DMRM")
     protected String directMessageRoomMemberId;
-    protected String directMessageRoomId;
     protected String username;
+    protected String directMessageRoomId;
+    protected String directMessageRoomType; // 개인톡인지 단톡방인지
 }

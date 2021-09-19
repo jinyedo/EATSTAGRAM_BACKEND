@@ -11,4 +11,6 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter
 @ToString
 public class DirectMessageRoomMemberDTO extends DirectMessageRoomMember {
+
+    private long count;
 }
