@@ -3,12 +3,11 @@ package daelim.project.eatstagram.service.directMessageRoomMember.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity;
-import daelim.project.eatstagram.service.member.MemberDTO;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import java.util.List;
 
-import static daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity.*;
+import static daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity.directMessageRoomMemberEntity;
 
 public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepositorySupport implements DirectMessageRoomMemberDslRepository {
 
@@ -17,12 +16,12 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
     }
 
     @Override
-    public DirectMessageRoomMemberDTO findByUsernames(List<MemberDTO> memberList) {
+    public DirectMessageRoomMemberDTO findByUsernames(List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList) {
         return from(directMessageRoomMemberEntity)
                 .where(
                         directMessageRoomMemberEntity.directMessageRoomType.eq("private"),
-                        directMessageRoomMemberEntity.username.eq(memberList.get(0).getUsername())
-                            .or(directMessageRoomMemberEntity.username.eq(memberList.get(1).getUsername()))
+                        directMessageRoomMemberEntity.username.eq(directMessageRoomMemberDTOList.get(0).getUsername())
+                            .or(directMessageRoomMemberEntity.username.eq(directMessageRoomMemberDTOList.get(1).getUsername()))
                 )
                 .select(Projections.bean(DirectMessageRoomMemberDTO.class,
                         directMessageRoomMemberEntity.directMessageRoomId,
