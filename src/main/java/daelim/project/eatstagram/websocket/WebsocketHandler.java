@@ -6,7 +6,6 @@ import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
 import daelim.project.eatstagram.service.directMessage.DirectMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -121,6 +120,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 WebSocketSession wss = (WebSocketSession) temp.get(k);
                 if (wss != null) {
                     try {
+                        if (!requestMsgType.equals("text")) obj.put("msg", filename);
                         obj.put("regDate", LocalDateTime.now().toString());
                         wss.sendMessage(new TextMessage(obj.toJSONString()));
                     } catch (Exception e) {
