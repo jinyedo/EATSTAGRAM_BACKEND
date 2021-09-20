@@ -8,11 +8,37 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 
 import static daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity.directMessageRoomMemberEntity;
+import static daelim.project.eatstagram.service.member.QMember.*;
 
 public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepositorySupport implements DirectMessageRoomMemberDslRepository {
 
     public DirectMessageRoomMemberDslRepositoryImpl() {
         super(QDirectMessageRoomMemberEntity.class);
+    }
+
+    @Override
+    public List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdJoinMember(String directMessageRoomId) {
+        return from(directMessageRoomMemberEntity)
+                .where(directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId))
+                .leftJoin(member)
+                .on(directMessageRoomMemberEntity.username.eq(member.username))
+                .select(Projections.bean(DirectMessageRoomMemberDTO.class,
+                        member.username,
+                        member.name,
+                        member.nickname
+                ))
+                .fetch();
+    }
+
+    @Override
+    public List<DirectMessageRoomMemberDTO> findByUsername(String username) {
+        return from(directMessageRoomMemberEntity)
+                .where(directMessageRoomMemberEntity.username.eq(username))
+                .select(Projections.bean(DirectMessageRoomMemberDTO.class,
+                        directMessageRoomMemberEntity.directMessageRoomId,
+                        directMessageRoomMemberEntity.directMessageRoomType
+                ))
+                .fetch();
     }
 
     @Override

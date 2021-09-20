@@ -6,5 +6,7 @@ import java.util.List;
 
 public interface DirectMessageRoomMemberDslRepository {
 
+    List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdJoinMember(String directMessageRoomId);
+    List<DirectMessageRoomMemberDTO> findByUsername(String username);
     DirectMessageRoomMemberDTO findByUsernames(List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList);
 }
