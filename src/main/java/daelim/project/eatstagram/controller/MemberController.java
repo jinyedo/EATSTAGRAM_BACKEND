@@ -94,7 +94,7 @@ public class MemberController {
 
     @RequestMapping("/getListByNameAndNickname")
     @ResponseBody
-    public ResponseEntity<List<MemberDTO>> getListByNameAndNickname(String condition) {
-        return new ResponseEntity<>(memberService.getListByNameAndNickname(condition), HttpStatus.OK);
+    public ResponseEntity<List<MemberDTO>> getListByNameAndNickname(String username, String condition) {
+        return new ResponseEntity<>(memberService.getListByNameAndNickname(username, condition), HttpStatus.OK);
     }
 }

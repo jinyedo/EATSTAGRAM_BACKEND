@@ -19,8 +19,7 @@ import java.util.Arrays;
 public class ContentFileService extends BaseService<String, ContentFileEntity, ContentFileDTO, ContentFileRepository> {
 
     private final StorageRepository storageRepository;
-    // public final String CONTENT_FILE_FOLDER_NAME = "content";
-    public static final String CONTENT_FILE_FOLDER_NAME = "images";
+    public static final String CONTENT_FILE_FOLDER_NAME = "content";
 
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("----------콘텐츠 불러오기----------");

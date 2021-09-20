@@ -16,9 +16,10 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public List<MemberDTO> getListByNameAndNickname(String condition) {
+    public List<MemberDTO> getListByNameAndNickname(String username, String condition) {
         return from(member)
                 .where(
+                        member.username.eq(username).not(),
                         member.name.contains(condition).or(member.nickname.contains(condition))
                 )
                 .select(Projections.bean(MemberDTO.class,

@@ -5,31 +5,37 @@ import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
 import daelim.project.eatstagram.service.directMessage.DirectMessageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-@Slf4j
+@Log4j2
 public class WebsocketHandler extends TextWebSocketHandler {
-
-    List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
 
     private final ContentReplyService contentReplyService;
     private final DirectMessageService directMessageService;
+
+    List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
+    int fileUploadIdx = 0; // 파일을 전송한 방의 번호
+    String filename = "";
 
     @SuppressWarnings("unchecked")
     @Override // 소켓 연결
@@ -75,8 +81,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
         JSONObject obj = jsonToObjectParse(message.getPayload()); // JSON 데이터를 JSONObject 로 파싱한다.
         log.info("requestObj : " + obj);
 
-        String requestMsg = (String) obj.get("msg");
         String requestMsgType = (String) obj.get("type");
+        String requestMsg = requestMsgType.equals("text") ? (String) obj.get("msg") : UUID.randomUUID() + "_" + obj.get("msg");
         String requestRoomType = (String) obj.get("roomType");
         String requestRoomId = (String) obj.get("roomId"); // 방의 번호를 받는다.
         String requestUsername = (String) obj.get("username"); // 회원의 ID 를 받는다.
@@ -99,10 +105,12 @@ public class WebsocketHandler extends TextWebSocketHandler {
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
 
         if (sessionList.size() > 0) {
-            for (LinkedHashMap<String, Object> linkedHashMap : sessionList) {
-                String roomId = (String) linkedHashMap.get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
+            for (int i=0; i<sessionList.size(); i++) {
+                String roomId = (String) sessionList.get(i).get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
                 if (roomId.equals(requestRoomId)) { // 같은값이 방이 존재한다면
-                    temp = linkedHashMap; // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
+                    temp = sessionList.get(i); // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
+                    fileUploadIdx = i;
+                    filename = !requestMsgType.equals("text") ? requestMsg : null;
                     break;
                 }
             }
@@ -122,6 +130,26 @@ public class WebsocketHandler extends TextWebSocketHandler {
             }
         }
         log.info("---------------------------------------");
+    }
+
+    // 바이너리 메시지 발송
+    @Override // BinaryMessage 의 데이터가 들어오면 실행
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
+        log.info("----- request BinaryMessage -----");
+        ByteBuffer byteBuffer = directMessageService.fileSave(filename, message);
+
+        // 파일 쓰기가 끝나면 이미지를 발송한다.
+        LinkedHashMap<String, Object> temp = sessionList.get(fileUploadIdx);
+        for (String k : temp.keySet()) {
+            if (k.equals("roomId")) continue;
+            WebSocketSession wss = (WebSocketSession) temp.get(k);
+            try {
+                wss.sendMessage(new BinaryMessage(byteBuffer)); // 초기화된 버퍼를 발송하낟.
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        log.info("---------------------------------");
     }
 
     @Override // 소켓 종료

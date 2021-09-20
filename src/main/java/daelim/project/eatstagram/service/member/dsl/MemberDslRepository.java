@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MemberDslRepository {
 
-    List<MemberDTO> getListByNameAndNickname(String condition);
+    List<MemberDTO> getListByNameAndNickname(String username, String condition);
 }

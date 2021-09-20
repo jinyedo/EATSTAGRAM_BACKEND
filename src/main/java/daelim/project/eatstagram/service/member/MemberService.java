@@ -59,7 +59,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         }
     }
 
-    public List<MemberDTO> getListByNameAndNickname(String condition) {
-        return getRepository().getListByNameAndNickname(condition);
+    public List<MemberDTO> getListByNameAndNickname(String username, String condition) {
+        return getRepository().getListByNameAndNickname(username, condition);
     }
 }

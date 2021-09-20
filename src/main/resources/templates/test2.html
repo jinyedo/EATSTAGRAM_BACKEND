@@ -90,6 +90,25 @@
                 console.log("파일 전송 실패");
             }
         }
+
+        // 사진 전송시 이벤트 처리
+        function fileSend() {
+            const file = document.querySelector("#fileUpload").files[0];
+            const fileReader = new FileReader();
+            fileReader.onload = function () {
+                const param = {
+                    msg : file.name,
+                    type : "fileUpload",
+                    username : $("#sessionId").val(),
+                    roomId : $("#roomId").val(),
+                    roomType : $("#username").val(),
+                }
+                ws.send(JSON.stringify(param)); // 파일을 보내기전 메시지를 보내서 파일을 보냄을 명시한다.
+                const arrayBuffer = this.result;
+                ws.send(arrayBuffer); // 파일 소켓 전송
+            }
+            fileReader.readAsArrayBuffer(file);
+        }
 </script>
 </body>
 </html>
