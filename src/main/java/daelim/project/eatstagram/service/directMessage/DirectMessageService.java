@@ -27,7 +27,7 @@ public class DirectMessageService extends BaseService<String, DirectMessageEntit
     }
 
     public ByteBuffer fileSave(String filename, BinaryMessage message) {
-        storageRepository.makeFolder(ContentFileService.CONTENT_FILE_FOLDER_NAME);
+        storageRepository.makeFolder(DIRECT_MESSAGE_FILE_FOLDER_NAME);
         String path = storageRepository.getRootLocation().toString() + File.separator + DIRECT_MESSAGE_FILE_FOLDER_NAME + File.separator;
         ByteBuffer byteBuffer = message.getPayload();
         File file = new File(path, filename);
