@@ -141,7 +141,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         // 파일 쓰기가 끝나면 이미지를 발송한다.
         LinkedHashMap<String, Object> temp = sessionList.get(fileUploadIdx);
         for (String k : temp.keySet()) {
-            if (k.equals("roomId")) continue;
+            if (k.equals("roomType") || k.equals("roomId")) continue;
             WebSocketSession wss = (WebSocketSession) temp.get(k);
             try {
                 wss.sendMessage(new BinaryMessage(byteBuffer)); // 초기화된 버퍼를 발송하낟.
