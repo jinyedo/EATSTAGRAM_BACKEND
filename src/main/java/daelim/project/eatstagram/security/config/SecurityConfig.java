@@ -15,7 +15,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
@@ -42,7 +41,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://ec2-3-36-133-3.ap-northeast-2.compute.amazonaws.com:3000"));
+        configuration.setAllowedOriginPatterns(List.of("http://localhost:3000", "http://www.whereyedo.com:3000"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -57,10 +56,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 
-        http.authorizeRequests()
-                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-                //.anyRequest().authenticated().and()
-                .and().cors();
+        http.cors().configurationSource(corsConfigurationSource()); // cors 설정
 
         http.csrf().disable(); // CSRF 토큰을 발해하지 않도록 지정
 

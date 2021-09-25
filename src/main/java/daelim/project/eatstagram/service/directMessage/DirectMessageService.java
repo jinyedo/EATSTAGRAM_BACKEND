@@ -1,7 +1,6 @@
 package daelim.project.eatstagram.service.directMessage;
 
 import daelim.project.eatstagram.service.base.BaseService;
-import daelim.project.eatstagram.service.contentFile.ContentFileService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

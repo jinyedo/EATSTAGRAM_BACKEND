@@ -1,8 +1,8 @@
 package daelim.project.eatstagram.service.member;
 
-import daelim.project.eatstagram.service.member.MemberRole;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
+import daelim.project.eatstagram.service.base.ModelMapperUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +41,32 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         dto.setMsg("회원가입 성공");
         dto.setJoinSuccessYn(true);
         return dto;
+    }
+
+    public ResponseEntity<Object> joinSocial(MemberDTO dto) {
+        Optional<Member> result =  getRepository().findByUsernameAndFormSocial(dto.getUsername(), true);
+        String password = UUID.randomUUID().toString();
+        if (result.isEmpty()) {
+            Member member = Member.builder()
+                    .username(dto.getUsername())
+                    .password(passwordEncoder.encode(password))
+                    .email(dto.getEmail())
+                    .name(dto.getName())
+                    .nickname(dto.getNickname())
+                    .formSocial(true)
+                    .socialType(dto.getSocialType())
+                    .build();
+            member.addMemberRole(MemberRole.USER);
+            getRepository().save(member);
+            MemberDTO memberDTO = ModelMapperUtils.map(member, MemberDTO.class);
+            memberDTO.setPassword(password);
+            return new ResponseEntity<>(memberDTO, HttpStatus.OK);
+        }
+        MemberDTO memberDTO = ModelMapperUtils.map(result.get(), MemberDTO.class);
+        memberDTO.setPassword(passwordEncoder.encode(password));
+        save(memberDTO);
+        memberDTO.setPassword(password);
+        return new ResponseEntity<>(memberDTO, HttpStatus.OK);
     }
 
     public String checkUsername(String username) {

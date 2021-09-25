@@ -25,10 +25,9 @@ public class AuthMemberDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("MemberUserDetailsService loadUserByUsername : " + username);
 
-        Optional<Member> result = memberRepository.findByUsernameAndFormSocial(username,false);
+        Optional<Member> result = memberRepository.findByUsername(username);
         if (result.isPresent()) {
             Member member = result.get();
-
             return new AuthMemberDTO(
                     member.getUsername(),
                     member.getPassword(),

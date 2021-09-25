@@ -19,7 +19,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry
                 .addHandler(websocketHandler, "/ws/{type}/{id}")
-                .setAllowedOrigins("*");
+                .setAllowedOriginPatterns("http://localhost:3000", "http://www.whereyedo.com:3000");
     }
 
     @Bean
