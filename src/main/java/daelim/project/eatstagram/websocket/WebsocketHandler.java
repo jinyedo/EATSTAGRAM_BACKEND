@@ -43,8 +43,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
         String url = session.getUri().toString();
         log.info("[웹소켓 연결] URL : " + url + ", sessionId: " + session.getId());
-        String roomType = url.split("/")[4]; // 연결된 방의 type
-        String roomId = url.split("/")[5]; // 연결된 방의 ID
+        String roomType = url.split("/")[5]; // 연결된 방의 type
+        String roomId = url.split("/")[6]; // 연결된 방의 ID
 
         boolean flag = false;
         int idx = 0;
@@ -135,21 +135,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
     // 바이너리 메시지 발송
     @Override // BinaryMessage 의 데이터가 들어오면 실행
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-        log.info("----- request BinaryMessage -----");
-        ByteBuffer byteBuffer = directMessageService.fileSave(filename, message);
-
-        // 파일 쓰기가 끝나면 이미지를 발송한다.
-        LinkedHashMap<String, Object> temp = sessionList.get(fileUploadIdx);
-        for (String k : temp.keySet()) {
-            if (k.equals("roomType") || k.equals("roomId")) continue;
-            WebSocketSession wss = (WebSocketSession) temp.get(k);
-            try {
-                wss.sendMessage(new BinaryMessage(byteBuffer)); // 초기화된 버퍼를 발송하낟.
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        log.info("---------------------------------");
+        directMessageService.fileSave(filename, message);
     }
 
     @Override // 소켓 종료
