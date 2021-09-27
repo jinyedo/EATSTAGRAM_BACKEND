@@ -90,7 +90,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 directMessageRoomMemberDTOList.add(DirectMessageRoomMemberDTO.builder().username(user).build());
             }
 
-            String result = directMessageRoomBizService.add(directMessageRoomMemberDTOList);
+            Map<String, Object> result = directMessageRoomBizService.add(directMessageRoomMemberDTOList);
+            JSONObject json =  new JSONObject(result);
 
             List<LinkedHashMap<String, Object>> tempList = new ArrayList<>();
             if (sessionList.size() > 0) {
@@ -109,7 +110,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                         WebSocketSession wss = (WebSocketSession) temp.get(k);
                         if (wss != null) {
                             try {
-                                wss.sendMessage(new TextMessage(jsonToObjectParse(result).toJSONString()));
+                                wss.sendMessage(new TextMessage(json.toJSONString()));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
