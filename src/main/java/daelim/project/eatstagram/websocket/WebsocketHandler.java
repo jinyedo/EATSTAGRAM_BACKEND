@@ -1,9 +1,11 @@
 package daelim.project.eatstagram.websocket;
 
+import daelim.project.eatstagram.service.biz.DirectMessageRoomBizService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
 import daelim.project.eatstagram.service.directMessage.DirectMessageService;
+import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONObject;
@@ -17,12 +19,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Component
 @RequiredArgsConstructor
@@ -30,6 +28,7 @@ import java.util.UUID;
 public class WebsocketHandler extends TextWebSocketHandler {
 
     private final ContentReplyService contentReplyService;
+    private final DirectMessageRoomBizService directMessageRoomBizService;
     private final DirectMessageService directMessageService;
 
     List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
@@ -77,58 +76,99 @@ public class WebsocketHandler extends TextWebSocketHandler {
     @Transactional(rollbackFor = Exception.class)
     public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         log.info("----- request websocket text data -----");
+
         JSONObject obj = jsonToObjectParse(message.getPayload()); // JSON 데이터를 JSONObject 로 파싱한다.
         log.info("requestObj : " + obj);
 
-        String requestMsgType = (String) obj.get("type");
-        String requestMsg = requestMsgType.equals("text") ? (String) obj.get("msg") : UUID.randomUUID() + "_" + obj.get("msg");
         String requestRoomType = (String) obj.get("roomType");
-        String requestRoomId = (String) obj.get("roomId"); // 방의 번호를 받는다.
-        String requestUsername = (String) obj.get("username"); // 회원의 ID 를 받는다.
 
-        if (requestRoomType.equals("contentReply")) {
-            contentReplyService.save(ContentReplyDTO.builder()
-                    .reply(requestMsg)
-                    .contentId(requestRoomId)
-                    .username(requestUsername)
-                    .build());
-        } else if (requestRoomType.equals("directMessage")) {
-            directMessageService.save(DirectMessageDTO.builder()
-                    .directMessage(requestMsg)
-                    .directMessageType(requestMsgType)
-                    .directMessageRoomId(requestRoomId)
-                    .username(requestUsername)
-                    .build());
-        }
+        if (requestRoomType.equals("directMessageRoomList")) {
+            List<String> requestUserList = (List<String>) obj.get("userList");
+            List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList = new ArrayList<>();
 
-        LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
+            for (String user : requestUserList) {
+                directMessageRoomMemberDTOList.add(DirectMessageRoomMemberDTO.builder().username(user).build());
+            }
 
-        if (sessionList.size() > 0) {
-            for (int i=0; i<sessionList.size(); i++) {
-                String roomId = (String) sessionList.get(i).get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
-                if (roomId.equals(requestRoomId)) { // 같은값이 방이 존재한다면
-                    temp = sessionList.get(i); // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
-                    fileUploadIdx = i;
-                    filename = !requestMsgType.equals("text") ? requestMsg : null;
-                    break;
+            String result = directMessageRoomBizService.add(directMessageRoomMemberDTOList);
+
+            List<LinkedHashMap<String, Object>> tempList = new ArrayList<>();
+            if (sessionList.size() > 0) {
+                for (LinkedHashMap<String, Object> element : sessionList) {
+                    String roomId = (String) element.get("roomId");
+                    for (String k : requestUserList) {
+                        if (roomId.equals(k)) {
+                            tempList.add(element);
+                        }
+                    }
                 }
             }
 
-            // 해당 방의 세션들만 찾아서 메시지를 발송해준다.
-            for (String k : temp.keySet()) {
-                if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
-                WebSocketSession wss = (WebSocketSession) temp.get(k);
-                if (wss != null) {
-                    try {
-                        if (!requestMsgType.equals("text")) obj.put("msg", filename);
-                        obj.put("regDate", LocalDateTime.now().toString());
-                        wss.sendMessage(new TextMessage(obj.toJSONString()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
+            for (LinkedHashMap<String, Object> temp : tempList) {
+                for (String k : temp.keySet()) {
+                    if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
+                    WebSocketSession wss = (WebSocketSession) temp.get(k);
+                    if (wss != null) {
+                        try {
+                            wss.sendMessage(new TextMessage(jsonToObjectParse(result).toJSONString()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+
+        } else {
+            String requestMsgType = (String) obj.get("type");
+            String requestMsg = requestMsgType.equals("text") ? (String) obj.get("msg") : UUID.randomUUID() + "_" + obj.get("msg");
+            String requestRoomId = (String) obj.get("roomId"); // 방의 번호를 받는다.
+            String requestUsername = (String) obj.get("username"); // 회원의 ID 를 받는다.
+
+            if (requestRoomType.equals("contentReply")) {
+                contentReplyService.save(ContentReplyDTO.builder()
+                        .reply(requestMsg)
+                        .contentId(requestRoomId)
+                        .username(requestUsername)
+                        .build());
+            } else if (requestRoomType.equals("directMessage")) {
+                directMessageService.save(DirectMessageDTO.builder()
+                        .directMessage(requestMsg)
+                        .directMessageType(requestMsgType)
+                        .directMessageRoomId(requestRoomId)
+                        .username(requestUsername)
+                        .build());
+            }
+
+            LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
+
+            if (sessionList.size() > 0) {
+                for (int i=0; i<sessionList.size(); i++) {
+                    String roomId = (String) sessionList.get(i).get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
+                    if (roomId.equals(requestRoomId)) { // 같은값이 방이 존재한다면
+                        temp = sessionList.get(i); // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
+                        fileUploadIdx = i;
+                        filename = !requestMsgType.equals("text") ? requestMsg : null;
+                        break;
+                    }
+                }
+
+                // 해당 방의 세션들만 찾아서 메시지를 발송해준다.
+                for (String k : temp.keySet()) {
+                    if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
+                    WebSocketSession wss = (WebSocketSession) temp.get(k);
+                    if (wss != null) {
+                        try {
+                            if (!requestMsgType.equals("text")) obj.put("msg", filename);
+                            obj.put("regDate", LocalDateTime.now().toString());
+                            wss.sendMessage(new TextMessage(obj.toJSONString()));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
+
         log.info("---------------------------------------");
     }
 

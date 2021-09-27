@@ -5,8 +5,6 @@ import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomServ
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,20 +39,18 @@ public class DirectMessageRoomBizService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public ResponseEntity<String> add(List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList) {
+    public String add(List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList) {
         DirectMessageRoomDTO directMessageRoomDTO = DirectMessageRoomDTO.builder().build();
-        if (directMessageRoomMemberDTOList.size() > 2) {
-            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.BAD_REQUEST);
+        if (directMessageRoomMemberDTOList.size() < 2) {
+            return "{\"response\": \"error\"}";
         }else if (directMessageRoomMemberDTOList.size() == 2) { // 2인 톡방
             DirectMessageRoomMemberDTO result
                     = directMessageRoomMemberService.getRepository().findByUsernames(directMessageRoomMemberDTOList);
             if (result != null) {
-                return new ResponseEntity<>(
-                        "{\"response\": \"ok\", " +
-                                "\"newYn\": \"N\", " +
-                                "\"directMessageRoomId\": \"" + result.getDirectMessageRoomId() + "\", " +
-                                "\"directMessageRoomType\": \"" + result.getDirectMessageRoomType() + "\"}"
-                        , HttpStatus.OK);
+                return "{\"response\": \"ok\", " +
+                        "\"newYn\": \"N\", " +
+                        "\"directMessageRoomId\": \"" + result.getDirectMessageRoomId() + "\", " +
+                        "\"directMessageRoomType\": \"" + result.getDirectMessageRoomType() + "\"}";
             }
             directMessageRoomDTO.setDirectMessageRoomType("private");
         } else { // 단톡방(3인 이상)
@@ -68,11 +64,9 @@ public class DirectMessageRoomBizService {
                     .directMessageRoomType(directMessageRoomDTO.getDirectMessageRoomType())
                     .build());
         }
-        return new ResponseEntity<>(
-                "{\"response\": \"ok\", " +
-                        "\"newYn\": \"Y\", " +
-                        "\"directMessageRoomId\": \"" + directMessageRoomDTO.getDirectMessageRoomId() + "\", " +
-                        "\"directMessageRoomType\": \"" + directMessageRoomDTO.getDirectMessageRoomType() + "\"}"
-                , HttpStatus.OK);
+        return "{\"response\": \"ok\", " +
+                "\"newYn\": \"Y\", " +
+                "\"directMessageRoomId\": \"" + directMessageRoomDTO.getDirectMessageRoomId() + "\", " +
+                "\"directMessageRoomType\": \"" + directMessageRoomDTO.getDirectMessageRoomType() + "\"}";
     }
 }
