@@ -102,17 +102,17 @@ public class WebsocketHandler extends TextWebSocketHandler {
                         }
                     }
                 }
-            }
 
-            for (LinkedHashMap<String, Object> temp : tempList) {
-                for (String k : temp.keySet()) {
-                    if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
-                    WebSocketSession wss = (WebSocketSession) temp.get(k);
-                    if (wss != null) {
-                        try {
-                            wss.sendMessage(new TextMessage(jsonToObjectParse(result).toJSONString()));
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                for (LinkedHashMap<String, Object> temp : tempList) {
+                    for (String k : temp.keySet()) {
+                        if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
+                        WebSocketSession wss = (WebSocketSession) temp.get(k);
+                        if (wss != null) {
+                            try {
+                                wss.sendMessage(new TextMessage(jsonToObjectParse(result).toJSONString()));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
