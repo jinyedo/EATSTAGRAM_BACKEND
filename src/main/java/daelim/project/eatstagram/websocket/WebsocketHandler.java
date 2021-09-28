@@ -59,7 +59,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
         if (sessionList.size() > 0) {
             for (int i=0; i<sessionList.size(); i++) {
                 String rn = (String) sessionList.get(i).get("roomId");
-                if (rn.equals(roomId)) {
+                String rt = (String) sessionList.get(i).get("roomType");
+                if (rn.equals(roomId) && rt.equals(roomType)) {
                     flag = true;
                     idx = i;
                     break;
@@ -201,64 +202,14 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 }
 
                 /* [ 이 부분에서 2번 기능 구현 ] */
-                LinkedHashMap<String, Object> alertTemp = new LinkedHashMap<>();
-                LinkedHashMap<String, Object> alertTemp2 = new LinkedHashMap<>();
                 List<DirectMessageRoomMemberDTO> userList
                         = directMessageRoomMemberService.getRepository().findByDirectMessageRoomId(requestRoomId, requestUsername);
                 for (DirectMessageRoomMemberDTO user : userList) {
-                    /*
-                     * 여기서 해당 requestRoomId 와 user 를 통해 1번 DB의 해당 회원의 연결 여부 조회
-                     * - 결과가 N 이면 2번 DB의 연결 상태를 N으로 변경
-                     *
-                     * 해당 유저의 헤더 웹소켓 roomId 의 session 에 전달
-                     * 해당 유저의 채팅방 리스트 웹소켓 roomId 의 session 전달
-                     * */
                     String connectionStatusYn = directMessageRoomConnectionStatusService.getConnectionStatusYn(requestRoomId, user.getUsername());
                     if (connectionStatusYn.equals("N")) {
                         directMessageRoomReadStatusService.updateReadYn(requestRoomId, user.getUsername(), "N");
-                        for (LinkedHashMap<String, Object> map : sessionList) {
-                            String roomType = (String) map.get("roomType");
-                            String roomId = (String) map.get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
-                            if (roomType.equals("header") && roomId.equals(user.getUsername())) { // 같은값이 방이 존재한다면
-                                alertTemp = map; // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
-                                break;
-                            }
-                        }
-
-                        for (String k : alertTemp.keySet()) {
-                            if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
-                            WebSocketSession wss = (WebSocketSession) alertTemp.get(k);
-                            if (wss != null) {
-                                try {
-                                    JSONObject jsonObject = jsonToObjectParse("{test: test}");
-                                    wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-
-                        for (LinkedHashMap<String, Object> map : sessionList) {
-                            String roomType = (String) map.get("roomType");
-                            String roomId = (String) map.get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
-                            if (roomType.equals("directMessageRoomList") && roomId.equals(user.getUsername())) { // 같은값이 방이 존재한다면
-                                alertTemp2 = map; // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
-                                break;
-                            }
-                        }
-
-                        for (String k : alertTemp2.keySet()) {
-                            if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
-                            WebSocketSession wss = (WebSocketSession) alertTemp2.get(k);
-                            if (wss != null) {
-                                try {
-                                    JSONObject jsonObject = jsonToObjectParse("{test: test}");
-                                    wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
+                        sendMessage(user.getUsername(), "header");
+                        sendMessage(user.getUsername(), "directMessageRoomList");
                     } else {
                         directMessageRoomReadStatusService.updateReadYn(requestRoomId, user.getUsername(), "Y");
                     }
@@ -295,5 +246,30 @@ public class WebsocketHandler extends TextWebSocketHandler {
             e.printStackTrace();
         }
         return obj;
+    }
+
+    private void sendMessage(String conditionUsername, String conditionRoomType) {
+        LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
+        for (LinkedHashMap<String, Object> map : sessionList) {
+            String roomType = (String) map.get("roomType");
+            String roomId = (String) map.get("roomId");
+            if (roomType.equals(conditionRoomType) && roomId.equals(conditionUsername)) {
+                temp = map;
+                break;
+            }
+        }
+
+        for (String k : temp.keySet()) {
+            if (k.equals("roomType") || k.equals("roomId")) continue;
+            WebSocketSession wss = (WebSocketSession) temp.get(k);
+            if (wss != null) {
+                try {
+                    JSONObject jsonObject = jsonToObjectParse("{\"roomType\": \"" + conditionRoomType +  "\"}");
+                    wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
