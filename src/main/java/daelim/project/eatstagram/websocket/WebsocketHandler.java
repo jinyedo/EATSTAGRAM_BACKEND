@@ -116,6 +116,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 }
             }
 
+            jsonObj.put("type", "createDirectMessageRoom");
             sendDirectMessageRoomListMessage(requestUserList, requestRoomType, jsonObj);
 
         } else {
@@ -154,9 +155,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                             sendDirectMessageAlertMessage(requestRoomId, "directMessageRoomList", user.getUsername());
                             directMessageRoomMemberStatusService.updateAlertYn(requestRoomId, user.getUsername(), "Y");
                         }
-                    } else {
-                        directMessageRoomMemberStatusService.updateReadYn(requestRoomId, user.getUsername(), "Y");
-                        directMessageRoomMemberStatusService.updateAlertYn(requestRoomId, user.getUsername(), "N");
                     }
                 }
             }
@@ -195,27 +193,40 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
     private void sendDirectMessageAlertMessage(String requestRoomId, String conditionRoomType, String conditionUsername) {
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
-        for (LinkedHashMap<String, Object> map : sessionList) {
-            String roomType = (String) map.get("roomType");
-            String roomId = (String) map.get("roomId");
-            if (roomType.equals(conditionRoomType) && roomId.equals(conditionUsername)) {
-                temp = map;
-                break;
+        log.info("________________________________________-");
+        log.info("requestRoomId : " + requestRoomId);
+        log.info("conditionRoomType : " + conditionRoomType);
+        log.info("conditionUsername : " + conditionUsername);
+        if (sessionList.size() > 0) {
+            for (LinkedHashMap<String, Object> map : sessionList) {
+                String roomType = (String) map.get("roomType");
+                String roomId = (String) map.get("roomId");
+                if (roomType.equals(conditionRoomType) && roomId.equals(conditionUsername)) {
+                    temp = map;
+                    break;
+                }
             }
-        }
 
-        for (String k : temp.keySet()) {
-            if (k.equals("roomType") || k.equals("roomId")) continue;
-            WebSocketSession wss = (WebSocketSession) temp.get(k);
-            if (wss != null) {
-                try {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("websocketType", conditionRoomType);
-                    jsonObject.put("websocketId" , conditionUsername);
-                    jsonObject.put("directMessageRoomId", requestRoomId);
-                    wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
-                } catch (Exception e) {
-                    e.printStackTrace();
+            for (String k : temp.keySet()) {
+                log.info(k + " : " + temp.get(k));
+            }
+            log.info("________________________________________-");
+
+            for (String k : temp.keySet()) {
+                if (k.equals("roomType") || k.equals("roomId")) continue;
+                WebSocketSession wss = (WebSocketSession) temp.get(k);
+                if (wss != null) {
+                    try {
+                        log.info("wss : " + wss);
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("websocketType", conditionRoomType);
+                        jsonObject.put("websocketId" , conditionUsername);
+                        jsonObject.put("directMessageRoomId", requestRoomId);
+                        jsonObject.put("type", "alert");
+                        wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

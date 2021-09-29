@@ -18,6 +18,8 @@ public class DirectMessageRoomMemberStatusController {
     @RequestMapping("/updateConnectionYn")
     @ResponseBody
     public void updateConnectionYn(@ModelAttribute DirectMessageRoomMemberStatusDTO dto) {
+        System.out.println("________________________________________________________");
+        System.out.println(dto.getConnectionYn());
         directMessageRoomMemberStatusService.updateConnectionYn(dto);
     }
 }
