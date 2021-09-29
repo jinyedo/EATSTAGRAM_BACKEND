@@ -1,4 +1,4 @@
-package daelim.project.eatstagram.service.directMessageRoomConnectionStatus;
+package daelim.project.eatstagram.service.directMessageRoomMemberStatus;
 
 import daelim.project.eatstagram.service.base.BaseEntity;
 import daelim.project.eatstagram.service.base.DTOKey;
@@ -15,11 +15,14 @@ import javax.persistence.MappedSuperclass;
 @SuperBuilder
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
-public class DirectMessageRoomConnectionStatus extends BaseEntity {
+public class DirectMessageRoomMemberStatus extends BaseEntity {
 
-    @Id @DTOKey("DMRCS")
-    protected String directMessageRoomConnectionStatusId;
+    @Id
+    @DTOKey("DMRMS")
+    protected String directMessageRoomMemberStatusId;
     protected String connectionYn;
+    protected String readYn;
+    protected String alertYn;
     protected String username;
     protected String directMessageRoomId;
 }

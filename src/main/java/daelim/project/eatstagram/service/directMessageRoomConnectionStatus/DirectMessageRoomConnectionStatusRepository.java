@@ -1,9 +1,0 @@
-package daelim.project.eatstagram.service.directMessageRoomConnectionStatus;
-
-import daelim.project.eatstagram.service.directMessageRoomConnectionStatus.dsl.DirectMessageRoomConnectionStatusDslRepository;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Repository
-public interface DirectMessageRoomConnectionStatusRepository extends JpaRepository<DirectMessageRoomConnectionStatusEntity, String>, DirectMessageRoomConnectionStatusDslRepository {
-}

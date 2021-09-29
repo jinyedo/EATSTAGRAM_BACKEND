@@ -1,4 +1,4 @@
-package daelim.project.eatstagram.service.directMessageRoomConnectionStatus;
+package daelim.project.eatstagram.service.directMessageRoomMemberStatus;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,5 +10,5 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Getter @Setter
 @ToString
-public class DirectMessageRoomConnectionStatusDTO extends DirectMessageRoomConnectionStatus{
+public class DirectMessageRoomMemberStatusDTO extends DirectMessageRoomMemberStatus {
 }

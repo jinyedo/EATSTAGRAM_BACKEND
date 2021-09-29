@@ -5,12 +5,10 @@ import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
 import daelim.project.eatstagram.service.directMessage.DirectMessageService;
-import daelim.project.eatstagram.service.directMessageRoomConnectionStatus.DirectMessageRoomConnectionStatusDTO;
-import daelim.project.eatstagram.service.directMessageRoomConnectionStatus.DirectMessageRoomConnectionStatusService;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
-import daelim.project.eatstagram.service.directMessageRoomReadStatus.DirectMessageRoomReadStatusDTO;
-import daelim.project.eatstagram.service.directMessageRoomReadStatus.DirectMessageRoomReadStatusService;
+import daelim.project.eatstagram.service.directMessageRoomMemberStatus.DirectMessageRoomMemberStatusDTO;
+import daelim.project.eatstagram.service.directMessageRoomMemberStatus.DirectMessageRoomMemberStatusService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.json.simple.JSONObject;
@@ -36,8 +34,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
     private final DirectMessageRoomBizService directMessageRoomBizService;
     private final DirectMessageService directMessageService;
     private final DirectMessageRoomMemberService directMessageRoomMemberService;
-    private final DirectMessageRoomConnectionStatusService directMessageRoomConnectionStatusService;
-    private final DirectMessageRoomReadStatusService directMessageRoomReadStatusService;
+    private final DirectMessageRoomMemberStatusService directMessageRoomMemberStatusService;
 
     List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
     int fileUploadIdx = 0; // 파일을 전송한 방의 번호
@@ -107,16 +104,11 @@ public class WebsocketHandler extends TextWebSocketHandler {
             String directMessageRoomId = (String) result.get("directMessageRoomId");
             if (newYn.equals("Y")) {
                 for (String user : requestUserList) {
-                    directMessageRoomConnectionStatusService.save(
-                            DirectMessageRoomConnectionStatusDTO.builder()
+                    directMessageRoomMemberStatusService.save(
+                            DirectMessageRoomMemberStatusDTO.builder()
                                     .connectionYn("N")
-                                    .username(user)
-                                    .directMessageRoomId(directMessageRoomId)
-                                    .build()
-                    );
-                    directMessageRoomReadStatusService.save(
-                            DirectMessageRoomReadStatusDTO.builder()
                                     .readYn("N")
+                                    .alertYn("N")
                                     .username(user)
                                     .directMessageRoomId(directMessageRoomId)
                                     .build()
@@ -153,13 +145,18 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 List<DirectMessageRoomMemberDTO> userList
                         = directMessageRoomMemberService.getRepository().findByDirectMessageRoomId(requestRoomId, requestUsername);
                 for (DirectMessageRoomMemberDTO user : userList) {
-                    String connectionStatusYn = directMessageRoomConnectionStatusService.getConnectionStatusYn(requestRoomId, user.getUsername());
-                    if (connectionStatusYn.equals("N")) {
-                        directMessageRoomReadStatusService.updateReadYn(requestRoomId, user.getUsername(), "N");
-                        sendDirectMessageAlertMessage(user.getUsername(), "header");
-                        sendDirectMessageAlertMessage(user.getUsername(), "directMessageRoomList");
+                    String connectionYn = directMessageRoomMemberStatusService.getConnectionYn(requestRoomId, user.getUsername());
+                    String alertYn = directMessageRoomMemberStatusService.getAlertYn(requestRoomId, user.getUsername());
+                    if (connectionYn.equals("N")) {
+                        directMessageRoomMemberStatusService.updateReadYn(requestRoomId, user.getUsername(), "N");
+                        if (alertYn.equals("N")) {
+                            sendDirectMessageAlertMessage(requestRoomId, "header", user.getUsername());
+                            sendDirectMessageAlertMessage(requestRoomId, "directMessageRoomList", user.getUsername());
+                            directMessageRoomMemberStatusService.updateAlertYn(requestRoomId, user.getUsername(), "Y");
+                        }
                     } else {
-                        directMessageRoomReadStatusService.updateReadYn(requestRoomId, user.getUsername(), "Y");
+                        directMessageRoomMemberStatusService.updateReadYn(requestRoomId, user.getUsername(), "Y");
+                        directMessageRoomMemberStatusService.updateAlertYn(requestRoomId, user.getUsername(), "N");
                     }
                 }
             }
@@ -196,7 +193,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         return obj;
     }
 
-    private void sendDirectMessageAlertMessage(String conditionUsername, String conditionRoomType) {
+    private void sendDirectMessageAlertMessage(String requestRoomId, String conditionRoomType, String conditionUsername) {
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
         for (LinkedHashMap<String, Object> map : sessionList) {
             String roomType = (String) map.get("roomType");
@@ -212,7 +209,10 @@ public class WebsocketHandler extends TextWebSocketHandler {
             WebSocketSession wss = (WebSocketSession) temp.get(k);
             if (wss != null) {
                 try {
-                    JSONObject jsonObject = jsonToObjectParse("{\"roomType\": \"" + conditionRoomType +  "\", \"roomId\": \"" + conditionUsername + "\"}");
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("websocketType", conditionRoomType);
+                    jsonObject.put("websocketId" , conditionUsername);
+                    jsonObject.put("directMessageRoomId", requestRoomId);
                     wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
                 } catch (Exception e) {
                     e.printStackTrace();
