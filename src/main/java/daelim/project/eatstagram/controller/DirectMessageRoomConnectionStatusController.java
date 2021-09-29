@@ -15,9 +15,9 @@ public class DirectMessageRoomConnectionStatusController {
 
     private final DirectMessageRoomConnectionStatusService directMessageRoomConnectionStatusService;
 
-    @RequestMapping("/save")
+    @RequestMapping("/updateConnectionYn")
     @ResponseBody
-    public void save(@ModelAttribute DirectMessageRoomConnectionStatusDTO dto) {
-        //directMessageRoomConnectionStatusService.save();
+    public void updateConnectionYn(@ModelAttribute DirectMessageRoomConnectionStatusDTO dto) {
+        directMessageRoomConnectionStatusService.updateConnectionYn(dto);
     }
 }

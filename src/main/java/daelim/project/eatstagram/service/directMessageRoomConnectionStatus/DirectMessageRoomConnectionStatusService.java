@@ -10,4 +10,8 @@ public class DirectMessageRoomConnectionStatusService
     public String getConnectionStatusYn(String directMessageRoomId, String username) {
         return getRepository().getConnectionStatusYn(directMessageRoomId, username);
     }
+
+    public void updateConnectionYn(DirectMessageRoomConnectionStatusDTO dto) {
+        getRepository().updateConnectionYn(dto.getDirectMessageRoomId(), dto.getUsername(), dto.getConnectionYn());
+    }
 }
