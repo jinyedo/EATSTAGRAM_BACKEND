@@ -4,6 +4,7 @@ import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomDTO;
 import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomService;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
+import daelim.project.eatstagram.service.directMessageRoomMemberStatus.DirectMessageRoomMemberStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,22 +20,40 @@ public class DirectMessageRoomBizService {
 
     private final DirectMessageRoomService directMessageRoomService;
     private final DirectMessageRoomMemberService directMessageRoomMemberService;
+    private final DirectMessageRoomMemberStatusService directMessageRoomMemberStatusService;
 
     public List<DirectMessageRoomDTO> getList(String username){
         List<DirectMessageRoomDTO> directMessageRoomDTOList = new ArrayList<>();
+        // 해당 회원이 참여해 있는 채팅방 리스트 가져오기
         List<DirectMessageRoomMemberDTO> findByUsernameResult
                 = directMessageRoomMemberService.getRepository().findByUsername(username);
+        // 해당 회원이 참여해 있는 채팅방 개수만큼 반복
         for (DirectMessageRoomMemberDTO findByUsernameResultItem : findByUsernameResult) {
+
+            // 해당 회원이 참여해 있는 채팅방에 안읽은 메시지가 있어 알림이 왔는지
+            String alertYn = directMessageRoomMemberStatusService.getAlertYn(
+                    findByUsernameResultItem.getDirectMessageRoomId(),
+                    username
+            );
+
+            // 회원이 가지고 있는 채팅방 정보로 채팅 DTO 만들기
             DirectMessageRoomDTO directMessageRoomDTO = DirectMessageRoomDTO.builder()
                     .directMessageRoomId(findByUsernameResultItem.getDirectMessageRoomId())
                     .directMessageRoomType(findByUsernameResultItem.getDirectMessageRoomType())
+                    .alertYn(alertYn)
                     .build();
+
+            // 채팅방 아이디로 채팅방에 참여해 있는 회원 리스트 가져오기
             List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdJoinMemberResult
                     = directMessageRoomMemberService.getRepository().findByDirectMessageRoomIdJoinMember(findByUsernameResultItem.getDirectMessageRoomId());
+            // 채팅방에 속해있는 회원 수 만큼 반복
             for (DirectMessageRoomMemberDTO findByDirectMessageRoomIdJoinMemberResultItem : findByDirectMessageRoomIdJoinMemberResult) {
+                // 채팅방 리스트를 그려줄 때 자신의 정보는 필요 없으므로 반복 요소가 자신일때는 건너뛴다.
                 if (findByDirectMessageRoomIdJoinMemberResultItem.getUsername().equals(username)) continue;
+                // 채팅방 DTO 에 회원 리스트 추가
                 directMessageRoomDTO.addDirectMessageRoomMemberDTOList(findByDirectMessageRoomIdJoinMemberResultItem);
             }
+            // 반환해줄 채팅방 리스트에 채팅방 추가
             directMessageRoomDTOList.add(directMessageRoomDTO);
         }
         return directMessageRoomDTOList;

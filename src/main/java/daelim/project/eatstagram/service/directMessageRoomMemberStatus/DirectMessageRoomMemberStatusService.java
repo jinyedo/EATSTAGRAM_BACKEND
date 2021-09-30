@@ -7,12 +7,12 @@ import org.springframework.stereotype.Service;
 public class DirectMessageRoomMemberStatusService
         extends BaseService<String, DirectMessageRoomMemberStatusEntity, DirectMessageRoomMemberStatusDTO, DirectMessageRoomMemberStatusRepository> {
 
-    public String getAlertYn(String directMessageRoomId, String username) {
-        return getRepository().getAlertYn(directMessageRoomId, username);
-    }
-
     public String getConnectionYn(String directMessageRoomId, String username) {
         return getRepository().getConnectionYn(directMessageRoomId, username);
+    }
+
+    public String getAlertYn(String directMessageRoomId, String username) {
+        return getRepository().getAlertYn(directMessageRoomId, username);
     }
 
     public void updateConnectionYn(DirectMessageRoomMemberStatusDTO dto) {
@@ -29,5 +29,9 @@ public class DirectMessageRoomMemberStatusService
 
     public void updateAlertYn(String directMessageRoomId, String username, String alertYn) {
         getRepository().updateAlertYn(directMessageRoomId, username, alertYn);
+    }
+
+    public long unreadMessageTotalCountByUsername(String username) {
+        return getRepository().unreadMessageTotalCountByUsername(username);
     }
 }

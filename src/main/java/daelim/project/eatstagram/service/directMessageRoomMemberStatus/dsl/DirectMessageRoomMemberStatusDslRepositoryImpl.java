@@ -1,5 +1,7 @@
 package daelim.project.eatstagram.service.directMessageRoomMemberStatus.dsl;
 
+import com.querydsl.core.types.Projections;
+import daelim.project.eatstagram.service.directMessageRoomMemberStatus.DirectMessageRoomMemberStatusDTO;
 import daelim.project.eatstagram.service.directMessageRoomMemberStatus.QDirectMessageRoomMemberStatusEntity;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
@@ -14,19 +16,6 @@ public class DirectMessageRoomMemberStatusDslRepositoryImpl extends QuerydslRepo
     }
 
     @Override
-    public String getAlertYn(String directMessageRoomId, String username) {
-        return from(directMessageRoomMemberStatusEntity)
-                .where(
-                        directMessageRoomMemberStatusEntity.directMessageRoomId.eq(directMessageRoomId),
-                        directMessageRoomMemberStatusEntity.username.eq(username)
-                )
-                .select(
-                        directMessageRoomMemberStatusEntity.alertYn
-                )
-                .fetchOne();
-    }
-
-    @Override
     public String getConnectionYn(String directMessageRoomId, String username) {
         return from(directMessageRoomMemberStatusEntity)
                 .where(
@@ -35,6 +24,19 @@ public class DirectMessageRoomMemberStatusDslRepositoryImpl extends QuerydslRepo
                 )
                 .select(
                         directMessageRoomMemberStatusEntity.connectionYn
+                )
+                .fetchOne();
+    }
+
+    @Override
+    public String getAlertYn(String directMessageRoomId, String username) {
+        return from(directMessageRoomMemberStatusEntity)
+                .where(
+                        directMessageRoomMemberStatusEntity.directMessageRoomId.eq(directMessageRoomId),
+                        directMessageRoomMemberStatusEntity.username.eq(username)
+                )
+                .select(
+                        directMessageRoomMemberStatusEntity.alertYn
                 )
                 .fetchOne();
     }
@@ -73,5 +75,17 @@ public class DirectMessageRoomMemberStatusDslRepositoryImpl extends QuerydslRepo
                         directMessageRoomMemberStatusEntity.username.eq(username)
                 )
                 .execute();
+    }
+
+    @Override
+    public long unreadMessageTotalCountByUsername(String username) {
+        return from(directMessageRoomMemberStatusEntity)
+                .where(
+                        directMessageRoomMemberStatusEntity.username.eq(username),
+                        directMessageRoomMemberStatusEntity.connectionYn.eq("N"),
+                        directMessageRoomMemberStatusEntity.readYn.eq("N"),
+                        directMessageRoomMemberStatusEntity.alertYn.eq("Y")
+                )
+                .fetchCount();
     }
 }

@@ -30,7 +30,6 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
                 .fetch();
     }
 
-    // 이거 사용
     @Override
     public List<DirectMessageRoomMemberDTO> findByDirectMessageRoomId(String directMessageRoomId, String username) {
         return from(directMessageRoomMemberEntity)

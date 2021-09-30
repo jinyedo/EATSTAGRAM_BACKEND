@@ -18,8 +18,12 @@ public class DirectMessageRoomMemberStatusController {
     @RequestMapping("/updateConnectionYn")
     @ResponseBody
     public void updateConnectionYn(@ModelAttribute DirectMessageRoomMemberStatusDTO dto) {
-        System.out.println("________________________________________________________");
-        System.out.println(dto.getConnectionYn());
         directMessageRoomMemberStatusService.updateConnectionYn(dto);
+    }
+
+    @RequestMapping("/unreadMessageTotalCountByUsername")
+    @ResponseBody
+    public long unreadMessageTotalCountByUsername(String username) {
+        return directMessageRoomMemberStatusService.unreadMessageTotalCountByUsername(username);
     }
 }

@@ -13,8 +13,10 @@ import java.util.List;
 @ToString
 public class DirectMessageRoomDTO extends DirectMessageRoom {
 
+    private String alertYn;
+
     @Builder.Default
-    List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList = new ArrayList<>();
+    private List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList = new ArrayList<>();
 
     public void addDirectMessageRoomMemberDTOList(DirectMessageRoomMemberDTO directMessageRoomMemberDTO) {
         this.directMessageRoomMemberDTOList.add(directMessageRoomMemberDTO);
