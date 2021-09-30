@@ -223,6 +223,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                         jsonObject.put("websocketId" , conditionUsername);
                         jsonObject.put("directMessageRoomId", requestRoomId);
                         jsonObject.put("type", "alert");
+                        jsonObject.put("alertYn", "Y");
                         wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
                     } catch (Exception e) {
                         e.printStackTrace();
