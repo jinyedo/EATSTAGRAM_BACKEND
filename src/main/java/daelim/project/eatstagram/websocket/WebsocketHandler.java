@@ -195,14 +195,10 @@ public class WebsocketHandler extends TextWebSocketHandler {
             if (roomType.equals("directMessageRoomList")) { // 해당 회원의 채팅방 목록 웹소켓이 끊어지면 해당 회원의 전체 채팅방의 연결 상태를 N으로 변경한다.
                 directMessageRoomMemberStatusService.updateAllConnectionYn(roomId, "N");
             } else if (roomType.equals("directMessage")) {
-
                 int directMessageRoomIdIndex = session.getUri().toString().split("/")[6].indexOf("?");
                 String directMessageRoomId = session.getUri().toString().split("/")[6].substring(0, directMessageRoomIdIndex);
-                log.info(directMessageRoomId);
-
                 int usernameIndex = session.getUri().toString().split("/")[6].indexOf("=");
                 String username = session.getUri().toString().split("/")[6].substring(usernameIndex + 1);
-                log.info(username);
                 directMessageRoomMemberStatusService.updateAlertYn(directMessageRoomId, username, "N");
             }
             for (LinkedHashMap<String, Object> linkedHashMap : sessionList) {

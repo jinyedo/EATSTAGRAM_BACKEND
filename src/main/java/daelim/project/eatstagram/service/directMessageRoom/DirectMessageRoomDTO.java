@@ -4,6 +4,7 @@ import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRo
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +15,7 @@ import java.util.List;
 public class DirectMessageRoomDTO extends DirectMessageRoom {
 
     private String alertYn;
-
+    private LocalDateTime maxRegDate;
     @Builder.Default
     private List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList = new ArrayList<>();
-
-    public void addDirectMessageRoomMemberDTOList(DirectMessageRoomMemberDTO directMessageRoomMemberDTO) {
-        this.directMessageRoomMemberDTOList.add(directMessageRoomMemberDTO);
-    }
 }

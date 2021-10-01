@@ -44,6 +44,23 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
     }
 
     @Override
+    public List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdAndNotUsernameJoinMember(String directMessageRoomId, String username) {
+        return from(directMessageRoomMemberEntity)
+                .where(
+                        directMessageRoomMemberEntity.username.eq(username).not(),
+                        directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId)
+                )
+                .leftJoin(member)
+                .on(member.username.eq(directMessageRoomMemberEntity.username))
+                .select(Projections.bean(DirectMessageRoomMemberDTO.class,
+                        member.username,
+                        member.nickname,
+                        member.name
+                ))
+                .fetch();
+    }
+
+    @Override
     public List<DirectMessageRoomMemberDTO> findByUsername(String username) {
         return from(directMessageRoomMemberEntity)
                 .where(directMessageRoomMemberEntity.username.eq(username))

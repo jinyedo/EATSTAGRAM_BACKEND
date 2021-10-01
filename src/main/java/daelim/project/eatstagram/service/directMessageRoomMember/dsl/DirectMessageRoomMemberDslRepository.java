@@ -8,6 +8,7 @@ public interface DirectMessageRoomMemberDslRepository {
 
     List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdJoinMember(String directMessageRoomId);
     List<DirectMessageRoomMemberDTO> findByDirectMessageRoomId(String directMessageRoomId, String username);
+    List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdAndNotUsernameJoinMember(String directMessageRoomId, String username);
     List<DirectMessageRoomMemberDTO> findByUsername(String username);
     DirectMessageRoomMemberDTO findByUsernames(List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList);
 }
