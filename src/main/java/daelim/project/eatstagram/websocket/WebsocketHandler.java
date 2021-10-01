@@ -107,7 +107,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     directMessageRoomMemberStatusService.save(
                             DirectMessageRoomMemberStatusDTO.builder()
                                     .connectionYn("N")
-                                    .readYn("N")
                                     .alertYn("N")
                                     .username(user)
                                     .directMessageRoomId(directMessageRoomId)
@@ -149,7 +148,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     String connectionYn = directMessageRoomMemberStatusService.getConnectionYn(requestRoomId, user.getUsername());
                     String alertYn = directMessageRoomMemberStatusService.getAlertYn(requestRoomId, user.getUsername());
                     if (connectionYn.equals("N")) {
-                        directMessageRoomMemberStatusService.updateReadYn(requestRoomId, user.getUsername(), "N");
                         if (alertYn.equals("N")) {
                             sendDirectMessageAlertMessage(requestRoomId, "header", user.getUsername());
                             sendDirectMessageAlertMessage(requestRoomId, "directMessageRoomList", user.getUsername());
@@ -173,6 +171,11 @@ public class WebsocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
         if (sessionList.size() > 0) {
             log.info("[웹소켓 종료] URL : " + session.getUri().toString() + ", sessionId: " + session.getId());
+            String roomType = session.getUri().toString().split("/")[5]; // 종료된 방의 type
+            String roomId = session.getUri().toString().split("/")[6]; // 종료된 방의 ID
+            if (roomType.equals("directMessageRoomList")) {
+                directMessageRoomMemberStatusService.updateAllConnectionYn(roomId, "N");
+            }
             for (LinkedHashMap<String, Object> linkedHashMap : sessionList) {
                 linkedHashMap.remove(session.getId());
             }
@@ -193,10 +196,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
     private void sendDirectMessageAlertMessage(String requestRoomId, String conditionRoomType, String conditionUsername) {
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
-        log.info("________________________________________-");
-        log.info("requestRoomId : " + requestRoomId);
-        log.info("conditionRoomType : " + conditionRoomType);
-        log.info("conditionUsername : " + conditionUsername);
         if (sessionList.size() > 0) {
             for (LinkedHashMap<String, Object> map : sessionList) {
                 String roomType = (String) map.get("roomType");
@@ -206,11 +205,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     break;
                 }
             }
-
-            for (String k : temp.keySet()) {
-                log.info(k + " : " + temp.get(k));
-            }
-            log.info("________________________________________-");
 
             for (String k : temp.keySet()) {
                 if (k.equals("roomType") || k.equals("roomId")) continue;
@@ -223,7 +217,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                         jsonObject.put("websocketId" , conditionUsername);
                         jsonObject.put("directMessageRoomId", requestRoomId);
                         jsonObject.put("type", "alert");
-                        jsonObject.put("alertYn", "Y");
                         wss.sendMessage(new TextMessage(jsonObject.toJSONString()));
                     } catch (Exception e) {
                         e.printStackTrace();

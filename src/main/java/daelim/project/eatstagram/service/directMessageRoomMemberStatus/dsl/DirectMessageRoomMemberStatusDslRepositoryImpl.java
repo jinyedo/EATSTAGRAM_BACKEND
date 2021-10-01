@@ -1,13 +1,11 @@
 package daelim.project.eatstagram.service.directMessageRoomMemberStatus.dsl;
 
-import com.querydsl.core.types.Projections;
-import daelim.project.eatstagram.service.directMessageRoomMemberStatus.DirectMessageRoomMemberStatusDTO;
 import daelim.project.eatstagram.service.directMessageRoomMemberStatus.QDirectMessageRoomMemberStatusEntity;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.transaction.annotation.Transactional;
 
-import static daelim.project.eatstagram.service.directMessageRoomMemberStatus.QDirectMessageRoomMemberStatusEntity.*;
+import static daelim.project.eatstagram.service.directMessageRoomMemberStatus.QDirectMessageRoomMemberStatusEntity.directMessageRoomMemberStatusEntity;
 
 public class DirectMessageRoomMemberStatusDslRepositoryImpl extends QuerydslRepositorySupport implements DirectMessageRoomMemberStatusDslRepository {
 
@@ -55,11 +53,10 @@ public class DirectMessageRoomMemberStatusDslRepositoryImpl extends QuerydslRepo
 
     @Override
     @Transactional(rollbackFor = Exception.class) @Modifying
-    public void updateReadYn(String directMessageRoomId, String username, String readYn) {
+    public void updateAllConnectionYn(String username, String connectionYn) {
         update(directMessageRoomMemberStatusEntity)
-                .set(directMessageRoomMemberStatusEntity.readYn, readYn)
+                .set(directMessageRoomMemberStatusEntity.connectionYn, connectionYn)
                 .where(
-                        directMessageRoomMemberStatusEntity.directMessageRoomId.eq(directMessageRoomId),
                         directMessageRoomMemberStatusEntity.username.eq(username)
                 )
                 .execute();
@@ -83,7 +80,6 @@ public class DirectMessageRoomMemberStatusDslRepositoryImpl extends QuerydslRepo
                 .where(
                         directMessageRoomMemberStatusEntity.username.eq(username),
                         directMessageRoomMemberStatusEntity.connectionYn.eq("N"),
-                        directMessageRoomMemberStatusEntity.readYn.eq("N"),
                         directMessageRoomMemberStatusEntity.alertYn.eq("Y")
                 )
                 .fetchCount();

@@ -21,7 +21,6 @@ public class DirectMessageRoomMemberStatus extends BaseEntity {
     @DTOKey("DMRMS")
     protected String directMessageRoomMemberStatusId;
     protected String connectionYn;
-    protected String readYn;
     protected String alertYn;
     protected String username;
     protected String directMessageRoomId;

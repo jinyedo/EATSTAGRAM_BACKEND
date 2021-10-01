@@ -18,13 +18,12 @@ public class DirectMessageRoomMemberStatusService
     public void updateConnectionYn(DirectMessageRoomMemberStatusDTO dto) {
         getRepository().updateConnectionYn(dto.getDirectMessageRoomId(), dto.getUsername(), dto.getConnectionYn());
         if (dto.getConnectionYn().equals("Y")) {
-            updateReadYn(dto.getDirectMessageRoomId(), dto.getUsername(), "Y");
             updateAlertYn(dto.getDirectMessageRoomId(), dto.getUsername(), "N");
         }
     }
 
-    public void updateReadYn(String directMessageRoomId, String username, String readYn) {
-        getRepository().updateReadYn(directMessageRoomId, username, readYn);
+    public void updateAllConnectionYn(String username, String connectionYn) {
+        getRepository().updateAllConnectionYn(username, connectionYn);
     }
 
     public void updateAlertYn(String directMessageRoomId, String username, String alertYn) {
