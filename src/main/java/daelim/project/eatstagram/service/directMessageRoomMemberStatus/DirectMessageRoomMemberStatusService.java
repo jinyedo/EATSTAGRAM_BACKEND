@@ -17,7 +17,7 @@ public class DirectMessageRoomMemberStatusService
 
     public void updateConnectionYn(DirectMessageRoomMemberStatusDTO dto) {
         getRepository().updateConnectionYn(dto.getDirectMessageRoomId(), dto.getUsername(), dto.getConnectionYn());
-        if (dto.getConnectionYn().equals("Y")) {
+        if (dto.getConnectionYn().equals("N")) {
             updateAlertYn(dto.getDirectMessageRoomId(), dto.getUsername(), "N");
         }
     }
