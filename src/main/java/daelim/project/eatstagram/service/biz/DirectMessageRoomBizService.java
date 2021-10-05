@@ -4,7 +4,6 @@ import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomDTO;
 import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomService;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
-import daelim.project.eatstagram.service.directMessageRoomMemberStatus.DirectMessageRoomMemberStatusService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,7 +19,6 @@ public class DirectMessageRoomBizService {
 
     private final DirectMessageRoomService directMessageRoomService;
     private final DirectMessageRoomMemberService directMessageRoomMemberService;
-    private final DirectMessageRoomMemberStatusService directMessageRoomMemberStatusService;
 
     public List<DirectMessageRoomDTO> getList(String username) {
         // 해당 회원이 참여중인 채팅방 아이디들을 담을 리스트
@@ -39,7 +37,7 @@ public class DirectMessageRoomBizService {
         List<DirectMessageRoomDTO> directMessageRoomDTOList = directMessageRoomService.getRepository().getList(directMessageRoomIdList);
         for (DirectMessageRoomDTO dto : directMessageRoomDTOList) {
             // 해당 회원이 참여해 있는 채팅방에 안읽은 메시지가 있어 알림이 왔는지
-            String alertYn = directMessageRoomMemberStatusService.getAlertYn(dto.getDirectMessageRoomId(), username);
+            String alertYn = directMessageRoomMemberService.getAlertYn(dto.getDirectMessageRoomId(), username);
             dto.setAlertYn(alertYn);
             dto.setDirectMessageRoomMemberDTOList(
                     directMessageRoomMemberService.getRepository().findByDirectMessageRoomIdAndNotUsernameJoinMember(
@@ -83,6 +81,9 @@ public class DirectMessageRoomBizService {
                     .username(directMessageRoomMemberDTO.getUsername())
                     .directMessageRoomId(directMessageRoomDTO.getDirectMessageRoomId())
                     .directMessageRoomType(directMessageRoomDTO.getDirectMessageRoomType())
+                    .connectionYn("N")
+                    .alertYn("N")
+                    .inYn("Y")
                     .build());
         }
 

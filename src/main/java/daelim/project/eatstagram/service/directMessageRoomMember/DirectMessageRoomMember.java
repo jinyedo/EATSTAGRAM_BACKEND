@@ -22,4 +22,7 @@ public class DirectMessageRoomMember extends BaseEntity {
     protected String username;
     protected String directMessageRoomId;
     protected String directMessageRoomType; // 개인톡인지 단톡방인지
+    protected String connectionYn;
+    protected String alertYn;
+    protected String inYn;
 }
