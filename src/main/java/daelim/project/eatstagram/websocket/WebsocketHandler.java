@@ -103,7 +103,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
             Map<String, Object> result = directMessageRoomBizService.add(directMessageRoomMemberDTOList);
             JSONObject jsonObj =  new JSONObject(result);
 
-            jsonObj.put("type", "createDirectMessageRoom");
             // 방을 생성하기 위한 데이터를 클라이언트로 전송
             sendDirectMessageRoomListMessage(requestUserList, requestRoomType, jsonObj);
 
@@ -139,7 +138,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 // 채팅 전송
                 sendMessage(requestRoomType, requestRoomId, requestMsgType, requestMsg, obj);
 
-                // 채팅 알림을 날리기 위해 해당 채팅방에 채팅을 보낸 회원을 제외한 나머지 회원들 리스트를 가져온다.
+                // 채팅방 재 초대 및 채팅 알림을 날리기 위해 해당 채팅방에 채팅을 보낸 회원을 제외한 나머지 회원들 리스트를 가져온다.
                 List<DirectMessageRoomMemberDTO> userList
                         = directMessageRoomMemberService.getRepository().findByDirectMessageRoomId(requestRoomId, requestUsername);
 
@@ -147,10 +146,13 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 confirmUserList.add(DirectMessageRoomMemberDTO.builder().username(requestUsername).build());
                 confirmUserList.addAll(userList);
 
+                // 메시지를 보낸 회원을 제외한 나머지 회원들 만큼 반복
                 for (DirectMessageRoomMemberDTO user : userList) {
                     String connectionYn = directMessageRoomMemberService.getConnectionYn(requestRoomId, user.getUsername());
                     String alertYn = directMessageRoomMemberService.getAlertYn(requestRoomId, user.getUsername());
                     String inYn = directMessageRoomMemberService.getInYn(requestRoomId, user.getUsername());
+
+                    // 해당 회원이 채팅방을 나가있으면
                     if (inYn.equals("N")) {
                         Map<String, Object> result = directMessageRoomBizService.add(confirmUserList);
                         JSONObject jsonObj =  new JSONObject(result);

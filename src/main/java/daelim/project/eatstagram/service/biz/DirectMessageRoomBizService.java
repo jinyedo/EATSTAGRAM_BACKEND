@@ -66,6 +66,7 @@ public class DirectMessageRoomBizService {
                 returnMap.put("directMessageRoomId", result.getDirectMessageRoomId());
                 returnMap.put("directMessageRoomType", result.getDirectMessageRoomType());
                 returnMap.put("userList", getMemberListByDirectMessageRoomId(result.getDirectMessageRoomId()));
+                returnMap.put("type", "createDirectMessageRoom");
                 return returnMap;
             }
             directMessageRoomDTO.setDirectMessageRoomType("private");
@@ -92,6 +93,7 @@ public class DirectMessageRoomBizService {
         returnMap.put("directMessageRoomId", directMessageRoomDTO.getDirectMessageRoomId());
         returnMap.put("directMessageRoomType", directMessageRoomDTO.getDirectMessageRoomType());
         returnMap.put("userList", getMemberListByDirectMessageRoomId(directMessageRoomDTO.getDirectMessageRoomId()));
+        returnMap.put("type", "createDirectMessageRoom");
         return returnMap;
     }
 
