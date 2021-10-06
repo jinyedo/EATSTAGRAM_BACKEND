@@ -38,4 +38,16 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
 
         return new PageImpl<>(content, pageable, total);
     }
+
+    @Override
+    public ContentDTO findByContentId(String contentId) {
+        return from(contentEntity)
+                .where(contentEntity.contentId.eq(contentId))
+                .select(Projections.bean(ContentDTO.class,
+                        contentEntity.username,
+                        contentEntity.text,
+                        contentEntity.location
+                ))
+                .fetchOne();
+    }
 }

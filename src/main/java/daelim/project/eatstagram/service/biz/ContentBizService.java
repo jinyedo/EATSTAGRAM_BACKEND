@@ -59,6 +59,13 @@ public class ContentBizService {
         return pagingList;
     }
 
+    public ContentDTO getContentByContentId(String contentId) {
+        ContentDTO contentDTO = contentService.findByContentId(contentId);
+        List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentId);
+        contentDTO.setContentFileDTOList(contentFileList);
+        return contentDTO;
+    }
+
     // 콘텐츠 저장
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> contentAdd(ContentDTO contentDTO, MultipartFile[] uploadFiles) {

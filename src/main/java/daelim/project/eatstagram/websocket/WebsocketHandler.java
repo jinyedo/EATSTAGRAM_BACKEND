@@ -1,6 +1,9 @@
 package daelim.project.eatstagram.websocket;
 
+import daelim.project.eatstagram.service.biz.ContentBizService;
 import daelim.project.eatstagram.service.biz.DirectMessageRoomBizService;
+import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
@@ -9,6 +12,7 @@ import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRo
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -28,6 +32,7 @@ import java.util.*;
 @Log4j2
 public class WebsocketHandler extends TextWebSocketHandler {
 
+    private final ContentBizService contentBizService;
     private final ContentReplyService contentReplyService;
     private final DirectMessageRoomBizService directMessageRoomBizService;
     private final DirectMessageService directMessageService;
@@ -94,23 +99,16 @@ public class WebsocketHandler extends TextWebSocketHandler {
         // 방을 만들기 위한 요청이라면
         if (requestRoomType.equals("directMessageRoomList")) {
             List<String> requestUserList = (List<String>) obj.get("userList");
-            List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList = new ArrayList<>();
-
-            // 채팅방 생성하기
-            for (String user : requestUserList) {
-                directMessageRoomMemberDTOList.add(DirectMessageRoomMemberDTO.builder().username(user).build());
-            }
-            Map<String, Object> result = directMessageRoomBizService.add(directMessageRoomMemberDTOList);
-            JSONObject jsonObj =  new JSONObject(result);
-
+            // 채팅방 생성
+            JSONObject jsonObj =  createDirectMessageRoom(requestUserList);
             // 방을 생성하기 위한 데이터를 클라이언트로 전송
-            sendDirectMessageRoomListMessage(requestUserList, requestRoomType, jsonObj);
+            sendDirectMessageRoomListMessage(requestUserList, jsonObj);
 
         // 댓글 및 채팅을 위한 요청이라면
         } else {
             String requestMsgType = (String) obj.get("type");
-            String requestMsg = requestMsgType.equals("text") ? (String) obj.get("msg") : UUID.randomUUID() + "_" + obj.get("msg");
-            String requestRoomId = (String) obj.get("roomId"); // 방의 번호를 받는다.
+            String requestMsg = requestMsgType.equals("file") ? UUID.randomUUID() + "_" + obj.get("msg") : (String) obj.get("msg");
+            String requestRoomId = obj.get("roomId") != null ? (String) obj.get("roomId"): null; // 방의 번호를 받는다.
             String requestUsername = (String) obj.get("username"); // 회원의 ID 를 받는다.
 
             // 댓글을 위한 요청이라면
@@ -127,6 +125,43 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
             // 채팅을 위한 요청이라면
             } else if (requestRoomType.equals("directMessage")) {
+
+                // 공유
+                Map<String, Object> requestShareData = new HashMap<>();
+                if (requestMsgType.equals("share")) {
+                    requestShareData = (Map<String, Object>) obj.get("shareData");
+                    String thumbnail = (String) requestShareData.get("thumbnail");
+
+                    if (StringUtils.isEmpty(requestRoomId)) {
+                        List<String> userList = (List<String>) requestShareData.get("userList");
+
+                        JSONObject createDirectMessageRoomJsonObj = createDirectMessageRoom(userList);
+                        sendDirectMessageRoomListMessage(userList, createDirectMessageRoomJsonObj);
+
+                        requestRoomId = (String) createDirectMessageRoomJsonObj.get("directMessageRoomId");
+                    }
+
+                    ContentDTO contentDTO = contentBizService.getContentByContentId(requestMsg);
+
+                    obj.clear();
+                    obj.put("thumbnail", thumbnail);
+                    obj.put("username", contentDTO.getUsername());
+                    obj.put("text", contentDTO.getText());
+                    obj.put("location", contentDTO.getLocation());
+                    List<Map<String, String>> contentFileDTOList = new ArrayList<>();
+                    for (ContentFileDTO contentFileDTO : contentDTO.getContentFileDTOList()) {
+                        Map<String, String> contentFileInfo = new HashMap<>();
+                        contentFileInfo.put("contentFileId", contentFileDTO.getContentFileId());
+                        contentFileInfo.put("name", contentFileDTO.getName());
+                        contentFileInfo.put("type", contentFileDTO.getType());
+                        contentFileDTOList.add(contentFileInfo);
+                    }
+                    obj.put("contentFileDTOList", contentFileDTOList);
+                    requestMsg = obj.toJSONString();
+
+                    // requestMsgType = "text";
+                }
+
                 // DB에 채팅 저장
                 directMessageService.save(DirectMessageDTO.builder()
                         .directMessage(requestMsg)
@@ -215,6 +250,15 @@ public class WebsocketHandler extends TextWebSocketHandler {
         return obj;
     }
 
+    private JSONObject createDirectMessageRoom(List<String> userList){
+        List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList = new ArrayList<>();
+        for (String user : userList) {
+            directMessageRoomMemberDTOList.add(DirectMessageRoomMemberDTO.builder().username(user).build());
+        }
+        Map<String, Object> result = directMessageRoomBizService.add(directMessageRoomMemberDTOList);
+        return new JSONObject(result);
+    }
+
     // 클라이언트에게 채팅 알림 메시지 전송
     private void sendDirectMessageAlertMessage(String requestRoomId, String conditionRoomType, String conditionUsername, String alertYn) {
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
@@ -259,7 +303,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 if (roomType.equals(requestRoomType) && roomId.equals(requestRoomId)) { // 같은값이 방이 존재한다면
                     temp = sessionList.get(i); // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
                     fileUploadIdx = i;
-                    filename = !requestMsgType.equals("text") ? requestMsg : null;
+                    filename = requestMsgType.equals("file") ? requestMsg : null;
                     break;
                 }
             }
@@ -270,7 +314,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 WebSocketSession wss = (WebSocketSession) temp.get(k);
                 if (wss != null) {
                     try {
-                        if (!requestMsgType.equals("text")) obj.put("msg", filename);
+                        if (requestMsgType.equals("file")) obj.put("msg", filename);
                         obj.put("regDate", LocalDateTime.now().toString());
                         wss.sendMessage(new TextMessage(obj.toJSONString()));
                     } catch (Exception e) {
@@ -281,15 +325,15 @@ public class WebsocketHandler extends TextWebSocketHandler {
         }
     }
 
-    // 클라이언트에게 채팅방을 만들기 위한 데이터 전송
-    private void sendDirectMessageRoomListMessage(List<String> requestUserList, String requestRoomType, JSONObject obj) {
+    // 클라이언트에게 채팅방을 만들기 위한 데이터 전송 - 여러명에게
+    private void sendDirectMessageRoomListMessage(List<String> requestUserList, JSONObject obj) {
         List<LinkedHashMap<String, Object>> tempList = new ArrayList<>();
         if (sessionList.size() > 0) {
             for (LinkedHashMap<String, Object> element : sessionList) {
                 String roomType = (String) element.get("roomType");
                 String roomId = (String) element.get("roomId");
                 for (String k : requestUserList) {
-                    if (roomType.equals(requestRoomType) && roomId.equals(k)) {
+                    if (roomType.equals("directMessageRoomList") && roomId.equals(k)) {
                         tempList.add(element);
                     }
                 }
@@ -322,6 +366,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
         }
     }
 
+    // 클라이언트에게 채팅방을 만들기 위한 데이터 전송 - 특정 회원에게만
     private void sendDirectMessageRoomListMessage(String username, JSONObject obj) {
         LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
         if (sessionList.size() > 0) {

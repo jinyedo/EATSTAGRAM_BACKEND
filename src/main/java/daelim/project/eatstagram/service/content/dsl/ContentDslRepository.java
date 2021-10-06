@@ -7,4 +7,5 @@ import org.springframework.data.domain.Pageable;
 public interface ContentDslRepository {
 
     Page<ContentDTO> getPagingList(Pageable pageable);
+    ContentDTO findByContentId(String contentId);
 }

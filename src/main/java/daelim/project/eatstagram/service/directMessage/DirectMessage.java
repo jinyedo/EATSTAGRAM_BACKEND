@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import javax.persistence.Column;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
 
@@ -20,6 +21,7 @@ public class DirectMessage extends BaseEntity {
     @Id @DTOKey("DM")
     protected String directMessageId;
     protected String directMessageType;
+    @Column(length = Integer.MAX_VALUE)
     protected String directMessage;
     protected String directMessageRoomId;
     protected String username;
