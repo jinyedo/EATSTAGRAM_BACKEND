@@ -40,6 +40,31 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
+    public Page<ContentDTO> getMyPagingListBy(Pageable pageable, String username) {
+        List<ContentDTO> content = from(contentEntity)
+                .where(
+                        contentEntity.username.eq(username)
+                )
+                .select(Projections.bean(ContentDTO.class,
+                        contentEntity.contentId,
+                        contentEntity.text,
+                        contentEntity.location,
+                        contentEntity.username
+                ))
+                .orderBy(contentEntity.contentId.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = from(contentEntity)
+                .where(contentEntity.username.eq(username))
+                .select(contentEntity)
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
     public ContentDTO findByContentId(String contentId) {
         return from(contentEntity)
                 .where(contentEntity.contentId.eq(contentId))

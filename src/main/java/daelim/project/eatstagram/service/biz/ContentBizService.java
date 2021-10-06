@@ -41,22 +41,14 @@ public class ContentBizService {
     private final ContentLikeService contentLikeService;
     private final StorageRepository storageRepository;
 
-    // 콘텐츠 페이징 리스트
-    public Page<ContentDTO> getContentPagingList(Pageable pageable, String username) {
-        Page<ContentDTO> pagingList = contentService.getRepository().getPagingList(pageable);
-        for (ContentDTO contentDTO : pagingList) {
-            List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentDTO.getContentId());
-            List<ContentHashtagDTO> contentHashtagList = contentHashtagService.getRepository().getListByContentId(contentDTO.getContentId());
-            List<ContentCategoryDTO> contentCategoryList = contentCategoryService.getRepository().getListByContentId(contentDTO.getContentId());
-            long likeCount = contentLikeService.getRepository().countByContentId(contentDTO.getContentId());
-            boolean likeCheck = contentLikeService.getRepository().findByUsernameAndContentId(username, contentDTO.getContentId()) != null;
-            contentDTO.setContentFileDTOList(contentFileList);
-            contentDTO.setContentHashtagDTOList(contentHashtagList);
-            contentDTO.setContentCategoryDTOList(contentCategoryList);
-            contentDTO.setLikeCount(likeCount);
-            contentDTO.setLikeCheck(likeCheck);
-        }
-        return pagingList;
+    // 전체 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getAllContentPagingList(Pageable pageable, String username) {
+        return getDataRelatedToContent(contentService.getRepository().getPagingList(pageable), username);
+    }
+
+    // 내 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getMyContentPagingList(Pageable pageable, String username) {
+        return getDataRelatedToContent(contentService.getRepository().getMyPagingListBy(pageable, username), username);
     }
 
     public ContentDTO getContentByContentId(String contentId) {
@@ -122,4 +114,21 @@ public class ContentBizService {
         }
         return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
     }
+
+    private Page<ContentDTO> getDataRelatedToContent(Page<ContentDTO> contentList, String username) {
+        for (ContentDTO contentDTO : contentList) {
+            List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentDTO.getContentId());
+            List<ContentHashtagDTO> contentHashtagList = contentHashtagService.getRepository().getListByContentId(contentDTO.getContentId());
+            List<ContentCategoryDTO> contentCategoryList = contentCategoryService.getRepository().getListByContentId(contentDTO.getContentId());
+            long likeCount = contentLikeService.getRepository().countByContentId(contentDTO.getContentId());
+            boolean likeCheck = contentLikeService.getRepository().findByUsernameAndContentId(username, contentDTO.getContentId()) != null;
+            contentDTO.setContentFileDTOList(contentFileList);
+            contentDTO.setContentHashtagDTOList(contentHashtagList);
+            contentDTO.setContentCategoryDTOList(contentCategoryList);
+            contentDTO.setLikeCount(likeCount);
+            contentDTO.setLikeCheck(likeCheck);
+        }
+        return contentList;
+    }
+
 }

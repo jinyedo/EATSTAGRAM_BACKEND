@@ -144,6 +144,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     ContentDTO contentDTO = contentBizService.getContentByContentId(requestMsg);
 
                     obj.clear();
+                    obj.put("contentId", requestMsg);
                     obj.put("type", "share");
                     obj.put("thumbnail", thumbnail);
                     obj.put("username", contentDTO.getUsername());

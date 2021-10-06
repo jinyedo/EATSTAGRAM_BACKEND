@@ -95,14 +95,16 @@ public class MemberController {
         return new ResponseEntity<>(memberService.join(validationMemberDTO), HttpStatus.OK);
     }
 
+    // 소셜 로그인 회원가입
+    @RequestMapping("/join/social")
+    public ResponseEntity<Object> joinSocial(@ModelAttribute MemberDTO memberDTO) {
+        return memberService.joinSocial(memberDTO);
+    }
+
+    // 사용자 검색
     @RequestMapping("/getListByNameAndNickname")
     @ResponseBody
     public ResponseEntity<List<MemberDTO>> getListByNameAndNickname(String username, String condition) {
         return new ResponseEntity<>(memberService.getListByNameAndNickname(username, condition), HttpStatus.OK);
-    }
-
-    @RequestMapping("/join/social")
-    public ResponseEntity<Object> joinSocial(@ModelAttribute MemberDTO memberDTO) {
-        return memberService.joinSocial(memberDTO);
     }
 }

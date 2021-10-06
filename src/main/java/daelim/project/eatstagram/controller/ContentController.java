@@ -29,11 +29,18 @@ public class ContentController {
     private final ContentLikeService contentLikeService;
     private final ContentReplyService contentReplyService;
 
-    // 콘텐츠 페이징 리스트
+    // 전체 콘텐츠 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
     public Page<ContentDTO> getContentPagingList(Pageable pageable, String username) {
-        return contentBizService.getContentPagingList(pageable, username);
+        return contentBizService.getAllContentPagingList(pageable, username);
+    }
+
+    // 내 콘텐츠 페이징 리스트
+    @RequestMapping("/getMyPagingList")
+    @ResponseBody
+    public Page<ContentDTO> getMyContentPagingList(Pageable pageable, String username) {
+        return contentBizService.getMyContentPagingList(pageable, username);
     }
 
     // 콘텐츠 추가
@@ -55,6 +62,7 @@ public class ContentController {
         return contentLikeService.save(contentLikeDTO);
     }
 
+    // 댓글 페이징 리스트
     @RequestMapping("/reply/getPagingList")
     @ResponseBody
     public Page<ContentReplyDTO> getContentReplyPagingList(Pageable pageable, String contentId) {
