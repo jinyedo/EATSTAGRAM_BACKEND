@@ -37,6 +37,7 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                 .where(member.username.eq(username))
                 .select(Projections.bean(MemberDTO.class,
                         member.username,
+                        member.name,
                         member.nickname,
                         member.profileImgName
                 ))
