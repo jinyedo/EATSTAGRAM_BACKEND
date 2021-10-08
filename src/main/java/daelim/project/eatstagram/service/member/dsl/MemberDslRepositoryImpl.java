@@ -15,7 +15,7 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
         super(QMember.class);
     }
 
-    @Override
+    @Override // 검색
     public List<MemberDTO> getListByNameAndNickname(String username, String condition) {
         return from(member)
                 .where(
@@ -25,8 +25,21 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                 .select(Projections.bean(MemberDTO.class,
                         member.username,
                         member.name,
-                        member.nickname
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .fetch();
+    }
+
+    @Override // 아이디로 회원 조회
+    public MemberDTO getMemberInfo(String username) {
+        return from(member)
+                .where(member.username.eq(username))
+                .select(Projections.bean(MemberDTO.class,
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
+                ))
+                .fetchOne();
     }
 }

@@ -8,6 +8,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Getter @Setter
 public class StorageProperties {
 
-    // private String location = "C:/daelim/Project/EATSTAGRAM_FRONT/public/upload/";
-    private String location = "public/upload/";
+    private String location = "C:/daelim/Project/EATSTAGRAM_FRONT/public/upload/";
+    // private String location = "public/upload/";
 }

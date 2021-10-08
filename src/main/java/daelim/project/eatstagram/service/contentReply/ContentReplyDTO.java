@@ -11,4 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter
 @ToString
 public class ContentReplyDTO extends ContentReply {
+
+    private String nickname;
+    private String profileImgName;
 }

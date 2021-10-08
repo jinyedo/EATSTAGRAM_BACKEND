@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 
 import static daelim.project.eatstagram.service.content.QContentEntity.contentEntity;
+import static daelim.project.eatstagram.service.member.QMember.*;
 
 public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implements ContentDslRepository {
 
@@ -21,11 +22,15 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     @Override
     public Page<ContentDTO> getPagingList(Pageable pageable) {
         List<ContentDTO> content = from(contentEntity)
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
                         contentEntity.contentId,
                         contentEntity.text,
                         contentEntity.location,
-                        contentEntity.username
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .orderBy(contentEntity.contentId.desc())
                 .offset(pageable.getOffset())
@@ -33,6 +38,8 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetch();
 
         long total = from(contentEntity)
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
                 .select(contentEntity)
                 .fetchCount();
 
@@ -45,11 +52,15 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .where(
                         contentEntity.username.eq(username)
                 )
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
                         contentEntity.contentId,
                         contentEntity.text,
                         contentEntity.location,
-                        contentEntity.username
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .orderBy(contentEntity.contentId.desc())
                 .offset(pageable.getOffset())
@@ -58,6 +69,8 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
 
         long total = from(contentEntity)
                 .where(contentEntity.username.eq(username))
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
                 .select(contentEntity)
                 .fetchCount();
 
@@ -68,10 +81,14 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     public ContentDTO findByContentId(String contentId) {
         return from(contentEntity)
                 .where(contentEntity.contentId.eq(contentId))
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
-                        contentEntity.username,
                         contentEntity.text,
-                        contentEntity.location
+                        contentEntity.location,
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .fetchOne();
     }

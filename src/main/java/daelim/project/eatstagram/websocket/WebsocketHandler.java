@@ -10,6 +10,7 @@ import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
 import daelim.project.eatstagram.service.directMessage.DirectMessageService;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberDTO;
 import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
+import daelim.project.eatstagram.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.StringUtils;
@@ -32,10 +33,13 @@ import java.util.*;
 @Log4j2
 public class WebsocketHandler extends TextWebSocketHandler {
 
+    private final MemberService memberService;
+
     private final ContentBizService contentBizService;
     private final ContentReplyService contentReplyService;
-    private final DirectMessageRoomBizService directMessageRoomBizService;
+
     private final DirectMessageService directMessageService;
+    private final DirectMessageRoomBizService directMessageRoomBizService;
     private final DirectMessageRoomMemberService directMessageRoomMemberService;
 
     List<LinkedHashMap<String, Object>> sessionList = new ArrayList<>(); // 웹소켓 세션을 담아둘 리스트
@@ -120,6 +124,8 @@ public class WebsocketHandler extends TextWebSocketHandler {
                         .username(requestUsername)
                         .build());
 
+                obj.put("profileImgName", memberService.getMemberInfo(requestUsername).getProfileImgName());
+
                 // 댓글을 전송
                 sendMessage(requestRoomType, requestRoomId, requestMsgType, requestMsg, obj);
 
@@ -147,7 +153,9 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     obj.put("contentId", requestMsg);
                     obj.put("type", "share");
                     obj.put("thumbnail", thumbnail);
-                    obj.put("username", contentDTO.getUsername());
+                    obj.put("username", requestUsername);
+                    obj.put("nickname", contentDTO.getNickname());
+                    obj.put("profileImgName", contentDTO.getProfileImgName());
                     obj.put("text", contentDTO.getText());
                     obj.put("location", contentDTO.getLocation());
                     List<Map<String, String>> contentFileDTOList = new ArrayList<>();
@@ -160,8 +168,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     }
                     obj.put("contentFileDTOList", contentFileDTOList);
                     requestMsg = obj.toJSONString();
-
-                    // requestMsgType = "text";
                 }
 
                 // DB에 채팅 저장

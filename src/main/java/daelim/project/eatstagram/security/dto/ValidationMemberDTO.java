@@ -13,11 +13,11 @@ import javax.validation.constraints.Pattern;
 public class ValidationMemberDTO {
 
     @NotBlank
-    @Pattern(regexp = "[A-za-z0-9]{6,18}", message = "올바른 형식의 아이디를 입력해주세요.")
+    @Pattern(regexp = "[a-z0-9]{6,18}", message = "올바른 형식의 아이디를 입력해주세요.")
     private String username; // 아이디
 
     @NotBlank(message = "비밀번호는 필수 입력 정보입니다.")
-    @Pattern(regexp="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}", message = "올바른 형식의 비밀번호를 입력해주세요.")
+    @Pattern(regexp="(?=.*[0-9])(?=.*[a-z])(?=.*\\W)(?=\\S+$).{8,20}", message = "올바른 형식의 비밀번호를 입력해주세요.")
     private String password; // 비밀번호
 
     @NotBlank(message = "비밀번호 확인은 필수 입력정보 입니다.")
@@ -35,6 +35,8 @@ public class ValidationMemberDTO {
     @Pattern(regexp = "([\\w-.]+)@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.)|(([\\w-]+\\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(]?)$", message = "올바른 형식의 이메일 주소를 입력해주세요.")
     private String email;
 
+    @NotBlank
+    @Pattern(regexp = "([a-zA-Z가-힣0-9]{2,10})", message = "올바른 형식의 닉네임을 입력해주세요.")
     private String nickname;
 
     private String msg;

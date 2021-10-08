@@ -15,6 +15,9 @@ import java.util.List;
 @ToString
 public class ContentDTO extends Content {
 
+    private String nickname;
+    private String profileImgName;
+
     @Builder.Default
     private List<ContentHashtagDTO> contentHashtagDTOList = new ArrayList<>();
 

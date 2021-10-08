@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 
 import static daelim.project.eatstagram.service.contentReply.QContentReplyEntity.*;
+import static daelim.project.eatstagram.service.member.QMember.*;
 
 public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport implements ContentReplyDslRepository {
 
@@ -24,12 +25,16 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
                 .where(
                         contentReplyEntity.contentId.eq(contentId)
                 )
+                .leftJoin(member)
+                .on(member.username.eq(contentReplyEntity.username))
                 .select(Projections.bean(ContentReplyDTO.class,
                         contentReplyEntity.contentReplyId,
                         contentReplyEntity.reply,
                         contentReplyEntity.contentId,
-                        contentReplyEntity.username,
-                        contentReplyEntity.regDate
+                        contentReplyEntity.regDate,
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .orderBy(contentReplyEntity.contentReplyId.desc())
                 .offset(pageable.getOffset())
@@ -38,6 +43,8 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
 
         long total = from(contentReplyEntity)
                 .where(contentReplyEntity.contentId.eq(contentId))
+                .leftJoin(member)
+                .on(member.username.eq(contentReplyEntity.username))
                 .select(contentReplyEntity)
                 .fetchCount();
 

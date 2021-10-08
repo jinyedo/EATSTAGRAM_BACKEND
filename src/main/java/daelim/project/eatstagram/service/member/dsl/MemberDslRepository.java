@@ -7,4 +7,5 @@ import java.util.List;
 public interface MemberDslRepository {
 
     List<MemberDTO> getListByNameAndNickname(String username, String condition);
+    MemberDTO getMemberInfo(String username);
 }

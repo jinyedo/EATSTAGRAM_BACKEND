@@ -17,18 +17,14 @@ public class Member extends BaseEntity {
 
     @Id
     private String username; // 아이디
-
     private String password;
-
     private String name;
-
     private String email;
-
     private String nickname;
-
     private boolean formSocial; // 소셜 로그인 유무
-
     private String socialType; // 소셜 로그인 타입
+    private String profileImgName;
+    private String profileImgPath;
 
     @Builder.Default
     @Enumerated(EnumType.STRING) @ElementCollection(fetch = FetchType.LAZY)

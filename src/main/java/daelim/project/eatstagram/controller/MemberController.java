@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -35,7 +36,9 @@ public class MemberController {
     @RequestMapping("loginSuccess")
     @ResponseBody
     public ResponseEntity<String> loginSuccess(@AuthenticationPrincipal AuthMemberDTO authMemberDTO) {
-        return new ResponseEntity<>("{\"response\": \"ok\", \"username\": \"" + authMemberDTO.getUsername() + "\"}", HttpStatus.OK);
+        return new ResponseEntity<>("{\"response\": \"ok\"," +
+                " \"username\": \"" + authMemberDTO.getUsername() + "\"," +
+                " \"nickname\": \"" + authMemberDTO.getNickname() + "\"}", HttpStatus.OK);
     }
 
     // 로그인 실패
@@ -106,5 +109,17 @@ public class MemberController {
     @ResponseBody
     public ResponseEntity<List<MemberDTO>> getListByNameAndNickname(String username, String condition) {
         return new ResponseEntity<>(memberService.getListByNameAndNickname(username, condition), HttpStatus.OK);
+    }
+
+    @RequestMapping("/getMemberInfo")
+    @ResponseBody
+    public ResponseEntity<MemberDTO> getMemberInfo(String username) {
+        return new ResponseEntity<>(memberService.getMemberInfo(username), HttpStatus.OK);
+    }
+
+    @RequestMapping("/saveProfileImg")
+    @ResponseBody
+    public ResponseEntity<String> saveProfileImg(String username, MultipartFile file) {
+        return memberService.saveProfileImg(username, file);
     }
 }

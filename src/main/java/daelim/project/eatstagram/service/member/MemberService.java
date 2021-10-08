@@ -3,13 +3,26 @@ package daelim.project.eatstagram.service.member;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
 import daelim.project.eatstagram.service.base.ModelMapperUtils;
+import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.contentCategory.ContentCategoryDTO;
+import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
+import daelim.project.eatstagram.service.contentFile.ContentFileService;
+import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
+import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +32,8 @@ import java.util.UUID;
 @Slf4j
 public class MemberService extends BaseService<String, Member, MemberDTO, MemberRepository> {
 
+    private final StorageRepository storageRepository;
+    private static final String PROFILE_IMAGE_FOLDER_NAME = "profile";
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public ValidationMemberDTO join(ValidationMemberDTO dto) {
@@ -88,5 +103,48 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
 
     public List<MemberDTO> getListByNameAndNickname(String username, String condition) {
         return getRepository().getListByNameAndNickname(username, condition);
+    }
+
+    public MemberDTO getMemberInfo(String username) {
+        return getRepository().getMemberInfo(username);
+    }
+
+    public ResponseEntity<String> saveProfileImg(String username, MultipartFile file) {
+        if (file.isEmpty()) return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
+
+        Path folderPath = storageRepository.makeFolder(PROFILE_IMAGE_FOLDER_NAME);
+
+        String fileType = file.getContentType();
+        assert fileType != null;
+        // 이미지 파일만 업로드 가능
+        if (!fileType.startsWith("image")) {
+            log.warn("this file is not image type");
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
+        }
+
+        // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
+        String originalName = file.getOriginalFilename();
+        assert originalName != null;
+        String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+
+        String uuid = UUID.randomUUID().toString();
+        fileName =  uuid + "_" + fileName;
+        String saveName = folderPath + File.separator + fileName;
+        Path savePath = Paths.get(saveName);
+
+        Member member = getRepository().findByUsername(username).orElseThrow();
+        member.setProfileImgName(fileName);
+        member.setProfileImgPath(savePath.normalize().toAbsolutePath().toString());
+        getRepository().save(member);
+
+        try {
+            file.transferTo(savePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>("{\"response\": \"ok\", \"profileImgName\": \"" + fileName + "\"}", HttpStatus.OK);
     }
 }
