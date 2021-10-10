@@ -147,7 +147,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                         requestRoomId = (String) createDirectMessageRoomJsonObj.get("directMessageRoomId");
                     }
 
-                    ContentDTO contentDTO = contentBizService.getContentByContentId(requestMsg);
+                    ContentDTO contentDTO = contentBizService.findByContentId(requestMsg);
 
                     obj.clear();
                     obj.put("contentId", requestMsg);

@@ -29,4 +29,8 @@ public class ContentDTO extends Content {
 
     private long likeCount;
     private boolean likeCheck;
+
+    private long replyCount;
+
+    private String savedYn;
 }

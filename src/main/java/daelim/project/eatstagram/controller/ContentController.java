@@ -7,6 +7,7 @@ import daelim.project.eatstagram.service.contentLike.ContentLikeDTO;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
+import daelim.project.eatstagram.service.contentSaved.ContentSavedService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -28,29 +29,45 @@ public class ContentController {
     private final ContentFileService contentFileService;
     private final ContentLikeService contentLikeService;
     private final ContentReplyService contentReplyService;
+    protected final ContentSavedService contentSavedService;
 
     // 전체 콘텐츠 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
     public Page<ContentDTO> getContentPagingList(Pageable pageable, String username) {
-        return contentBizService.getAllContentPagingList(pageable, username);
+        return contentBizService.getAllPagingList(pageable, username);
     }
 
     // 내 콘텐츠 페이징 리스트
     @RequestMapping("/getMyPagingList")
     @ResponseBody
     public Page<ContentDTO> getMyContentPagingList(Pageable pageable, String username) {
-        return contentBizService.getMyContentPagingList(pageable, username);
+        return contentBizService.getMyPagingList(pageable, username);
+    }
+
+    // 저장된 콘텐츠 페이징 리스트
+    @RequestMapping("/getSavedPagingList")
+    @ResponseBody
+    public Page<ContentDTO> getSavedPagingList(Pageable pageable, String username) {
+        return contentBizService.getSavedPagingList(pageable, username);
     }
 
     // 콘텐츠 추가
     @RequestMapping("/add")
+    @ResponseBody
     public ResponseEntity<String> add(@ModelAttribute ContentDTO contentDTO, MultipartFile[] uploadFiles) {
-        return contentBizService.contentAdd(contentDTO, uploadFiles);
+        return contentBizService.add(contentDTO, uploadFiles);
+    }
+
+    @RequestMapping("/save")
+    @ResponseBody
+    public ResponseEntity<String> save(String username, String contentId) {
+        return contentSavedService.save(username, contentId);
     }
 
     // 비디오 스트림
     @RequestMapping(value = "/stream/{contentName}")
+    @ResponseBody
     public void stream(@PathVariable("contentName")String contentName, HttpServletRequest request, HttpServletResponse response) throws Exception {
         contentFileService.videoStream(contentName, request, response);
     }
@@ -65,7 +82,7 @@ public class ContentController {
     // 댓글 페이징 리스트
     @RequestMapping("/reply/getPagingList")
     @ResponseBody
-    public Page<ContentReplyDTO> getContentReplyPagingList(Pageable pageable, String contentId) {
-        return contentReplyService.getContentReplyPagingList(pageable, contentId);
+    public Page<ContentReplyDTO> getPagingList(Pageable pageable, String contentId) {
+        return contentReplyService.getPagingList(pageable, contentId);
     }
 }

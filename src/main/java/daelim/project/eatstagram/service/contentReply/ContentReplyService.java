@@ -8,7 +8,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContentReplyService extends BaseService<String, ContentReplyEntity, ContentReplyDTO, ContentReplyRepository> {
 
-    public Page<ContentReplyDTO> getContentReplyPagingList(Pageable pageable, String contentId) {
-        return getRepository().getContentReplyPagingList(pageable, contentId);
+    public Page<ContentReplyDTO> getPagingList(Pageable pageable, String contentId) {
+        return getRepository().getPagingList(pageable, contentId);
+    }
+
+    public long getTotalCountByContentId(String contentId) {
+        return getRepository().getTotalCountByContentId(contentId);
     }
 }

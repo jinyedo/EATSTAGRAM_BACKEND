@@ -47,7 +47,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public Page<ContentDTO> getMyPagingListBy(Pageable pageable, String username) {
+    public Page<ContentDTO> getMyPagingList(Pageable pageable, String username) {
         List<ContentDTO> content = from(contentEntity)
                 .where(
                         contentEntity.username.eq(username)
@@ -69,6 +69,35 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
 
         long total = from(contentEntity)
                 .where(contentEntity.username.eq(username))
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
+                .select(contentEntity)
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<ContentDTO> getSavedPagingListBy(Pageable pageable, List<String> contentIds) {
+        List<ContentDTO> content = from(contentEntity)
+                .where(contentEntity.contentId.in(contentIds))
+                .leftJoin(member)
+                .on(member.username.eq(contentEntity.username))
+                .select(Projections.bean(ContentDTO.class,
+                        contentEntity.contentId,
+                        contentEntity.text,
+                        contentEntity.location,
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
+                ))
+                .orderBy(contentEntity.contentId.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long total = from(contentEntity)
+                .where(contentEntity.contentId.in(contentIds))
                 .leftJoin(member)
                 .on(member.username.eq(contentEntity.username))
                 .select(contentEntity)

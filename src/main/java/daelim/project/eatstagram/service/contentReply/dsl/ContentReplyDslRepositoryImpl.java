@@ -20,7 +20,7 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
-    public Page<ContentReplyDTO> getContentReplyPagingList(Pageable pageable, String contentId) {
+    public Page<ContentReplyDTO> getPagingList(Pageable pageable, String contentId) {
         List<ContentReplyDTO> content = from(contentReplyEntity)
                 .where(
                         contentReplyEntity.contentId.eq(contentId)
@@ -49,5 +49,13 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public long getTotalCountByContentId(String contentId){
+        return from(contentReplyEntity)
+                .where(contentReplyEntity.contentId.eq(contentId))
+                .select(contentReplyEntity)
+                .fetchCount();
     }
 }
