@@ -36,6 +36,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     private static final String PROFILE_IMAGE_FOLDER_NAME = "profile";
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    // 일반 회원가입
     public ValidationMemberDTO join(ValidationMemberDTO dto) {
         Optional<Member> result =  getRepository().findByUsernameAndFormSocial(dto.getUsername(), false);
         if (result.isPresent()) {
@@ -58,6 +59,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         return dto;
     }
 
+    // 소셜 회원가입
     public ResponseEntity<Object> joinSocial(MemberDTO dto) {
         Optional<Member> result =  getRepository().findByUsernameAndFormSocial(dto.getUsername(), true);
         String password = UUID.randomUUID().toString();
@@ -84,6 +86,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         return new ResponseEntity<>(memberDTO, HttpStatus.OK);
     }
 
+    // 아이디 중복 검사
     public String checkUsername(String username) {
         Optional<Member> result = getRepository().findByUsernameAndFormSocial(username,false);
         if (result.isPresent()) {
@@ -92,6 +95,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         return "ok";
     }
 
+    // 닉네임 중복검사
     public String checkNickname(String nickname) {
         Optional<Member> result =  getRepository().findMemberByNickname(nickname);
         if (result.isPresent()) {
@@ -101,50 +105,65 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         }
     }
 
+    // (검색) 사용자 정보 가져오기
     public List<MemberDTO> getListByNameAndNickname(String username, String condition) {
         return getRepository().getListByNameAndNickname(username, condition);
     }
 
+    // 사용자 정보 가져오기
     public MemberDTO getMemberInfo(String username) {
         return getRepository().getMemberInfo(username);
     }
 
+    // 프로필 이미지 저장 및 삭제
     public ResponseEntity<String> saveProfileImg(String username, MultipartFile file) {
-        if (file.isEmpty()) return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
-
         Path folderPath = storageRepository.makeFolder(PROFILE_IMAGE_FOLDER_NAME);
+        String fileName = null;
+        if (file.isEmpty()) {
+            Member member = getRepository().findByUsername(username).orElseThrow();
+            String profileImgPath = member.getProfileImgPath();
+            if (!profileImgPath.isEmpty()) {
+                File deleteFile = new File(profileImgPath);
+                if (deleteFile.exists()) {
+                    deleteFile.delete();
+                }
+                member.setProfileImgName(null);
+                member.setProfileImgPath(null);
+                getRepository().save(member);
+            }
+        } else {
 
-        String fileType = file.getContentType();
-        assert fileType != null;
-        // 이미지 파일만 업로드 가능
-        if (!fileType.startsWith("image")) {
-            log.warn("this file is not image type");
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
+            String fileType = file.getContentType();
+            assert fileType != null;
+            // 이미지 파일만 업로드 가능
+            if (!fileType.startsWith("image")) {
+                log.warn("this file is not image type");
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
+            }
+
+            // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
+            String originalName = file.getOriginalFilename();
+            assert originalName != null;
+            fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
+
+            String uuid = UUID.randomUUID().toString();
+            fileName =  uuid + "_" + fileName;
+            String saveName = folderPath + File.separator + fileName;
+            Path savePath = Paths.get(saveName);
+
+            Member member = getRepository().findByUsername(username).orElseThrow();
+            member.setProfileImgName(fileName);
+            member.setProfileImgPath(savePath.normalize().toAbsolutePath().toString());
+            getRepository().save(member);
+
+            try {
+                file.transferTo(savePath);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
+            }
         }
-
-        // 실제 파일 이름 IE 나 Edge 는 전체 경로가 들어오므로
-        String originalName = file.getOriginalFilename();
-        assert originalName != null;
-        String fileName = originalName.substring(originalName.lastIndexOf("\\") + 1);
-
-        String uuid = UUID.randomUUID().toString();
-        fileName =  uuid + "_" + fileName;
-        String saveName = folderPath + File.separator + fileName;
-        Path savePath = Paths.get(saveName);
-
-        Member member = getRepository().findByUsername(username).orElseThrow();
-        member.setProfileImgName(fileName);
-        member.setProfileImgPath(savePath.normalize().toAbsolutePath().toString());
-        getRepository().save(member);
-
-        try {
-            file.transferTo(savePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
-        }
-
         return new ResponseEntity<>("{\"response\": \"ok\", \"profileImgName\": \"" + fileName + "\"}", HttpStatus.OK);
     }
 }

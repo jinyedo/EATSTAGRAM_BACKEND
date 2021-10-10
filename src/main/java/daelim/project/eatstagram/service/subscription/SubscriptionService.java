@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class SubscriptionService extends BaseService<String, SubscriptionEntity,
     // 구독 여부
     public ResponseEntity<String> getSubscriptionYn(String username, String subscriber) {
         String subscriptionYn = getRepository().findByUsernameAndSubscriber(username, subscriber) == null ? "N" : "Y";
-        return new ResponseEntity<>("{\"response\": \"ok\", \"subscriptionYn\": \"" + subscriptionYn + "\"," + "\"}", HttpStatus.OK);
+        return new ResponseEntity<>("{\"response\": \"ok\", \"subscriptionYn\": \"" + subscriptionYn + "\"}", HttpStatus.OK);
     }
 
     // 구독한 사람들의 총 수
