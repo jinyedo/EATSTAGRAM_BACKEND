@@ -32,6 +32,13 @@ public class SubscriptionDslRepositoryImpl extends QuerydslRepositorySupport imp
                 .fetch();
     }
 
+    public List<String> getSubscribersByUsername(String username) {
+        return from(subscriptionEntity)
+                .where(subscriptionEntity.username.eq(username))
+                .select(subscriptionEntity.subscriber)
+                .fetch();
+    }
+
     @Override
     public SubscriptionEntity findByUsernameAndSubscriber(String username, String subscriber) {
         return from(subscriptionEntity)

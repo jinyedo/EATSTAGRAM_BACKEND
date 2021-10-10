@@ -31,11 +31,11 @@ public class ContentController {
     private final ContentReplyService contentReplyService;
     protected final ContentSavedService contentSavedService;
 
-    // 전체 콘텐츠 페이징 리스트
+    // 구독한 사람들의 콘텐츠 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
-    public Page<ContentDTO> getContentPagingList(Pageable pageable, String username) {
-        return contentBizService.getAllPagingList(pageable, username);
+    public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, String username) {
+        return contentBizService.getSubscribedPagingList(pageable, username);
     }
 
     // 내 콘텐츠 페이징 리스트
@@ -59,6 +59,7 @@ public class ContentController {
         return contentBizService.add(contentDTO, uploadFiles);
     }
 
+    // 내 저장 목록에 콘텐츠 저장하거나 삭제하기
     @RequestMapping("/save")
     @ResponseBody
     public ResponseEntity<String> save(String username, String contentId) {

@@ -12,19 +12,22 @@ import java.util.List;
 @Slf4j
 public class ContentService extends BaseService<String, ContentEntity, ContentDTO, ContentRepository> {
 
-    public ContentDTO findByContentId(String contentId) {
-        return getRepository().findByContentId(contentId);
+    // 구독한 사람들의 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, List<String> subscribers) {
+        return getRepository().getSubscribedPagingList(pageable, subscribers);
     }
 
-    public Page<ContentDTO> getPagingList(Pageable pageable) {
-        return getRepository().getPagingList(pageable);
-    }
-
+    // 내 콘텐츠 페이징 리스트
     public Page<ContentDTO> getMyPagingList(Pageable pageable, String username) {
         return getRepository().getMyPagingList(pageable, username);
     }
 
+    // 저장된 콘텐츠 페이징 리스트
     public Page<ContentDTO> getSavedPagingList(Pageable pageable, List<String> contentIds) {
         return getRepository().getSavedPagingListBy(pageable, contentIds);
+    }
+
+    public ContentDTO findByContentId(String contentId) {
+        return getRepository().findByContentId(contentId);
     }
 }

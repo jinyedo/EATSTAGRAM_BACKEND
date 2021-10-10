@@ -15,4 +15,5 @@ public class SubscriptionDTO extends Subscription {
     private String nickname;
     private String name;
     private String profileImgName;
+    private String subscriptionYn;
 }
