@@ -3,7 +3,10 @@ package daelim.project.eatstagram.controller;
 import daelim.project.eatstagram.service.subscription.SubscriptionDTO;
 import daelim.project.eatstagram.service.subscription.SubscriptionService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,11 +20,11 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    // 구독자 리스트
-    @RequestMapping("/getList")
+    // 구독자 페이징 리스트
+    @RequestMapping("/getPagingList")
     @ResponseBody
-    public List<SubscriptionDTO> getList(String username, String condition) {
-        return subscriptionService.getList(username, condition);
+    public Page<SubscriptionDTO> getPagingList(Pageable pageable, @ModelAttribute SubscriptionDTO subscriptionDTO) {
+        return subscriptionService.getPagingList(pageable, subscriptionDTO);
     }
 
     // 구독 여부

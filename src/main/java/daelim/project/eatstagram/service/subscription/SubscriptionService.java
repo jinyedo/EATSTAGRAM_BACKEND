@@ -1,23 +1,26 @@
 package daelim.project.eatstagram.service.subscription;
 
 import daelim.project.eatstagram.service.base.BaseService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.util.List;
 
 @Service
 public class SubscriptionService extends BaseService<String, SubscriptionEntity, SubscriptionDTO, SubscriptionRepository> {
 
-    // 구독자 리스트
-    public List<SubscriptionDTO> getList(String username, String condition) {
-        List<SubscriptionDTO> getList = getRepository().getList(condition);
-        for (SubscriptionDTO dto : getList) {
-            String subscriptionYn = getRepository().findByUsernameAndSubscriber(username, dto.subscriber) == null ? "N" : "Y";
+    // 구독자 페이징 리스트
+    public Page<SubscriptionDTO> getPagingList(Pageable pageable, SubscriptionDTO subscriptionDTO) {
+        Page<SubscriptionDTO> pagingList = getRepository().getPagingList(pageable, subscriptionDTO);
+        for (SubscriptionDTO dto : pagingList) {
+            String subscriptionYn = getRepository().findByUsernameAndSubscriber(subscriptionDTO.username, dto.subscriber) == null ? "N" : "Y";
             dto.setSubscriptionYn(subscriptionYn);
         }
-        return getList;
+        return pagingList;
     }
 
     // 구독자 명단 리스트
