@@ -70,6 +70,11 @@ public class ContentBizService {
         return getDataRelatedToContent(contentService.getSpecificPagingList(pageable, contentIds), username);
     }
 
+    // 검색한 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
+        return getDataRelatedToContent(contentService.getSearchPagingList(pageable, condition), username);
+    }
+
     public ContentDTO findByContentId(String contentId) {
         ContentDTO contentDTO = contentService.findByContentId(contentId);
         List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentId);

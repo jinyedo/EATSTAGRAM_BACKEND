@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 
 import static daelim.project.eatstagram.service.content.QContentEntity.contentEntity;
+import static daelim.project.eatstagram.service.contentHashTag.QContentHashtagEntity.*;
 import static daelim.project.eatstagram.service.member.QMember.*;
 
 public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implements ContentDslRepository {
@@ -102,6 +103,45 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(member)
                 .on(member.username.eq(contentEntity.username))
                 .select(contentEntity)
+                .fetchCount();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<ContentDTO> getSearchPagingList(Pageable pageable, String condition) {
+        List<ContentDTO> content = from(contentEntity)
+                .leftJoin(contentHashtagEntity)
+                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .where(
+                        contentEntity.text.contains(condition)
+                                .or(contentEntity.location.contains(condition)
+                                        .or(contentHashtagEntity.hashtag.contains(condition)))
+                )
+                .select(Projections.bean(ContentDTO.class,
+                                contentEntity.contentId,
+                                contentEntity.text,
+                                contentEntity.location,
+                                member.username,
+                                member.nickname,
+                                member.profileImgName
+                ))
+                .orderBy(contentEntity.contentId.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .distinct()
+                .fetch();
+
+        long total = from(contentEntity)
+                .leftJoin(contentHashtagEntity)
+                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .where(
+                        contentEntity.text.contains(condition)
+                                .or(contentEntity.location.contains(condition)
+                                        .or(contentHashtagEntity.hashtag.contains(condition)))
+                )
+                .select(contentEntity)
+                .distinct()
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);

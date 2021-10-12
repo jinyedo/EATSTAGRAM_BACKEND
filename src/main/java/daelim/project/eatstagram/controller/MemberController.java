@@ -8,6 +8,8 @@ import daelim.project.eatstagram.service.member.MemberDTO;
 import daelim.project.eatstagram.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -104,11 +106,18 @@ public class MemberController {
         return memberService.joinSocial(memberDTO);
     }
 
-    // 사용자 검색
-    @RequestMapping("/getListByNameAndNickname")
+    // 사용자 검색 리스트
+    @RequestMapping("/getSearchList")
     @ResponseBody
-    public ResponseEntity<List<MemberDTO>> getListByNameAndNickname(String username, String condition) {
-        return new ResponseEntity<>(memberService.getListByNameAndNickname(username, condition), HttpStatus.OK);
+    public List<MemberDTO> getSearchList(String username, String condition) {
+        return memberService.getSearchList(username, condition);
+    }
+
+    // 사용자 검색 페이징리스트
+    @RequestMapping("/getSearchPagingList")
+    @ResponseBody
+    public Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
+        return memberService.getSearchPagingList(pageable, username, condition);
     }
 
     @RequestMapping("/getMemberInfo")

@@ -8,7 +8,6 @@ import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.contentSaved.ContentSavedService;
-import daelim.project.eatstagram.service.subscription.SubscriptionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -58,6 +57,13 @@ public class ContentController {
     @ResponseBody
     public Page<ContentDTO> getCategoryPagingList(Pageable pageable, String username, String category) {
         return contentBizService.getCategoryPagingList(pageable, username, category);
+    }
+
+    // 검색한 콘텐츠 페이징 리스트
+    @RequestMapping("/getCategoryPagingList")
+    @ResponseBody
+    public Page<ContentDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
+        return contentBizService.getSearchPagingList(pageable, username, condition);
     }
 
     // 콘텐츠 추가

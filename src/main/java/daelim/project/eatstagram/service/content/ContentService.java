@@ -27,6 +27,11 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
         return getRepository().getSpecificPagingList(pageable, contentIds);
     }
 
+    // 검색 조건을 통한 페이징 리스트
+    public Page<ContentDTO> getSearchPagingList(Pageable pageable, String condition) {
+        return getRepository().getSearchPagingList(pageable, condition);
+    }
+
     public ContentDTO findByContentId(String contentId) {
         return getRepository().findByContentId(contentId);
     }

@@ -3,16 +3,12 @@ package daelim.project.eatstagram.service.member;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
 import daelim.project.eatstagram.service.base.ModelMapperUtils;
-import daelim.project.eatstagram.service.content.ContentDTO;
-import daelim.project.eatstagram.service.contentCategory.ContentCategoryDTO;
-import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
-import daelim.project.eatstagram.service.contentFile.ContentFileService;
-import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -107,8 +103,13 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     }
 
     // (검색) 사용자 정보 가져오기
-    public List<MemberDTO> getListByNameAndNickname(String username, String condition) {
-        return getRepository().getListByNameAndNickname(username, condition);
+    public List<MemberDTO> getSearchList(String username, String condition) {
+        return getRepository().getSearchList(username, condition);
+    }
+
+    // (검색) 사용자 정보 가져오기 - 페이징
+    public Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
+        return getRepository().getSearchPagingList(pageable, username, condition);
     }
 
     // 사용자 정보 가져오기
@@ -165,9 +166,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
             }
         }
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("response", "ok");
         jsonObject.put("profileImgName", fileName);
         return new ResponseEntity<>(jsonObject, HttpStatus.OK);
-        //return new ResponseEntity<>("{\"response\": \"ok\", \"profileImgName\": \"" + fileName + "\"}", HttpStatus.OK);
     }
 }
