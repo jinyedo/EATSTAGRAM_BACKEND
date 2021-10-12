@@ -132,7 +132,6 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
                 getRepository().save(member);
             }
         } else {
-
             String fileType = file.getContentType();
             assert fileType != null;
             // 이미지 파일만 업로드 가능
