@@ -166,7 +166,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("response", "ok");
-        jsonObject.put("profileImgName", null);
+        jsonObject.put("profileImgName", fileName);
         return new ResponseEntity<>(jsonObject, HttpStatus.OK);
         //return new ResponseEntity<>("{\"response\": \"ok\", \"profileImgName\": \"" + fileName + "\"}", HttpStatus.OK);
     }
