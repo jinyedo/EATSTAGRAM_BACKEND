@@ -7,4 +7,5 @@ import java.util.List;
 public interface ContentCategoryDslRepository {
 
     List<ContentCategoryDTO> getListByContentId(String contentId);
+    List<String> getContentIdsByCategory(String category);
 }

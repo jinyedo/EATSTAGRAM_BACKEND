@@ -79,7 +79,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public Page<ContentDTO> getSavedPagingListBy(Pageable pageable, List<String> contentIds) {
+    public Page<ContentDTO> getSpecificPagingList(Pageable pageable, List<String> contentIds) {
         List<ContentDTO> content = from(contentEntity)
                 .where(contentEntity.contentId.in(contentIds))
                 .leftJoin(member)

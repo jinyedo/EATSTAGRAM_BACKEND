@@ -12,7 +12,7 @@ public interface ContentDslRepository {
     Page<ContentDTO> getSubscribedPagingList(Pageable pageable, List<String> subscribers);
     // 자신이 올린 콘텐츠 페이징 리스트
     Page<ContentDTO> getMyPagingList(Pageable pageable, String username);
-    // 저장된 콘텐츠 페이징 리스트
-    Page<ContentDTO> getSavedPagingListBy(Pageable pageable, List<String> contentIds);
+    // 특정 콘텐츠 페이징 리스트
+    Page<ContentDTO> getSpecificPagingList(Pageable pageable, List<String> contentIds);
     ContentDTO findByContentId(String contentId);
 }

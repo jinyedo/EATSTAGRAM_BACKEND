@@ -22,9 +22,9 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
         return getRepository().getMyPagingList(pageable, username);
     }
 
-    // 저장된 콘텐츠 페이징 리스트
-    public Page<ContentDTO> getSavedPagingList(Pageable pageable, List<String> contentIds) {
-        return getRepository().getSavedPagingListBy(pageable, contentIds);
+    // 특정 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getSpecificPagingList(Pageable pageable, List<String> contentIds) {
+        return getRepository().getSpecificPagingList(pageable, contentIds);
     }
 
     public ContentDTO findByContentId(String contentId) {

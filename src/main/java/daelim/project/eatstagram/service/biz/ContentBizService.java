@@ -61,7 +61,13 @@ public class ContentBizService {
     // 저장된 콘텐츠 페이징 리스트
     public Page<ContentDTO> getSavedPagingList(Pageable pageable, String username) {
         List<String> contentIds = contentSavedService.getContentIdsByUsername(username);
-        return getDataRelatedToContent(contentService.getSavedPagingList(pageable, contentIds), username);
+        return getDataRelatedToContent(contentService.getSpecificPagingList(pageable, contentIds), username);
+    }
+
+    // 저장된 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getCategoryPagingList(Pageable pageable, String username, String category) {
+        List<String> contentIds = contentCategoryService.getContentIdsByCategory(category);
+        return getDataRelatedToContent(contentService.getSpecificPagingList(pageable, contentIds), username);
     }
 
     public ContentDTO findByContentId(String contentId) {

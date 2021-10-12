@@ -24,4 +24,12 @@ public class ContentCategoryDslRepositoryImpl extends QuerydslRepositorySupport 
                         contentCategoryEntity.category))
                 .fetch();
     }
+
+    @Override
+    public List<String> getContentIdsByCategory(String category) {
+        return from(contentCategoryEntity)
+                .where(contentCategoryEntity.category.eq(category))
+                .select(contentCategoryEntity.contentId)
+                .fetch();
+    }
 }

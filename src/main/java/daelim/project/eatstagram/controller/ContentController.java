@@ -53,6 +53,13 @@ public class ContentController {
         return contentBizService.getSavedPagingList(pageable, username);
     }
 
+    // 저장된 콘텐츠 페이징 리스트
+    @RequestMapping("/getCategoryPagingList")
+    @ResponseBody
+    public Page<ContentDTO> getCategoryPagingList(Pageable pageable, String username, String category) {
+        return contentBizService.getCategoryPagingList(pageable, username, category);
+    }
+
     // 콘텐츠 추가
     @RequestMapping("/add")
     @ResponseBody
