@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface SubscriptionDslRepository {
     // 구독자 페이징 리스트
-    Page<SubscriptionDTO> getPagingList(Pageable pageable, SubscriptionDTO subscriptionDTO);
+    Page<SubscriptionDTO> getPagingList(Pageable pageable, String condition);
     // 구독자 명단 리스트
     List<String> getSubscribersByUsername(String username);
     // 특정 구독 정보 가져오기

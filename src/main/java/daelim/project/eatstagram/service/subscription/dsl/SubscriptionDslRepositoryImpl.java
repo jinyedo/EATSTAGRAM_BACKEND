@@ -21,9 +21,9 @@ public class SubscriptionDslRepositoryImpl extends QuerydslRepositorySupport imp
     }
 
     @Override
-    public Page<SubscriptionDTO> getPagingList(Pageable pageable, SubscriptionDTO subscriptionDTO) {
+    public Page<SubscriptionDTO> getPagingList(Pageable pageable, String condition) {
         List<SubscriptionDTO> content = from(subscriptionEntity)
-                .where(subscriptionEntity.username.eq(subscriptionDTO.getUsername()))
+                .where(subscriptionEntity.username.eq(condition))
                 .leftJoin(member)
                 .on(member.username.eq(subscriptionEntity.subscriber))
                 .select(Projections.bean(SubscriptionDTO.class,
@@ -38,7 +38,7 @@ public class SubscriptionDslRepositoryImpl extends QuerydslRepositorySupport imp
                 .fetch();
 
         long total = from(subscriptionEntity)
-                .where(subscriptionEntity.username.eq(subscriptionDTO.getUsername()))
+                .where(subscriptionEntity.username.eq(condition))
                 .leftJoin(member)
                 .on(member.username.eq(subscriptionEntity.subscriber))
                 .select(subscriptionEntity)

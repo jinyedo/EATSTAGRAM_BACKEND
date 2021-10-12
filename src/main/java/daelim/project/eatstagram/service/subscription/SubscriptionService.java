@@ -14,9 +14,9 @@ public class SubscriptionService extends BaseService<String, SubscriptionEntity,
 
     // 구독자 페이징 리스트
     public Page<SubscriptionDTO> getPagingList(Pageable pageable, SubscriptionDTO subscriptionDTO) {
-        Page<SubscriptionDTO> pagingList = getRepository().getPagingList(pageable, subscriptionDTO);
+        Page<SubscriptionDTO> pagingList = getRepository().getPagingList(pageable, subscriptionDTO.getCondition());
         for (SubscriptionDTO dto : pagingList) {
-            String subscriptionYn = getRepository().findByUsernameAndSubscriber(subscriptionDTO.username, dto.subscriber) == null ? "N" : "Y";
+            String subscriptionYn = getRepository().findByUsernameAndSubscriber(subscriptionDTO.getUsername(), dto.getSubscriber()) == null ? "N" : "Y";
             dto.setSubscriptionYn(subscriptionYn);
         }
         return pagingList;
