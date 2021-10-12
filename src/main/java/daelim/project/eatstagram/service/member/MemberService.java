@@ -12,6 +12,7 @@ import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -116,10 +117,10 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     }
 
     // 프로필 이미지 저장 및 삭제
-    public ResponseEntity<String> saveProfileImg(String username, MultipartFile file) {
+    public ResponseEntity<Object> saveProfileImg(String username, MultipartFile file) {
         Path folderPath = storageRepository.makeFolder(PROFILE_IMAGE_FOLDER_NAME);
         String fileName = null;
-        if (file.isEmpty()) {
+        if (file == null) {
             Member member = getRepository().findByUsername(username).orElseThrow();
             String profileImgPath = member.getProfileImgPath();
             if (!profileImgPath.isEmpty()) {
@@ -163,6 +164,10 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
                 return new ResponseEntity<>("{\"response\": \"error\"}", HttpStatus.OK);
             }
         }
-        return new ResponseEntity<>("{\"response\": \"ok\", \"profileImgName\": \"" + fileName + "\"}", HttpStatus.OK);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("response", "ok");
+        jsonObject.put("profileImgName", null);
+        return new ResponseEntity<>(jsonObject, HttpStatus.OK);
+        //return new ResponseEntity<>("{\"response\": \"ok\", \"profileImgName\": \"" + fileName + "\"}", HttpStatus.OK);
     }
 }

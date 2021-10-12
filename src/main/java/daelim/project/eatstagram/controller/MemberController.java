@@ -119,7 +119,7 @@ public class MemberController {
 
     @RequestMapping("/saveProfileImg")
     @ResponseBody
-    public ResponseEntity<String> saveProfileImg(String username, MultipartFile file) {
+    public ResponseEntity<Object> saveProfileImg(String username, MultipartFile file) {
         return memberService.saveProfileImg(username, file);
     }
 }
