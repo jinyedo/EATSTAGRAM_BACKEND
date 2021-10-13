@@ -11,4 +11,6 @@ import lombok.experimental.SuperBuilder;
 @Getter @Setter
 @ToString
 public class MemberDTO extends Member {
+
+    String subscriptionYn;
 }

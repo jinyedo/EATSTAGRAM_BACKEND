@@ -2,6 +2,7 @@ package daelim.project.eatstagram.controller;
 
 import daelim.project.eatstagram.security.dto.AuthMemberDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
+import daelim.project.eatstagram.service.biz.MemberBizService;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
 import daelim.project.eatstagram.service.member.MemberDTO;
@@ -31,6 +32,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MemberBizService memberBizService;
     private final EmailAuthService emailAuthService;
     private ValidationMemberDTO validationMemberDTO;
 
@@ -117,7 +119,7 @@ public class MemberController {
     @RequestMapping("/getSearchPagingList")
     @ResponseBody
     public Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
-        return memberService.getSearchPagingList(pageable, username, condition);
+        return memberBizService.getSearchPagingList(pageable, username, condition);
     }
 
     @RequestMapping("/getMemberInfo")

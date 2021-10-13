@@ -111,13 +111,13 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     @Override
     public Page<ContentDTO> getSearchPagingList(Pageable pageable, String condition) {
         List<ContentDTO> content = from(contentEntity)
-                .leftJoin(contentHashtagEntity)
-                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
                 .where(
                         contentEntity.text.contains(condition)
                                 .or(contentEntity.location.contains(condition)
                                         .or(contentHashtagEntity.hashtag.contains(condition)))
                 )
+                .leftJoin(contentHashtagEntity)
+                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
                 .select(Projections.bean(ContentDTO.class,
                                 contentEntity.contentId,
                                 contentEntity.text,
@@ -133,13 +133,13 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetch();
 
         long total = from(contentEntity)
-                .leftJoin(contentHashtagEntity)
-                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
                 .where(
                         contentEntity.text.contains(condition)
                                 .or(contentEntity.location.contains(condition)
                                         .or(contentHashtagEntity.hashtag.contains(condition)))
                 )
+                .leftJoin(contentHashtagEntity)
+                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
                 .select(contentEntity)
                 .distinct()
                 .fetchCount();

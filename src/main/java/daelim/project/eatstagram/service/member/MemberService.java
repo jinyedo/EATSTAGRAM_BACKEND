@@ -7,8 +7,6 @@ import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.simple.JSONObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -102,14 +100,9 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         }
     }
 
-    // (검색) 사용자 정보 가져오기
+    // 검색시 사용자 리스트 가져오기
     public List<MemberDTO> getSearchList(String username, String condition) {
         return getRepository().getSearchList(username, condition);
-    }
-
-    // (검색) 사용자 정보 가져오기 - 페이징
-    public Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
-        return getRepository().getSearchPagingList(pageable, username, condition);
     }
 
     // 사용자 정보 가져오기

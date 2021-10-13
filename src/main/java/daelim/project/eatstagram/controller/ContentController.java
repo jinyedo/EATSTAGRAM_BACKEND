@@ -60,7 +60,7 @@ public class ContentController {
     }
 
     // 검색한 콘텐츠 페이징 리스트
-    @RequestMapping("/getCategoryPagingList")
+    @RequestMapping("/getSearchPagingList")
     @ResponseBody
     public Page<ContentDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
         return contentBizService.getSearchPagingList(pageable, username, condition);
