@@ -1,6 +1,7 @@
 package daelim.project.eatstagram.service.subscription.dsl;
 
 import com.querydsl.core.types.Projections;
+import daelim.project.eatstagram.service.member.MemberDTO;
 import daelim.project.eatstagram.service.subscription.QSubscriptionEntity;
 import daelim.project.eatstagram.service.subscription.SubscriptionDTO;
 import daelim.project.eatstagram.service.subscription.SubscriptionEntity;
@@ -47,6 +48,7 @@ public class SubscriptionDslRepositoryImpl extends QuerydslRepositorySupport imp
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
     public List<String> getSubscribersByUsername(String username) {
         return from(subscriptionEntity)
                 .where(subscriptionEntity.username.eq(username))
