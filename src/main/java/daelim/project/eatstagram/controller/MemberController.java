@@ -129,12 +129,14 @@ public class MemberController {
         return memberBizService.getTopTenList(username);
     }
 
+    // 특정 사용자 정보 가져오기
     @RequestMapping("/getMemberInfo")
     @ResponseBody
     public ResponseEntity<MemberDTO> getMemberInfo(String username) {
         return new ResponseEntity<>(memberService.getMemberInfo(username), HttpStatus.OK);
     }
 
+    // 프로필 사진 저장 및 삭제
     @RequestMapping("/saveProfileImg")
     @ResponseBody
     public ResponseEntity<Object> saveProfileImg(String username, MultipartFile file) {
