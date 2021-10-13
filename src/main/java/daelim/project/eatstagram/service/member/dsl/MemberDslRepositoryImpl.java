@@ -1,6 +1,8 @@
 package daelim.project.eatstagram.service.member.dsl;
 
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberPath;
 import daelim.project.eatstagram.service.member.MemberDTO;
 import daelim.project.eatstagram.service.member.QMember;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import java.util.List;
 
 import static daelim.project.eatstagram.service.member.QMember.*;
+import static daelim.project.eatstagram.service.subscription.QSubscriptionEntity.subscriptionEntity;
 
 public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implements MemberDslRepository {
 
@@ -60,6 +63,27 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                         member.nickname,
                         member.profileImgName
                 ))
+                .fetch();
+    }
+
+    @Override
+    public List<MemberDTO> getTopTenList() {
+        return from(member)
+                .leftJoin(subscriptionEntity)
+                .on(subscriptionEntity.username.eq(member.username))
+                .select(Projections.bean(MemberDTO.class,
+                        member.username,
+                        member.nickname,
+                        member.name,
+                        member.profileImgName,
+                        subscriptionEntity.subscriber.count().as("subscriberCount")
+                ))
+                .groupBy(subscriptionEntity.username)
+                .orderBy(Expressions.numberPath(
+                        Long.class,
+                        "subscriberCount").desc()
+                )
+                .limit(10)
                 .fetch();
     }
 

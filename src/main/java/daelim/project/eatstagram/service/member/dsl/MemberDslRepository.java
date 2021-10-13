@@ -10,5 +10,6 @@ public interface MemberDslRepository {
 
     Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition);
     List<MemberDTO> getSearchList(String username, String condition);
+    List<MemberDTO> getTopTenList();
     MemberDTO getMemberInfo(String username);
 }

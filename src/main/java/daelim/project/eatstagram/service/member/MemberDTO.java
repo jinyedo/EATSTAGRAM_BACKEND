@@ -13,4 +13,5 @@ import lombok.experimental.SuperBuilder;
 public class MemberDTO extends Member {
 
     String subscriptionYn;
+    long subscriberCount;
 }

@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberBizService {
@@ -23,5 +25,15 @@ public class MemberBizService {
             memberDTO.setSubscriptionYn(subscriptionYn);
         }
         return searchPagingList;
+    }
+
+    // 구독자 수가 상위 10프로인 사용자 리스트 가져오기
+    public List<MemberDTO> getTopTenList(String username) {
+        List<MemberDTO> topTenList = memberService.getRepository().getTopTenList();
+        for (MemberDTO memberDTO : topTenList) {
+            String subscriptionYn = subscriptionService. getRepository().findByUsernameAndSubscriber(username, memberDTO.getUsername()) == null ? "N" : "Y";
+            memberDTO.setSubscriptionYn(subscriptionYn);
+        }
+        return topTenList;
     }
 }
