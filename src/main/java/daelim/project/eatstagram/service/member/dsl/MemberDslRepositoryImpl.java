@@ -95,7 +95,8 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                         member.username,
                         member.name,
                         member.nickname,
-                        member.profileImgName
+                        member.profileImgName,
+                        member.introduce
                 ))
                 .fetchOne();
     }

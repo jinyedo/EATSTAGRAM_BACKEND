@@ -132,8 +132,15 @@ public class MemberController {
     // 특정 사용자 정보 가져오기
     @RequestMapping("/getMemberInfo")
     @ResponseBody
-    public ResponseEntity<MemberDTO> getMemberInfo(String username) {
-        return new ResponseEntity<>(memberService.getMemberInfo(username), HttpStatus.OK);
+    public MemberDTO getMemberInfo(String username) {
+        return memberService.getMemberInfo(username);
+    }
+
+    // 특정 사용자 정보 수정하기
+    @RequestMapping("/setMemberInfo")
+    @ResponseBody
+    public MemberDTO setMemberInfo(@ModelAttribute MemberDTO memberDTO) {
+        return memberService.setMemberInfo(memberDTO);
     }
 
     // 프로필 사진 저장 및 삭제

@@ -6,6 +6,7 @@ import daelim.project.eatstagram.service.base.ModelMapperUtils;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -108,6 +109,16 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     // 사용자 정보 가져오기
     public MemberDTO getMemberInfo(String username) {
         return getRepository().getMemberInfo(username);
+    }
+
+    // 특정 사용자 정보 수정하기
+    public MemberDTO setMemberInfo(MemberDTO memberDTO) {
+        Member member = getRepository().findByUsername(memberDTO.getUsername()).orElseThrow();
+        if (StringUtils.isNotEmpty(memberDTO.getName())) member.setName(memberDTO.getName());
+        if (StringUtils.isNotEmpty(memberDTO.getNickname())) member.setNickname(memberDTO.getNickname());
+        if (StringUtils.isNotEmpty(memberDTO.getIntroduce())) member.setIntroduce(memberDTO.getIntroduce());
+        getRepository().save(member);
+        return ModelMapperUtils.map(member, MemberDTO.class);
     }
 
     // 프로필 이미지 저장 및 삭제
