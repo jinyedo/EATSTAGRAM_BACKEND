@@ -118,8 +118,8 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                                 .or(contentEntity.location.contains(condition)
                                         .or(contentHashtagEntity.hashtag.contains(condition)))
                 )
-                .leftJoin(contentHashtagEntity)
-                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .leftJoin(contentHashtagEntity).on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .leftJoin(member).on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
                                 contentEntity.contentId,
                                 contentEntity.text,
@@ -140,8 +140,8 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                                 .or(contentEntity.location.contains(condition)
                                         .or(contentHashtagEntity.hashtag.contains(condition)))
                 )
-                .leftJoin(contentHashtagEntity)
-                .on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .leftJoin(contentHashtagEntity).on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .leftJoin(member).on(member.username.eq(contentEntity.username))
                 .select(contentEntity)
                 .distinct()
                 .fetchCount();
