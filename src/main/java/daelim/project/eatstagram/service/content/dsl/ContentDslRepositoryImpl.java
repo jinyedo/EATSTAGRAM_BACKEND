@@ -23,7 +23,9 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     @Override
     public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, List<String> subscribers) {
         List<ContentDTO> content = from(contentEntity)
-                .where(contentEntity.username.in(subscribers))
+                .where(
+                        contentEntity.username.in(subscribers)
+                )
                 .leftJoin(member)
                 .on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,

@@ -50,6 +50,7 @@ public class ContentBizService {
     // 구독한 사람들의 콘텐츠 페이징 리스트
     public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, String username) {
         List<String> subscribers = subscriptionService.getSubscribersByUsername(username);
+        subscribers.add(username);
         return getDataRelatedToContent(contentService.getSubscribedPagingList(pageable, subscribers), username);
     }
 
