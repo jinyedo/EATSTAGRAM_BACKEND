@@ -108,6 +108,13 @@ public class MemberController {
         return memberService.joinSocial(memberDTO);
     }
 
+    // 랭킹별 사용자 리스트 가져오기
+    @RequestMapping("/getRankingList")
+    @ResponseBody
+    public Page<MemberDTO> getRankingList(Pageable pageable, String username) {
+        return memberBizService.getRankingList(pageable, username);
+    }
+
     // 사용자 검색 페이징리스트
     @RequestMapping("/getSearchPagingList")
     @ResponseBody
@@ -120,13 +127,6 @@ public class MemberController {
     @ResponseBody
     public List<MemberDTO> getSearchList(String username, String condition) {
         return memberService.getSearchList(username, condition);
-    }
-
-    // 구독자 수가 상위 10프로인 사용자 리스트 가져오기
-    @RequestMapping("/getTopTenList")
-    @ResponseBody
-    public List<MemberDTO> getTopTenList(String username) {
-        return memberBizService.getTopTenList(username);
     }
 
     // 특정 사용자 정보 가져오기

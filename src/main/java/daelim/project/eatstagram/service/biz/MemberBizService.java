@@ -8,14 +8,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class MemberBizService {
 
     private final MemberService memberService;
     private final SubscriptionService subscriptionService;
+
+    // 랭킹별 사용자 리스트 가져오기
+    public Page<MemberDTO> getRankingList(Pageable pageable, String username) {
+        Page<MemberDTO> rankingList = memberService.getRepository().getRankingList(pageable);
+        for (MemberDTO memberDTO : rankingList) {
+            String subscriptionYn = subscriptionService. getRepository().findByUsernameAndSubscriber(username, memberDTO.getUsername()) == null ? "N" : "Y";
+            memberDTO.setSubscriptionYn(subscriptionYn);
+        }
+        return rankingList;
+    }
 
     // 검색시 사용자 페이징 리스트 가져오기
     public Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
@@ -25,15 +33,5 @@ public class MemberBizService {
             memberDTO.setSubscriptionYn(subscriptionYn);
         }
         return searchPagingList;
-    }
-
-    // 구독자 수가 상위 10프로인 사용자 리스트 가져오기
-    public List<MemberDTO> getTopTenList(String username) {
-        List<MemberDTO> topTenList = memberService.getRepository().getTopTenList();
-        for (MemberDTO memberDTO : topTenList) {
-            String subscriptionYn = subscriptionService. getRepository().findByUsernameAndSubscriber(username, memberDTO.getUsername()) == null ? "N" : "Y";
-            memberDTO.setSubscriptionYn(subscriptionYn);
-        }
-        return topTenList;
     }
 }
