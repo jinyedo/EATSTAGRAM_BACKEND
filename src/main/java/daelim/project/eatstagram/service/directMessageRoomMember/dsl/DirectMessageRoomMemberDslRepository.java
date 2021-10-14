@@ -18,5 +18,6 @@ public interface DirectMessageRoomMemberDslRepository {
     void updateAllConnectionYn(String username, String connectionYn);
     void updateAlertYn(String directMessageRoomId, String username, String alertYn);
     void updateInYn(String directMessageRoomId, String username, String inYn);
+    void updateConditionDate(String directMessageRoomId, String username);
     long unreadMessageTotalCountByUsername(String username);
 }

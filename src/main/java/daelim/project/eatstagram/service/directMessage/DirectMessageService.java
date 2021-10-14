@@ -21,8 +21,8 @@ public class DirectMessageService extends BaseService<String, DirectMessageEntit
     private final StorageRepository storageRepository;
     public static final String DIRECT_MESSAGE_FILE_FOLDER_NAME = "dm";
 
-    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId) {
-        return getRepository().getDirectMessagePagingList(pageable, directMessageRoomId);
+    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username) {
+        return getRepository().getDirectMessagePagingList(pageable, directMessageRoomId, username);
     }
 
     public ByteBuffer fileSave(String filename, BinaryMessage message) {

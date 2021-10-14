@@ -19,7 +19,7 @@ public class DirectMessageController {
     // 채팅 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
-    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId) {
-        return directMessageService.getDirectMessagePagingList(pageable, directMessageRoomId);
+    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username) {
+        return directMessageService.getDirectMessagePagingList(pageable, directMessageRoomId, username);
     }
 }

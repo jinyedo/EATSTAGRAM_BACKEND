@@ -8,9 +8,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static daelim.project.eatstagram.service.directMessage.QDirectMessageEntity.*;
+import static daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity.*;
 
 public class DirectMessageDslRepositoryImpl extends QuerydslRepositorySupport implements DirectMessageDslRepository {
 
@@ -19,11 +21,20 @@ public class DirectMessageDslRepositoryImpl extends QuerydslRepositorySupport im
     }
 
     @Override
-    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId) {
+    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username) {
+
+        LocalDateTime conditionDate = from(directMessageRoomMemberEntity)
+                .where(
+                        directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId),
+                        directMessageRoomMemberEntity.username.eq(username)
+                )
+                .select(directMessageRoomMemberEntity.conditionDate)
+                .fetchOne();
 
         List<DirectMessageDTO> content = from(directMessageEntity)
                 .where(
-                        directMessageEntity.directMessageRoomId.eq(directMessageRoomId)
+                        directMessageEntity.directMessageRoomId.eq(directMessageRoomId),
+                        directMessageEntity.regDate.gt(conditionDate)
                 )
                 .select(Projections.bean(DirectMessageDTO.class,
                         directMessageEntity.directMessageId,
@@ -33,7 +44,7 @@ public class DirectMessageDslRepositoryImpl extends QuerydslRepositorySupport im
                         directMessageEntity.username,
                         directMessageEntity.regDate
                 ))
-                .orderBy(directMessageEntity.directMessageId.desc())
+                .orderBy(directMessageEntity.regDate.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

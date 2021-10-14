@@ -35,6 +35,7 @@ public class DirectMessageRoomMemberService
     }
 
     public void updateInYn(String directMessageRoomId, String username, String inYn) {
+        if (inYn.equals("N")) getRepository().updateConditionDate(directMessageRoomId, username);
         getRepository().updateInYn(directMessageRoomId, username, inYn);
     }
 

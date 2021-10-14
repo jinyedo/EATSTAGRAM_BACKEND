@@ -7,11 +7,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 
 @MappedSuperclass
+@EntityListeners(value = {AuditingEntityListener.class})
 @SuperBuilder
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
@@ -25,4 +30,7 @@ public class DirectMessageRoomMember extends BaseEntity {
     protected String connectionYn;
     protected String alertYn;
     protected String inYn;
+
+    @CreatedDate
+    protected LocalDateTime conditionDate;
 }

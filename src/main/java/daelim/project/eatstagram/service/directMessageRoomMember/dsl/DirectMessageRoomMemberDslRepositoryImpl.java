@@ -7,8 +7,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import static daelim.project.eatstagram.service.directMessage.QDirectMessageEntity.*;
 import static daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity.directMessageRoomMemberEntity;
 import static daelim.project.eatstagram.service.member.QMember.member;
 
@@ -107,18 +109,6 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class) @Modifying
-    public void updateInYn(String directMessageRoomId, String username, String inYn) {
-        update(directMessageRoomMemberEntity)
-                .set(directMessageRoomMemberEntity.inYn, inYn)
-                .where(
-                        directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId),
-                        directMessageRoomMemberEntity.username.eq(username)
-                )
-                .execute();
-    }
-
-    @Override
     public String getConnectionYn(String directMessageRoomId, String username) {
         return from(directMessageRoomMemberEntity)
                 .where(
@@ -169,9 +159,42 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
 
     @Override
     @Transactional(rollbackFor = Exception.class) @Modifying
+    public void updateInYn(String directMessageRoomId, String username, String inYn) {
+        update(directMessageRoomMemberEntity)
+                .set(directMessageRoomMemberEntity.inYn, inYn)
+                .where(
+                        directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId),
+                        directMessageRoomMemberEntity.username.eq(username)
+                )
+                .execute();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class) @Modifying
     public void updateAlertYn(String directMessageRoomId, String username, String alertYn) {
         update(directMessageRoomMemberEntity)
                 .set(directMessageRoomMemberEntity.alertYn, alertYn)
+                .where(
+                        directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId),
+                        directMessageRoomMemberEntity.username.eq(username)
+                )
+                .execute();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class) @Modifying
+    public void updateConditionDate(String directMessageRoomId, String username) {
+
+        LocalDateTime conditionDate = from(directMessageEntity)
+                .where(directMessageEntity.directMessageRoomId.eq(directMessageRoomId))
+                .select(directMessageEntity.regDate)
+                .orderBy(directMessageEntity.regDate.desc())
+                .limit(1)
+                .fetchOne();
+
+
+        update(directMessageRoomMemberEntity)
+                .set(directMessageRoomMemberEntity.conditionDate, conditionDate)
                 .where(
                         directMessageRoomMemberEntity.directMessageRoomId.eq(directMessageRoomId),
                         directMessageRoomMemberEntity.username.eq(username)

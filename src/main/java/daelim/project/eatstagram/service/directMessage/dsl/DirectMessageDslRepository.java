@@ -6,5 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface DirectMessageDslRepository {
 
-    Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId);
+    Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username);
 }
