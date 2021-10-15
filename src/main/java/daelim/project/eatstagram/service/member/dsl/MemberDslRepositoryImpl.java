@@ -11,8 +11,8 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import java.util.List;
 
+import static daelim.project.eatstagram.service.follow.QFollowEntity.followEntity;
 import static daelim.project.eatstagram.service.member.QMember.member;
-import static daelim.project.eatstagram.service.subscription.QSubscriptionEntity.subscriptionEntity;
 
 public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implements MemberDslRepository {
 
@@ -21,31 +21,31 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<MemberDTO> getRankingList(Pageable pageable) {
+    public Page<MemberDTO> getRankingPagingList(Pageable pageable) {
         List<MemberDTO> content = from(member)
-                .leftJoin(subscriptionEntity)
-                .on(subscriptionEntity.username.eq(member.username))
+                .leftJoin(followEntity)
+                .on(followEntity.follow.eq(member.username))
                 .select(Projections.bean(MemberDTO.class,
                         member.username,
                         member.nickname,
                         member.name,
                         member.profileImgName,
-                        subscriptionEntity.subscriber.count().as("subscriberCount")
+                        followEntity.username.count().as("followerCount")
                 ))
-                .groupBy(subscriptionEntity.username)
+                .groupBy(member.username)
                 .orderBy(Expressions.numberPath(
                         Long.class,
-                        "subscriberCount").desc()
+                        "followerCount").desc()
                 )
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
 
         long total = from(member)
-                .leftJoin(subscriptionEntity)
-                .on(subscriptionEntity.username.eq(member.username))
+                .leftJoin(followEntity)
+                .on(followEntity.follow.eq(member.username))
                 .select(member)
-                .groupBy(subscriptionEntity.username)
+                .groupBy(member.username)
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);

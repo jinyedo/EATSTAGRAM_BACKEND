@@ -1,8 +1,18 @@
 package daelim.project.eatstagram.service.biz;
 
+import daelim.project.eatstagram.service.content.ContentService;
+import daelim.project.eatstagram.service.contentCategory.ContentCategoryService;
+import daelim.project.eatstagram.service.contentFile.ContentFileService;
+import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
+import daelim.project.eatstagram.service.contentLike.ContentLikeService;
+import daelim.project.eatstagram.service.contentReply.ContentReplyService;
+import daelim.project.eatstagram.service.contentSaved.ContentSavedService;
+import daelim.project.eatstagram.service.directMessage.DirectMessageService;
+import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomService;
+import daelim.project.eatstagram.service.directMessageRoomMember.DirectMessageRoomMemberService;
+import daelim.project.eatstagram.service.follow.FollowService;
 import daelim.project.eatstagram.service.member.MemberDTO;
 import daelim.project.eatstagram.service.member.MemberService;
-import daelim.project.eatstagram.service.subscription.SubscriptionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,25 +23,37 @@ import org.springframework.stereotype.Service;
 public class MemberBizService {
 
     private final MemberService memberService;
-    private final SubscriptionService subscriptionService;
+    private final FollowService followService;
+    private final ContentService contentService;
+    private final ContentCategoryService contentCategoryService;
+    private final ContentHashtagService contentHashtagService;
+    private final ContentFileService contentFileService;
+    private final ContentSavedService contentSavedService;
+    private final ContentLikeService contentLikeService;
+    private final ContentReplyService contentReplyService;
+    private final DirectMessageService directMessageService;
+    private final DirectMessageRoomService directMessageRoomService;
+    private final DirectMessageRoomMemberService directMessageRoomMemberService;
 
     // 랭킹별 사용자 리스트 가져오기
-    public Page<MemberDTO> getRankingList(Pageable pageable, String username) {
-        Page<MemberDTO> rankingList = memberService.getRepository().getRankingList(pageable);
-        for (MemberDTO memberDTO : rankingList) {
-            String subscriptionYn = subscriptionService. getRepository().findByUsernameAndSubscriber(username, memberDTO.getUsername()) == null ? "N" : "Y";
-            memberDTO.setSubscriptionYn(subscriptionYn);
-        }
-        return rankingList;
+    public Page<MemberDTO> getRankingPagingList(Pageable pageable, String username) {
+        Page<MemberDTO> rankingList = memberService.getRepository().getRankingPagingList(pageable);
+        return getDataRelatedToMember(rankingList, username);
     }
 
     // 검색시 사용자 페이징 리스트 가져오기
     public Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition) {
         Page<MemberDTO> searchPagingList = memberService.getRepository().getSearchPagingList(pageable, username, condition);
-        for (MemberDTO memberDTO : searchPagingList) {
-            String subscriptionYn = subscriptionService. getRepository().findByUsernameAndSubscriber(username, memberDTO.getUsername()) == null ? "N" : "Y";
-            memberDTO.setSubscriptionYn(subscriptionYn);
+        return getDataRelatedToMember(searchPagingList, username);
+    }
+
+    private Page<MemberDTO> getDataRelatedToMember(Page<MemberDTO> memberList, String username) {
+        for (MemberDTO memberDTO : memberList) {
+            String followYn = followService.followCheck(username, memberDTO.getUsername()) == null ? "N" : "Y";
+            String followerYn = followService.followerCheck(username, memberDTO.getUsername()) == null ? "N" : "Y";
+            memberDTO.setFollowYn(followYn);
+            memberDTO.setFollowerYn(followerYn);
         }
-        return searchPagingList;
+        return memberList;
     }
 }

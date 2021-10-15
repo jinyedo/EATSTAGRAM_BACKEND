@@ -3,7 +3,9 @@ package daelim.project.eatstagram.service.contentLike.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.contentLike.ContentLikeDTO;
 import daelim.project.eatstagram.service.contentLike.QContentLikeEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import static daelim.project.eatstagram.service.contentLike.QContentLikeEntity.contentLikeEntity;
 
@@ -35,4 +37,11 @@ public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport impl
                 .fetchCount();
     }
 
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentLikeEntity)
+                .where(contentLikeEntity.contentId.eq(contentId))
+                .execute();
+    }
 }

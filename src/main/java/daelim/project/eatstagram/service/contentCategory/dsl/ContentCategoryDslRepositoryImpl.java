@@ -3,7 +3,9 @@ package daelim.project.eatstagram.service.contentCategory.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.contentCategory.ContentCategoryDTO;
 import daelim.project.eatstagram.service.contentCategory.QContentCategoryEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -31,5 +33,13 @@ public class ContentCategoryDslRepositoryImpl extends QuerydslRepositorySupport 
                 .where(contentCategoryEntity.category.eq(category))
                 .select(contentCategoryEntity.contentId)
                 .fetch();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentCategoryEntity)
+                .where(contentCategoryEntity.contentId.eq(contentId))
+                .execute();
     }
 }

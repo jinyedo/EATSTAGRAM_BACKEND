@@ -3,15 +3,19 @@ package daelim.project.eatstagram.service.content.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.content.ContentDTO;
 import daelim.project.eatstagram.service.content.QContentEntity;
+import daelim.project.eatstagram.service.follow.QFollowEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 import static daelim.project.eatstagram.service.content.QContentEntity.contentEntity;
 import static daelim.project.eatstagram.service.contentHashTag.QContentHashtagEntity.*;
+import static daelim.project.eatstagram.service.follow.QFollowEntity.followEntity;
 import static daelim.project.eatstagram.service.member.QMember.*;
 
 public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implements ContentDslRepository {
@@ -21,13 +25,16 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
-    public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, List<String> subscribers) {
+    public Page<ContentDTO> getFollowsPagingList(Pageable pageable, String username) {
+
         List<ContentDTO> content = from(contentEntity)
                 .where(
-                        contentEntity.username.in(subscribers)
+                        contentEntity.username.eq(username)
+                        .or(followEntity.username.eq(username)
+                            .and(followEntity.follow.eq(contentEntity.username)))
                 )
-                .leftJoin(member)
-                .on(member.username.eq(contentEntity.username))
+                .leftJoin(member).on(member.username.eq(contentEntity.username))
+                .leftJoin(followEntity).on(followEntity.follow.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
                         contentEntity.contentId,
                         contentEntity.text,
@@ -42,8 +49,13 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .fetch();
 
         long total = from(contentEntity)
-                .leftJoin(member)
-                .on(member.username.eq(contentEntity.username))
+                .where(
+                        contentEntity.username.eq(username)
+                        .or(followEntity.username.eq(username)
+                        .and(followEntity.follow.eq(contentEntity.username)))
+                )
+                .leftJoin(member).on(member.username.eq(contentEntity.username))
+                .leftJoin(followEntity).on(followEntity.follow.eq(contentEntity.username))
                 .select(contentEntity)
                 .fetchCount();
 
@@ -163,5 +175,13 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                         member.profileImgName
                 ))
                 .fetchOne();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByUsername(String username) {
+        delete(contentEntity)
+                .where(contentEntity.username.eq(username))
+                .execute();
     }
 }

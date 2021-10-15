@@ -15,4 +15,8 @@ public class ContentReplyService extends BaseService<String, ContentReplyEntity,
     public long getTotalCountByContentId(String contentId) {
         return getRepository().getTotalCountByContentId(contentId);
     }
+
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
 }

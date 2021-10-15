@@ -12,6 +12,7 @@ import lombok.experimental.SuperBuilder;
 @ToString
 public class MemberDTO extends Member {
 
-    String subscriptionYn;
-    long subscriberCount;
+    private String followYn;
+    private String followerYn;
+    private long followerCount;
 }

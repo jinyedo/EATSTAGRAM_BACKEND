@@ -6,7 +6,9 @@ import daelim.project.eatstagram.service.contentReply.QContentReplyEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -57,5 +59,13 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
                 .where(contentReplyEntity.contentId.eq(contentId))
                 .select(contentReplyEntity)
                 .fetchCount();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentReplyEntity)
+                .where(contentReplyEntity.contentId.eq(contentId))
+                .execute();
     }
 }

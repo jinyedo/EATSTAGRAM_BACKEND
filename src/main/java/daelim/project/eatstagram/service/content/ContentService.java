@@ -12,9 +12,9 @@ import java.util.List;
 @Slf4j
 public class ContentService extends BaseService<String, ContentEntity, ContentDTO, ContentRepository> {
 
-    // 구독한 사람들의 콘텐츠 페이징 리스트
-    public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, List<String> subscribers) {
-        return getRepository().getSubscribedPagingList(pageable, subscribers);
+    // 팔로우한 사람들의 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getFollowsPagingList(Pageable pageable, String username) {
+        return getRepository().getFollowsPagingList(pageable, username);
     }
 
     // 내 콘텐츠 페이징 리스트
@@ -34,5 +34,9 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
 
     public ContentDTO findByContentId(String contentId) {
         return getRepository().findByContentId(contentId);
+    }
+
+    public void deleteByUsername(String username) {
+        getRepository().deleteByUsername(username);
     }
 }

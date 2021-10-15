@@ -23,4 +23,8 @@ public class ContentLikeService extends BaseService<String, ContentLikeEntity, C
             return new ResponseEntity<>("{\"response\": \"ok\", \"likeCheck\": \"" + false + "\", \"likeCount\": \"" + getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
         }
     }
+
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
 }

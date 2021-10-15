@@ -1,4 +1,4 @@
-package daelim.project.eatstagram.service.subscription;
+package daelim.project.eatstagram.service.follow;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,11 +10,13 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Getter @Setter
 @ToString
-public class SubscriptionDTO extends Subscription {
+public class FollowDTO extends Follow {
 
+    private String follower;
     private String nickname;
     private String name;
     private String profileImgName;
-    private String subscriptionYn;
-    private String condition;
+    private String followYn;
+    private String followerYn;
+    private String target;
 }

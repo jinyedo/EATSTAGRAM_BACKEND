@@ -1,4 +1,4 @@
-package daelim.project.eatstagram.service.subscription;
+package daelim.project.eatstagram.service.follow;
 
 import daelim.project.eatstagram.service.base.BaseEntity;
 import daelim.project.eatstagram.service.base.DTOKey;
@@ -15,10 +15,11 @@ import javax.persistence.MappedSuperclass;
 @SuperBuilder
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
-public class Subscription extends BaseEntity {
+public class Follow extends BaseEntity {
 
-    @Id @DTOKey("SS")
-    protected String subscriptionId;
+    @Id
+    @DTOKey("F")
+    protected String followId;
+    protected String follow;
     protected String username;
-    protected String subscriber;
 }

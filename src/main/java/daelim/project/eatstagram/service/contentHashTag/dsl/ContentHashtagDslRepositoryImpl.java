@@ -3,7 +3,9 @@ package daelim.project.eatstagram.service.contentHashTag.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
 import daelim.project.eatstagram.service.contentHashTag.QContentHashtagEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,5 +25,13 @@ public class ContentHashtagDslRepositoryImpl extends QuerydslRepositorySupport i
                         contentHashtagEntity.contentHashtagId,
                         contentHashtagEntity.hashtag))
                 .fetch();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentHashtagEntity)
+                .where(contentHashtagEntity.contentId.eq(contentId))
+                .execute();
     }
 }

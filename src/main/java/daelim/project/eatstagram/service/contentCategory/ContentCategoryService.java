@@ -11,4 +11,8 @@ public class ContentCategoryService extends BaseService<String, ContentCategoryE
     public List<String> getContentIdsByCategory(String category) {
         return getRepository().getContentIdsByCategory(category);
     }
+
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
 }

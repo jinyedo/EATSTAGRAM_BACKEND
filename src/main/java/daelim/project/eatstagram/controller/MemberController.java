@@ -108,11 +108,11 @@ public class MemberController {
         return memberService.joinSocial(memberDTO);
     }
 
-    // 랭킹별 사용자 리스트 가져오기
-    @RequestMapping("/getRankingList")
+    // 랭킹별 사용자 페이징 리스트 가져오기
+    @RequestMapping("/getRankingPagingList")
     @ResponseBody
-    public Page<MemberDTO> getRankingList(Pageable pageable, String username) {
-        return memberBizService.getRankingList(pageable, username);
+    public Page<MemberDTO> getRankingPagingList(Pageable pageable, String username) {
+        return memberBizService.getRankingPagingList(pageable, username);
     }
 
     // 사용자 검색 페이징리스트

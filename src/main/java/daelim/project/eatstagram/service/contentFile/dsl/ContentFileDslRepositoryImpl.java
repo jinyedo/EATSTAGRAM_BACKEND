@@ -3,7 +3,9 @@ package daelim.project.eatstagram.service.contentFile.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
 import daelim.project.eatstagram.service.contentFile.QContentFileEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -25,5 +27,13 @@ public class ContentFileDslRepositoryImpl extends QuerydslRepositorySupport impl
                         contentFileEntity.type,
                         contentFileEntity.path))
                 .fetch();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentFileEntity)
+                .where(contentFileEntity.contentId.eq(contentId))
+                .execute();
     }
 }

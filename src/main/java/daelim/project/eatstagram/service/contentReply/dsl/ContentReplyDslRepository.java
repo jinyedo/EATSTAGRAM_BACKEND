@@ -7,5 +7,6 @@ import org.springframework.data.domain.Pageable;
 public interface ContentReplyDslRepository {
 
     Page<ContentReplyDTO> getPagingList(Pageable pageable, String contentId);
-    public long getTotalCountByContentId(String contentId);
+    long getTotalCountByContentId(String contentId);
+    void deleteByContentId(String contentId);
 }

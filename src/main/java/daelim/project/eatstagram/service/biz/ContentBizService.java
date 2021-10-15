@@ -11,7 +11,7 @@ import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.contentSaved.ContentSavedService;
-import daelim.project.eatstagram.service.subscription.SubscriptionService;
+import daelim.project.eatstagram.service.follow.FollowService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,14 +44,11 @@ public class ContentBizService {
     private final ContentLikeService contentLikeService;
     private final ContentReplyService contentReplyService;
     private final ContentSavedService contentSavedService;
-    private final SubscriptionService subscriptionService;
     private final StorageRepository storageRepository;
 
-    // 구독한 사람들의 콘텐츠 페이징 리스트
-    public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, String username) {
-        List<String> subscribers = subscriptionService.getSubscribersByUsername(username);
-        subscribers.add(username);
-        return getDataRelatedToContent(contentService.getSubscribedPagingList(pageable, subscribers), username);
+    // 팔로우한 사람들의 콘텐츠 페이징 리스트
+    public Page<ContentDTO> getFollowsPagingList(Pageable pageable, String username) {
+        return getDataRelatedToContent(contentService.getFollowsPagingList(pageable, username), username);
     }
 
     // 내 콘텐츠 페이징 리스트

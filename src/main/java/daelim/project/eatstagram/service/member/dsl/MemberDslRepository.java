@@ -9,7 +9,7 @@ import java.util.List;
 public interface MemberDslRepository {
 
     // 랭킹별 사용자 리스트 가져오기
-    Page<MemberDTO> getRankingList(Pageable pageable);
+    Page<MemberDTO> getRankingPagingList(Pageable pageable);
     // 검색시 사용자 페이징 리스트 가져오기
     Page<MemberDTO> getSearchPagingList(Pageable pageable, String username, String condition);
     // 검색시 사용자 리스트 가져오기

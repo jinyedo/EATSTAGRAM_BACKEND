@@ -6,4 +6,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ContentHashtagService extends BaseService<String, ContentHashtagEntity, ContentHashtagDTO, ContentHashtagRepository> {
 
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
 }

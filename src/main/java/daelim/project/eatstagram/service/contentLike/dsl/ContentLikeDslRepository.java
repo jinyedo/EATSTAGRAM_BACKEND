@@ -6,5 +6,5 @@ public interface ContentLikeDslRepository {
 
     ContentLikeDTO findByUsernameAndContentId(String username, String contentId);
     long countByContentId(String contentId);
-
+    void deleteByContentId(String contentId);
 }

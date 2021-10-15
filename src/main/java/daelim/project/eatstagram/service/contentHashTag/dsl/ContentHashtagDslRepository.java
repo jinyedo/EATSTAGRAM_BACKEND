@@ -7,4 +7,5 @@ import java.util.List;
 public interface ContentHashtagDslRepository {
 
     List<ContentHashtagDTO> getListByContentId(String contentId);
+    void deleteByContentId(String contentId);
 }

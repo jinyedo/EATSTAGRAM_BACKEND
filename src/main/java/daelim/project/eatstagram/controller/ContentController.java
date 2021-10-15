@@ -31,11 +31,11 @@ public class ContentController {
     private final ContentReplyService contentReplyService;
     protected final ContentSavedService contentSavedService;
 
-    // 구독한 사람들의 콘텐츠 페이징 리스트
+    // 팔로우한 사람들의 콘텐츠 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
-    public Page<ContentDTO> getSubscribedPagingList(Pageable pageable, String username) {
-        return contentBizService.getSubscribedPagingList(pageable, username);
+    public Page<ContentDTO> getFollowsPagingList(Pageable pageable, String username) {
+        return contentBizService.getFollowsPagingList(pageable, username);
     }
 
     // 내 콘텐츠 페이징 리스트
