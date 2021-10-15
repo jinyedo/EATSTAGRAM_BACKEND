@@ -155,6 +155,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     obj.put("type", "share");
                     obj.put("thumbnail", thumbnail);
                     obj.put("username", requestUsername);
+                    obj.put("contentUsername", contentDTO.getUsername());
                     obj.put("nickname", contentDTO.getNickname());
                     obj.put("profileImgName", contentDTO.getProfileImgName());
                     obj.put("text", contentDTO.getText());
