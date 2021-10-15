@@ -25,6 +25,13 @@ public class FollowerController {
         return followService.getFollowerPagingList(pageable, followDTO);
     }
 
+    // 팔로워 여부
+    @RequestMapping("/getFollowerYn")
+    @ResponseBody
+    public ResponseEntity<String> getFollowerYn(String username, String target) {
+        return followService.getFollowerYn(username, target);
+    }
+
     // 팔로워 수
     @RequestMapping("/getFollowerCount")
     @ResponseBody

@@ -69,6 +69,12 @@ public class FollowService extends BaseService<String, FollowEntity, FollowDTO, 
         return followerPagingList;
     }
 
+    // 팔로워 여부
+    public ResponseEntity<String> getFollowerYn(String username, String target) {
+        String followerYn = followerCheck(username, target) == null ? "N" : "Y";
+        return new ResponseEntity<>("{\"response\": \"ok\", \"followerYn\": \"" + followerYn + "\"}", HttpStatus.OK);
+    }
+
     // 팔로워 수
     public ResponseEntity<String> getFollowerCount(String target) {
         long followerCount = getRepository().getFollowerCount(target);
