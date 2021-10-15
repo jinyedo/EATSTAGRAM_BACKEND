@@ -25,6 +25,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -222,7 +223,19 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
     @Override // 바이너리 메시지 발송 - BinaryMessage 의 데이터가 들어오면 실행
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
-        directMessageService.fileSave(filename, message);
+        ByteBuffer byteBuffer = directMessageService.fileSave(filename, message);
+
+        // 파일 쓰기가 끝나면 이미지를 발송한다.
+        LinkedHashMap<String, Object> temp = sessionList.get(fileUploadIdx);
+        for (String k : temp.keySet()) {
+            if (k.equals("roomType") || k.equals("roomId")) continue;
+            WebSocketSession wss = (WebSocketSession) temp.get(k);
+            try {
+                wss.sendMessage(new BinaryMessage(byteBuffer)); // 초기화된 버퍼를 발송하낟.
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override // 소켓 종료
