@@ -15,6 +15,7 @@ public class DirectMessageRoomMemberDTO extends DirectMessageRoomMember {
     private String username;
     private String name;
     private String nickname;
+    private String profileImgName;
     private long count;
 
     private String readYn;

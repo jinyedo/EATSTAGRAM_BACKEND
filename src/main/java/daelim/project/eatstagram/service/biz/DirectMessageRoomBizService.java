@@ -105,6 +105,7 @@ public class DirectMessageRoomBizService {
             userinfo.put("username", dto.getUsername());
             userinfo.put("name", dto.getName());
             userinfo.put("nickname", dto.getNickname());
+            userinfo.put("profileImgName", dto.getProfileImgName());
             userList.add(userinfo);
         }
         return userList;

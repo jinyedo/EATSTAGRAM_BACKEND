@@ -29,7 +29,8 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
                 .select(Projections.bean(DirectMessageRoomMemberDTO.class,
                         member.username,
                         member.name,
-                        member.nickname
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .fetch();
     }
