@@ -133,7 +133,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
             if (result) {
                 member.setPassword(passwordEncoder.encode(dto.getNewPassword()));
                 getRepository().save(member);
-                return new ResponseEntity<>("{\"response\": \"true\", \"msg\": \"비밀번호 변경 완료\"}", HttpStatus.OK);
+                return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"비밀번호 변경 완료\"}", HttpStatus.OK);
             } else {
                 return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"현재 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
             }
