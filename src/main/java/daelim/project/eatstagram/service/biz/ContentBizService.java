@@ -1,6 +1,7 @@
 package daelim.project.eatstagram.service.biz;
 
 import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.content.ContentEntity;
 import daelim.project.eatstagram.service.content.ContentService;
 import daelim.project.eatstagram.service.contentCategory.ContentCategoryDTO;
 import daelim.project.eatstagram.service.contentCategory.ContentCategoryService;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -143,6 +145,8 @@ public class ContentBizService {
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> delete(String contentId) {
         try {
+            Optional<ContentEntity> result = contentService.getRepository().findById(contentId);
+            if (result.isEmpty()) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"이미 삭제된 게시글입니다.\"}", HttpStatus.OK);
             contentFileService.deleteByContentId(contentId);
             contentHashtagService.deleteByContentId(contentId);
             contentCategoryService.deleteByContentId(contentId);
