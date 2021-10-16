@@ -39,6 +39,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                         contentEntity.contentId,
                         contentEntity.text,
                         contentEntity.location,
+                        contentEntity.regDate,
                         member.username,
                         member.nickname,
                         member.profileImgName
@@ -74,6 +75,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                         contentEntity.contentId,
                         contentEntity.text,
                         contentEntity.location,
+                        contentEntity.regDate,
                         member.username,
                         member.nickname,
                         member.profileImgName
@@ -103,6 +105,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                         contentEntity.contentId,
                         contentEntity.text,
                         contentEntity.location,
+                        contentEntity.regDate,
                         member.username,
                         member.nickname,
                         member.profileImgName
@@ -133,12 +136,13 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(contentHashtagEntity).on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
                 .leftJoin(member).on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
-                                contentEntity.contentId,
-                                contentEntity.text,
-                                contentEntity.location,
-                                member.username,
-                                member.nickname,
-                                member.profileImgName
+                        contentEntity.contentId,
+                        contentEntity.text,
+                        contentEntity.location,
+                        contentEntity.regDate,
+                        member.username,
+                        member.nickname,
+                        member.profileImgName
                 ))
                 .orderBy(contentEntity.contentId.desc())
                 .offset(pageable.getOffset())
@@ -178,6 +182,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .select(Projections.bean(ContentDTO.class,
                         contentEntity.text,
                         contentEntity.location,
+                        contentEntity.regDate,
                         member.username,
                         member.nickname,
                         member.profileImgName
