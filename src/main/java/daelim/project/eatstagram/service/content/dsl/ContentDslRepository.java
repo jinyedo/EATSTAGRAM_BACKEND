@@ -1,6 +1,7 @@
 package daelim.project.eatstagram.service.content.dsl;
 
 import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.content.ContentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,6 +19,7 @@ public interface ContentDslRepository {
     Page<ContentDTO> getSearchPagingList(Pageable pageable, String condition);
     List<String> getContentIdsByUsername(String username);
     ContentDTO findByContentId(String contentId);
+    ContentEntity contentCheck(String contentId);
     void deleteByUsername(String username);
     void deleteByContentId(String contentId);
 }

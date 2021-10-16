@@ -4,6 +4,8 @@ import daelim.project.eatstagram.service.base.BaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +40,14 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
 
     public ContentDTO findByContentId(String contentId) {
         return getRepository().findByContentId(contentId);
+    }
+
+    public ResponseEntity<String> contentCheck(String contentId) {
+        ContentEntity contentEntity = getRepository().contentCheck(contentId);
+        if (contentEntity == null) {
+            return new ResponseEntity<>("{\"response\": \"fail\"}", HttpStatus.OK);
+        }
+        return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
     }
 
     public void deleteByUsername(String username) {

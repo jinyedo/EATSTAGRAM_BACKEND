@@ -2,6 +2,7 @@ package daelim.project.eatstagram.controller;
 
 import daelim.project.eatstagram.service.biz.ContentBizService;
 import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.content.ContentService;
 import daelim.project.eatstagram.service.contentFile.ContentFileService;
 import daelim.project.eatstagram.service.contentLike.ContentLikeDTO;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
@@ -26,6 +27,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ContentController {
 
     private final ContentBizService contentBizService;
+    private final ContentService contentService;
     private final ContentFileService contentFileService;
     private final ContentLikeService contentLikeService;
     private final ContentReplyService contentReplyService;
@@ -85,6 +87,13 @@ public class ContentController {
     @ResponseBody
     public ResponseEntity<String> save(String username, String contentId) {
         return contentSavedService.save(username, contentId);
+    }
+
+    // 콘텐츠가 존재하는지 체크
+    @RequestMapping("/contentCheck")
+    @ResponseBody
+    public ResponseEntity<String> contentCheck(String contentId) {
+        return contentService.contentCheck(contentId);
     }
 
     // 비디오 스트림

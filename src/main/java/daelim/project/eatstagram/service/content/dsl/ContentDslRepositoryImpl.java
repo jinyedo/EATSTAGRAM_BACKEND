@@ -2,6 +2,7 @@ package daelim.project.eatstagram.service.content.dsl;
 
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.content.ContentEntity;
 import daelim.project.eatstagram.service.content.QContentEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -181,6 +182,14 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                         member.nickname,
                         member.profileImgName
                 ))
+                .fetchOne();
+    }
+
+    @Override
+    public ContentEntity contentCheck(String contentId) {
+        return from(contentEntity)
+                .where(contentEntity.contentId.eq(contentId))
+                .select(contentEntity)
                 .fetchOne();
     }
 
