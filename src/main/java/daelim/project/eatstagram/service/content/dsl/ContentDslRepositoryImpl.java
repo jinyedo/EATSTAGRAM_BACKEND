@@ -47,6 +47,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .orderBy(contentEntity.contentId.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .distinct()
                 .fetch();
 
         long total = from(contentEntity)
@@ -58,6 +59,7 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .leftJoin(member).on(member.username.eq(contentEntity.username))
                 .leftJoin(followEntity).on(followEntity.follow.eq(contentEntity.username))
                 .select(contentEntity)
+                .distinct()
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);
