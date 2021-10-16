@@ -123,8 +123,9 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     }
 
     // 비밀번호 변경하기
-    public ResponseEntity<String> setPassword(String username, String password, String newPassword) {
+    public ResponseEntity<String> setPassword(String username, String password, String newPassword, String newPasswordConfirm) {
         try {
+            if (!newPassword.equals(newPasswordConfirm)) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"새 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
             Member member = getRepository().findByUsername(username).orElseThrow();
             boolean result = passwordEncoder.matches(password, member.getPassword());
             if (result) {
@@ -132,7 +133,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
                 getRepository().save(member);
                 return new ResponseEntity<>("{\"response\": \"true\", \"msg\": \"비밀번호 변경 완료\"}", HttpStatus.OK);
             } else {
-                return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"비밀번호가 올바르지 않습니다.\"}", HttpStatus.OK);
+                return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"현재 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
             }
         } catch (Exception e) {
             e.printStackTrace();

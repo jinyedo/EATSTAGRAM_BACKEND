@@ -146,8 +146,8 @@ public class MemberController {
     // 비밀번호 변경
     @RequestMapping("/setPassword")
     @ResponseBody
-    public ResponseEntity<String> setPassword(String username, String password, String newPassword) {
-        return memberService.setPassword(username, password, newPassword);
+    public ResponseEntity<String> setPassword(String username, String password, String newPassword, String newPasswordConfirm) {
+        return memberService.setPassword(username, password, newPassword, newPasswordConfirm);
     }
 
     // 프로필 사진 저장 및 삭제
