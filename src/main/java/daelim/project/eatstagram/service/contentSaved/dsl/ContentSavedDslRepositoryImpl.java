@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static daelim.project.eatstagram.service.contentSaved.QContentSavedEntity.*;
+import static daelim.project.eatstagram.service.contentSaved.QContentSavedEntity.contentSavedEntity;
 
 public class ContentSavedDslRepositoryImpl extends QuerydslRepositorySupport implements ContentSavedDslRepository {
 
@@ -52,6 +52,14 @@ public class ContentSavedDslRepositoryImpl extends QuerydslRepositorySupport imp
     public void deleteByContentIds(List<String> contentIds) {
         delete(contentSavedEntity)
                 .where(contentSavedEntity.contentId.in(contentIds))
+                .execute();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentSavedEntity)
+                .where(contentSavedEntity.contentId.eq(contentId))
                 .execute();
     }
 }

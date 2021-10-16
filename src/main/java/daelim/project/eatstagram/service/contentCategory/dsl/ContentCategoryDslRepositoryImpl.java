@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static daelim.project.eatstagram.service.contentCategory.QContentCategoryEntity.*;
+import static daelim.project.eatstagram.service.contentCategory.QContentCategoryEntity.contentCategoryEntity;
 
 public class ContentCategoryDslRepositoryImpl extends QuerydslRepositorySupport implements ContentCategoryDslRepository {
 
@@ -40,6 +40,14 @@ public class ContentCategoryDslRepositoryImpl extends QuerydslRepositorySupport 
     public void deleteByContentIds(List<String> contentIds) {
         delete(contentCategoryEntity)
                 .where(contentCategoryEntity.contentId.in(contentIds))
+                .execute();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentCategoryEntity)
+                .where(contentCategoryEntity.contentId.eq(contentId))
                 .execute();
     }
 }

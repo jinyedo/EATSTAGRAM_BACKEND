@@ -8,4 +8,5 @@ public interface ContentFileDslRepository {
 
     List<ContentFileDTO> getListByContentId(String contentId);
     void deleteByContentIds(List<String> contentIds);
+    void deleteByContentId(String contentId);
 }

@@ -43,4 +43,8 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
     public void deleteByUsername(String username) {
         getRepository().deleteByUsername(username);
     }
+
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
 }

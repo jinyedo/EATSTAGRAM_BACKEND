@@ -8,4 +8,5 @@ public interface ContentHashtagDslRepository {
 
     List<ContentHashtagDTO> getListByContentId(String contentId);
     void deleteByContentIds(List<String> contentIds);
+    void deleteByContentId(String contentId);
 }

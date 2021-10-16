@@ -3,7 +3,6 @@ package daelim.project.eatstagram.service.content.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.content.ContentDTO;
 import daelim.project.eatstagram.service.content.QContentEntity;
-import daelim.project.eatstagram.service.follow.QFollowEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,9 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static daelim.project.eatstagram.service.content.QContentEntity.contentEntity;
-import static daelim.project.eatstagram.service.contentHashTag.QContentHashtagEntity.*;
+import static daelim.project.eatstagram.service.contentHashTag.QContentHashtagEntity.contentHashtagEntity;
 import static daelim.project.eatstagram.service.follow.QFollowEntity.followEntity;
-import static daelim.project.eatstagram.service.member.QMember.*;
+import static daelim.project.eatstagram.service.member.QMember.member;
 
 public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implements ContentDslRepository {
 
@@ -190,6 +189,14 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     public void deleteByUsername(String username) {
         delete(contentEntity)
                 .where(contentEntity.username.eq(username))
+                .execute();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentEntity)
+                .where(contentEntity.contentId.eq(contentId))
                 .execute();
     }
 }

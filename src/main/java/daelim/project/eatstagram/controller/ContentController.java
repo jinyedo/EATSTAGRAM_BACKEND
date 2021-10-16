@@ -73,6 +73,13 @@ public class ContentController {
         return contentBizService.add(contentDTO, uploadFiles);
     }
 
+    // 콘텐츠 삭제
+    @RequestMapping("/delete")
+    @ResponseBody
+    public ResponseEntity<String> delete(String contentId) {
+        return contentBizService.delete(contentId);
+    }
+
     // 내 저장 목록에 콘텐츠 저장하거나 삭제하기
     @RequestMapping("/save")
     @ResponseBody

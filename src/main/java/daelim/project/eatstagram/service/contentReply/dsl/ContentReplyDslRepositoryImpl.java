@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static daelim.project.eatstagram.service.contentReply.QContentReplyEntity.*;
-import static daelim.project.eatstagram.service.member.QMember.*;
+import static daelim.project.eatstagram.service.contentReply.QContentReplyEntity.contentReplyEntity;
+import static daelim.project.eatstagram.service.member.QMember.member;
 
 public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport implements ContentReplyDslRepository {
 
@@ -66,6 +66,14 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
     public void deleteByContentIds(List<String> contentIds) {
         delete(contentReplyEntity)
                 .where(contentReplyEntity.contentId.in(contentIds))
+                .execute();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentReplyEntity)
+                .where(contentReplyEntity.contentId.eq(contentId))
                 .execute();
     }
 }

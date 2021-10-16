@@ -10,4 +10,5 @@ public interface ContentSavedDslRepository {
     String getSavedYn(String username, String contentId);
     List<String> getContentIdsByUsername(String username);
     void deleteByContentIds(List<String> contentIds);
+    void deleteByContentId(String contentId);
 }

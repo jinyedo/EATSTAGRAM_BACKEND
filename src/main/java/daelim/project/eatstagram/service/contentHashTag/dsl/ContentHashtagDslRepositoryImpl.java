@@ -34,4 +34,12 @@ public class ContentHashtagDslRepositoryImpl extends QuerydslRepositorySupport i
                 .where(contentHashtagEntity.contentId.in(contentIds))
                 .execute();
     }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentHashtagEntity)
+                .where(contentHashtagEntity.contentId.eq(contentId))
+                .execute();
+    }
 }

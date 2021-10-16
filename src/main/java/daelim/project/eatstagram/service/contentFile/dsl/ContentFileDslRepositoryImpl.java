@@ -36,4 +36,12 @@ public class ContentFileDslRepositoryImpl extends QuerydslRepositorySupport impl
                 .where(contentFileEntity.contentId.in(contentIds))
                 .execute();
     }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentFileEntity)
+                .where(contentFileEntity.contentId.eq(contentId))
+                .execute();
+    }
 }

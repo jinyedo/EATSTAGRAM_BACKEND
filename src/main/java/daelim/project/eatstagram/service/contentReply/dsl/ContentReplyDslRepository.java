@@ -11,4 +11,5 @@ public interface ContentReplyDslRepository {
     Page<ContentReplyDTO> getPagingList(Pageable pageable, String contentId);
     long getTotalCountByContentId(String contentId);
     void deleteByContentIds(List<String> contentIds);
+    void deleteByContentId(String contentId);
 }

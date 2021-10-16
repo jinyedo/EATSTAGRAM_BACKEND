@@ -19,4 +19,5 @@ public interface ContentDslRepository {
     List<String> getContentIdsByUsername(String username);
     ContentDTO findByContentId(String contentId);
     void deleteByUsername(String username);
+    void deleteByContentId(String contentId);
 }

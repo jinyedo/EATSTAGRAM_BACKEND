@@ -137,6 +137,24 @@ public class ContentBizService {
         return new ResponseEntity<>("{\"response\": \"ok\"}", HttpStatus.OK);
     }
 
+    // 콘텐츠 삭제
+    @Transactional(rollbackFor = Exception.class)
+    public ResponseEntity<String> delete(String contentId) {
+        try {
+            contentFileService.deleteByContentId(contentId);
+            contentHashtagService.deleteByContentId(contentId);
+            contentCategoryService.deleteByContentId(contentId);
+            contentLikeService.deleteByContentId(contentId);
+            contentReplyService.deleteByContentId(contentId);
+            contentSavedService.deleteByContentId(contentId);
+            contentService.deleteByContentId(contentId);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"삭제를 완료했습니다.\"}", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("{\"response\": \"error\", \"msg\": \"서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.\"}", HttpStatus.OK);
+        }
+    }
+
     // 콘텐츠와 관련된 데이터 가져오기
     private Page<ContentDTO> getDataRelatedToContent(Page<ContentDTO> contentList, String username) {
         for (ContentDTO contentDTO : contentList) {

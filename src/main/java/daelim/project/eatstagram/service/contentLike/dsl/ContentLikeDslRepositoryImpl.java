@@ -46,4 +46,12 @@ public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport impl
                 .where(contentLikeEntity.contentId.in(contentIds))
                 .execute();
     }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentId(String contentId) {
+        delete(contentLikeEntity)
+                .where(contentLikeEntity.contentId.eq(contentId))
+                .execute();
+    }
 }

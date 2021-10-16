@@ -26,6 +26,10 @@ public class ContentFileService extends BaseService<String, ContentFileEntity, C
         getRepository().deleteByContentIds(contentIds);
     }
 
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
+
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {
         log.info("----------콘텐츠 불러오기----------");
         log.info("contentName : " + contentName);

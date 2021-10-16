@@ -21,4 +21,8 @@ public class ContentReplyService extends BaseService<String, ContentReplyEntity,
     public void deleteByContentIds(List<String> contentIds) {
         getRepository().deleteByContentIds(contentIds);
     }
+
+    public void deleteByContentId(String contentId) {
+        getRepository().deleteByContentId(contentId);
+    }
 }
