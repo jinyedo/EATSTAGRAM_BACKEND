@@ -109,6 +109,42 @@ public class MemberController {
         return memberService.joinSocial(memberDTO);
     }
 
+    // 비밀번호 변경
+    @RequestMapping("/setPassword")
+    @ResponseBody
+    public ResponseEntity<String> setPassword(@ModelAttribute @Valid NewPasswordValidationDTO newPasswordValidationDTO, Errors errors) {
+        if (errors.hasErrors()){
+            log.info("-----비밀번호 변경 유효성 검사 오류 종류-----");
+            for (FieldError error : errors.getFieldErrors()) {
+                log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
+            }
+            log.info("----------------------------------------");
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"입력값이 잘못되었습니다. 다시 확인해 주세요.\"}", HttpStatus.OK);
+        }
+        return memberService.setPassword(newPasswordValidationDTO);
+    }
+
+    // 특정 사용자 정보 가져오기
+    @RequestMapping("/getMemberInfo")
+    @ResponseBody
+    public MemberDTO getMemberInfo(String username) {
+        return memberService.getMemberInfo(username);
+    }
+
+    // 특정 사용자 정보 수정하기
+    @RequestMapping("/setMemberInfo")
+    @ResponseBody
+    public MemberDTO setMemberInfo(@ModelAttribute MemberDTO memberDTO) {
+        return memberService.setMemberInfo(memberDTO);
+    }
+
+    // 프로필 사진 저장 및 삭제
+    @RequestMapping("/saveProfileImg")
+    @ResponseBody
+    public ResponseEntity<Object> saveProfileImg(String username, MultipartFile file) {
+        return memberService.saveProfileImg(username, file);
+    }
+
     // 랭킹별 사용자 페이징 리스트 가져오기
     @RequestMapping("/getRankingPagingList")
     @ResponseBody
@@ -128,41 +164,5 @@ public class MemberController {
     @ResponseBody
     public List<MemberDTO> getSearchList(String username, String condition) {
         return memberService.getSearchList(username, condition);
-    }
-
-    // 특정 사용자 정보 가져오기
-    @RequestMapping("/getMemberInfo")
-    @ResponseBody
-    public MemberDTO getMemberInfo(String username) {
-        return memberService.getMemberInfo(username);
-    }
-
-    // 특정 사용자 정보 수정하기
-    @RequestMapping("/setMemberInfo")
-    @ResponseBody
-    public MemberDTO setMemberInfo(@ModelAttribute MemberDTO memberDTO) {
-        return memberService.setMemberInfo(memberDTO);
-    }
-
-    // 비밀번호 변경
-    @RequestMapping("/setPassword")
-    @ResponseBody
-    public ResponseEntity<String> setPassword(@ModelAttribute @Valid NewPasswordValidationDTO newPasswordValidationDTO, Errors errors) {
-        if (errors.hasErrors()){
-            log.info("-----비밀번호 변경 유효성 검사 오류 종류-----");
-            for (FieldError error : errors.getFieldErrors()) {
-                log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
-            }
-            log.info("----------------------------------------");
-            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"입력값이 잘못되었습니다. 다시 확인해 주세요.\"}", HttpStatus.OK);
-        }
-        return memberService.setPassword(newPasswordValidationDTO);
-    }
-
-    // 프로필 사진 저장 및 삭제
-    @RequestMapping("/saveProfileImg")
-    @ResponseBody
-    public ResponseEntity<Object> saveProfileImg(String username, MultipartFile file) {
-        return memberService.saveProfileImg(username, file);
     }
 }
