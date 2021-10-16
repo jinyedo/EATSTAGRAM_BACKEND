@@ -1,5 +1,6 @@
 package daelim.project.eatstagram.service.member;
 
+import daelim.project.eatstagram.security.dto.NewPasswordValidationDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
 import daelim.project.eatstagram.service.base.ModelMapperUtils;
@@ -123,13 +124,14 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     }
 
     // 비밀번호 변경하기
-    public ResponseEntity<String> setPassword(String username, String password, String newPassword, String newPasswordConfirm) {
+    public ResponseEntity<String> setPassword(NewPasswordValidationDTO dto) {
         try {
-            if (!newPassword.equals(newPasswordConfirm)) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"새 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
-            Member member = getRepository().findByUsername(username).orElseThrow();
-            boolean result = passwordEncoder.matches(password, member.getPassword());
+            if (dto.getPassword().equals(dto.getNewPassword())) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"현재 비밀번호와 새 비밀번호가 동일합니다. 다른 비밀번호를 입력해주세요.\"}", HttpStatus.OK);
+            if (!dto.getNewPassword().equals(dto.getNewPasswordConfirm())) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"새 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
+            Member member = getRepository().findByUsername(dto.getUsername()).orElseThrow();
+            boolean result = passwordEncoder.matches(dto.getPassword(), member.getPassword());
             if (result) {
-                member.setPassword(passwordEncoder.encode(newPassword));
+                member.setPassword(passwordEncoder.encode(dto.getNewPassword()));
                 getRepository().save(member);
                 return new ResponseEntity<>("{\"response\": \"true\", \"msg\": \"비밀번호 변경 완료\"}", HttpStatus.OK);
             } else {

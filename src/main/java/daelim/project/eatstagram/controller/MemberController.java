@@ -1,6 +1,7 @@
 package daelim.project.eatstagram.controller;
 
 import daelim.project.eatstagram.security.dto.AuthMemberDTO;
+import daelim.project.eatstagram.security.dto.NewPasswordValidationDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.biz.MemberBizService;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
@@ -146,8 +147,16 @@ public class MemberController {
     // 비밀번호 변경
     @RequestMapping("/setPassword")
     @ResponseBody
-    public ResponseEntity<String> setPassword(String username, String password, String newPassword, String newPasswordConfirm) {
-        return memberService.setPassword(username, password, newPassword, newPasswordConfirm);
+    public ResponseEntity<String> setPassword(@ModelAttribute @Valid NewPasswordValidationDTO newPasswordValidationDTO, Errors errors) {
+        if (errors.hasErrors()){
+            log.info("-----비밀번호 변경 유효성 검사 오류 종류-----");
+            for (FieldError error : errors.getFieldErrors()) {
+                log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
+            }
+            log.info("----------------------------------------");
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"입력값이 잘못되었습니다. 다시 확인해 주세요.\"}", HttpStatus.OK);
+        }
+        return memberService.setPassword(newPasswordValidationDTO);
     }
 
     // 프로필 사진 저장 및 삭제
