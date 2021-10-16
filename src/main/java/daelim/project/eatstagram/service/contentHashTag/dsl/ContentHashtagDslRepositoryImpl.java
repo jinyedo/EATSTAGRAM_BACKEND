@@ -29,9 +29,9 @@ public class ContentHashtagDslRepositoryImpl extends QuerydslRepositorySupport i
 
     @Override
     @Transactional @Modifying
-    public void deleteByContentId(String contentId) {
+    public void deleteByContentIds(List<String> contentIds) {
         delete(contentHashtagEntity)
-                .where(contentHashtagEntity.contentId.eq(contentId))
+                .where(contentHashtagEntity.contentId.in(contentIds))
                 .execute();
     }
 }

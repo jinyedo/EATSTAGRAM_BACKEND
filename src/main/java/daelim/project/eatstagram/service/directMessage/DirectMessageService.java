@@ -13,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,10 @@ public class DirectMessageService extends BaseService<String, DirectMessageEntit
 
     public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username) {
         return getRepository().getDirectMessagePagingList(pageable, directMessageRoomId, username);
+    }
+
+    public void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds) {
+        getRepository().deleteByDirectMessageRoomIds(directMessageRoomIds);
     }
 
     public ByteBuffer fileSave(String filename, BinaryMessage message) {

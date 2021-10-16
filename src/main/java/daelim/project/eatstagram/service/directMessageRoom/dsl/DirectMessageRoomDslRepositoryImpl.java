@@ -3,9 +3,10 @@ package daelim.project.eatstagram.service.directMessageRoom.dsl;
 import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.directMessageRoom.DirectMessageRoomDTO;
 import daelim.project.eatstagram.service.directMessageRoom.QDirectMessageRoom;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static daelim.project.eatstagram.service.directMessage.QDirectMessageEntity.directMessageEntity;
@@ -33,5 +34,13 @@ public class DirectMessageRoomDslRepositoryImpl extends QuerydslRepositorySuppor
                 .orderBy(directMessageEntity.regDate.desc())
                 .fetch();
 
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds) {
+        delete(directMessageRoom)
+                .where(directMessageRoom.directMessageRoomId.in(directMessageRoomIds))
+                .execute();
     }
 }

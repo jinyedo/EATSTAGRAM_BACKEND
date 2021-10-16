@@ -32,4 +32,8 @@ public class ContentSavedService extends BaseService<String, ContentSavedEntity,
     public List<String> getContentIdsByUsername(String username) {
         return getRepository().getContentIdsByUsername(username);
     }
+
+    public void deleteByContentIds(List<String> contentIds) {
+        getRepository().deleteByContentIds(contentIds);
+    }
 }

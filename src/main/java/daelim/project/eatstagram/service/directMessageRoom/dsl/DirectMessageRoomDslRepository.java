@@ -7,4 +7,5 @@ import java.util.List;
 public interface DirectMessageRoomDslRepository {
 
     List<DirectMessageRoomDTO> getList(List<String> directMessageRoomIdList);
+    void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds);
 }

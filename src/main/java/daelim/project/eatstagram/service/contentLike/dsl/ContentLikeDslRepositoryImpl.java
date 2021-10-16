@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static daelim.project.eatstagram.service.contentLike.QContentLikeEntity.contentLikeEntity;
 
 public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport implements ContentLikeDslRepository {
@@ -39,9 +41,9 @@ public class ContentLikeDslRepositoryImpl extends QuerydslRepositorySupport impl
 
     @Override
     @Transactional @Modifying
-    public void deleteByContentId(String contentId) {
+    public void deleteByContentIds(List<String> contentIds) {
         delete(contentLikeEntity)
-                .where(contentLikeEntity.contentId.eq(contentId))
+                .where(contentLikeEntity.contentId.in(contentIds))
                 .execute();
     }
 }

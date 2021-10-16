@@ -10,6 +10,7 @@ public interface DirectMessageRoomMemberDslRepository {
     List<DirectMessageRoomMemberDTO> findByDirectMessageRoomId(String directMessageRoomId, String username);
     List<DirectMessageRoomMemberDTO> findByDirectMessageRoomIdAndNotUsernameJoinMember(String directMessageRoomId, String username);
     List<DirectMessageRoomMemberDTO> findByUsername(String username);
+    List<String> getDirectMessageRoomIdsByUsername(String username);
     DirectMessageRoomMemberDTO findByUsernames(List<DirectMessageRoomMemberDTO> directMessageRoomMemberDTOList);
     String getConnectionYn(String directMessageRoomId, String username);
     String getAlertYn(String directMessageRoomId, String username);
@@ -20,4 +21,5 @@ public interface DirectMessageRoomMemberDslRepository {
     void updateInYn(String directMessageRoomId, String username, String inYn);
     void updateConditionDate(String directMessageRoomId, String username);
     long unreadMessageTotalCountByUsername(String username);
+    void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds);
 }

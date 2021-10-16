@@ -16,6 +16,7 @@ public interface ContentDslRepository {
     Page<ContentDTO> getSpecificPagingList(Pageable pageable, List<String> contentIds);
     // 검색 조건을 통한 페이징 리스트
     Page<ContentDTO> getSearchPagingList(Pageable pageable, String condition);
+    List<String> getContentIdsByUsername(String username);
     ContentDTO findByContentId(String contentId);
     void deleteByUsername(String username);
 }

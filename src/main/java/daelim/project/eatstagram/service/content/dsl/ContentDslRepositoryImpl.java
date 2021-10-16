@@ -162,6 +162,14 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
     }
 
     @Override
+    public List<String> getContentIdsByUsername(String username) {
+        return from(contentEntity)
+                .where(contentEntity.username.eq(username))
+                .select(contentEntity.contentId)
+                .fetch();
+    }
+
+    @Override
     public ContentDTO findByContentId(String contentId) {
         return from(contentEntity)
                 .where(contentEntity.contentId.eq(contentId))

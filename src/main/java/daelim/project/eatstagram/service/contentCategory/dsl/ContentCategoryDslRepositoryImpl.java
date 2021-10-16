@@ -37,9 +37,9 @@ public class ContentCategoryDslRepositoryImpl extends QuerydslRepositorySupport 
 
     @Override
     @Transactional @Modifying
-    public void deleteByContentId(String contentId) {
+    public void deleteByContentIds(List<String> contentIds) {
         delete(contentCategoryEntity)
-                .where(contentCategoryEntity.contentId.eq(contentId))
+                .where(contentCategoryEntity.contentId.in(contentIds))
                 .execute();
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface FollowDslRepository {
 
+    void deleteByUsername(String username);
+
 /* 팔로우 */
     Page<FollowDTO> getFollowPagingList(Pageable pageable, String target);
     FollowEntity followCheck(String username, String target);
@@ -16,5 +18,4 @@ public interface FollowDslRepository {
     Page<FollowDTO> getFollowerPagingList(Pageable pageable, String target);
     FollowEntity followerCheck(String username, String target);
     long getFollowerCount(String target);
-    void delete(String username, String target);
 }

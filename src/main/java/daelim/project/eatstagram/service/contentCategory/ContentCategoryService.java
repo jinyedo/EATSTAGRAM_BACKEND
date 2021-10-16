@@ -12,7 +12,7 @@ public class ContentCategoryService extends BaseService<String, ContentCategoryE
         return getRepository().getContentIdsByCategory(category);
     }
 
-    public void deleteByContentId(String contentId) {
-        getRepository().deleteByContentId(contentId);
+    public void deleteByContentIds(List<String> contentIds) {
+        getRepository().deleteByContentIds(contentIds);
     }
 }

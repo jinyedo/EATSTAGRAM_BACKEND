@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberBizService {
@@ -34,6 +36,25 @@ public class MemberBizService {
     private final DirectMessageService directMessageService;
     private final DirectMessageRoomService directMessageRoomService;
     private final DirectMessageRoomMemberService directMessageRoomMemberService;
+
+    public void deleteAccount(String username) {
+        List<String> contentIds = contentService.getContentIdsByUsername(username);
+        contentCategoryService.deleteByContentIds(contentIds);
+        contentHashtagService.deleteByContentIds(contentIds);
+        contentFileService.deleteByContentIds(contentIds);
+        contentSavedService.deleteByContentIds(contentIds);
+        contentLikeService.deleteByContentIds(contentIds);
+        contentReplyService.deleteByContentIds(contentIds);
+
+        List<String> directMessageRoomIds = directMessageRoomMemberService.getDirectMessageRoomIdsByUsername(username);
+        directMessageService.deleteByDirectMessageRoomIds(directMessageRoomIds);
+        directMessageRoomMemberService.deleteByDirectMessageRoomIds(directMessageRoomIds);
+        directMessageRoomService.deleteByDirectMessageRoomIds(directMessageRoomIds);
+
+        followService.deleteByUsername(username);
+        
+        memberService.getRepository().deleteById(username);
+    }
 
     // 랭킹별 사용자 리스트 가져오기
     public Page<MemberDTO> getRankingPagingList(Pageable pageable, String username) {

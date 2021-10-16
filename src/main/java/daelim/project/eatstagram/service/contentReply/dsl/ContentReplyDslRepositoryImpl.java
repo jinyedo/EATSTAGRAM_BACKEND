@@ -63,9 +63,9 @@ public class ContentReplyDslRepositoryImpl extends QuerydslRepositorySupport imp
 
     @Override
     @Transactional @Modifying
-    public void deleteByContentId(String contentId) {
+    public void deleteByContentIds(List<String> contentIds) {
         delete(contentReplyEntity)
-                .where(contentReplyEntity.contentId.eq(contentId))
+                .where(contentReplyEntity.contentId.in(contentIds))
                 .execute();
     }
 }

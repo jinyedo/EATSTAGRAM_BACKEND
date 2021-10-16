@@ -9,4 +9,5 @@ public interface ContentSavedDslRepository {
     ContentSavedEntity findByUsernameAndContentId(String username, String contentId);
     String getSavedYn(String username, String contentId);
     List<String> getContentIdsByUsername(String username);
+    void deleteByContentIds(List<String> contentIds);
 }

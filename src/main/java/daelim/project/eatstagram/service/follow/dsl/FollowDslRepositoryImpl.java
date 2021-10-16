@@ -22,6 +22,17 @@ public class FollowDslRepositoryImpl extends QuerydslRepositorySupport implement
         super(QFollowEntity.class);
     }
 
+    @Override
+    @Transactional @Modifying
+    public void deleteByUsername(String username) {
+        delete(followEntity)
+                .where(
+                        followEntity.username.eq(username)
+                                .or(followEntity.follow.eq(username))
+                )
+                .execute();
+    }
+
 /* 팔로우 */
     @Override
     public Page<FollowDTO> getFollowPagingList(Pageable pageable, String target) {
@@ -116,17 +127,4 @@ public class FollowDslRepositoryImpl extends QuerydslRepositorySupport implement
                 .select(followEntity)
                 .fetchCount();
     }
-
-    @Override
-    @Transactional @Modifying
-    public void delete(String username, String target) {
-        delete(followEntity)
-                .where(
-                    followEntity.username.eq(target),
-                    followEntity.follow.eq(username)
-                )
-                .execute();
-    }
-
-
 }

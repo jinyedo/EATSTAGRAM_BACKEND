@@ -6,7 +6,9 @@ import daelim.project.eatstagram.service.directMessage.QDirectMessageEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -55,5 +57,13 @@ public class DirectMessageDslRepositoryImpl extends QuerydslRepositorySupport im
                 .fetchCount();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds) {
+        delete(directMessageEntity)
+                .where(directMessageEntity.directMessageRoomId.in(directMessageRoomIds))
+                .execute();
     }
 }

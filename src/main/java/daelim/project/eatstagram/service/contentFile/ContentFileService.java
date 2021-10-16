@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.Arrays;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,8 +22,8 @@ public class ContentFileService extends BaseService<String, ContentFileEntity, C
     private final StorageRepository storageRepository;
     public static final String CONTENT_FILE_FOLDER_NAME = "content";
 
-    public void deleteByContentId(String contentId) {
-        getRepository().deleteByContentId(contentId);
+    public void deleteByContentIds(List<String> contentIds) {
+        getRepository().deleteByContentIds(contentIds);
     }
 
     public void videoStream(String contentName, HttpServletRequest request, HttpServletResponse response) throws IOException {

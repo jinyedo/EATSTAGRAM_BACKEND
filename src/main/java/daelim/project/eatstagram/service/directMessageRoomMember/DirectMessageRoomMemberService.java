@@ -3,9 +3,15 @@ package daelim.project.eatstagram.service.directMessageRoomMember;
 import daelim.project.eatstagram.service.base.BaseService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DirectMessageRoomMemberService
         extends BaseService<String, DirectMessageRoomMemberEntity, DirectMessageRoomMemberDTO, DirectMessageRoomMemberRepository> {
+
+    public List<String> getDirectMessageRoomIdsByUsername(String username) {
+        return getRepository().getDirectMessageRoomIdsByUsername(username);
+    }
 
     public String getConnectionYn(String directMessageRoomId, String username) {
         return getRepository().getConnectionYn(directMessageRoomId, username);
@@ -41,5 +47,9 @@ public class DirectMessageRoomMemberService
 
     public long unreadMessageTotalCountByUsername(String username) {
         return getRepository().unreadMessageTotalCountByUsername(username);
+    }
+
+    public void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds) {
+        getRepository().deleteByDirectMessageRoomIds(directMessageRoomIds);
     }
 }

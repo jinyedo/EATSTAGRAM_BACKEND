@@ -7,5 +7,5 @@ import java.util.List;
 public interface ContentFileDslRepository {
 
     List<ContentFileDTO> getListByContentId(String contentId);
-    void deleteByContentId(String contentId);
+    void deleteByContentIds(List<String> contentIds);
 }

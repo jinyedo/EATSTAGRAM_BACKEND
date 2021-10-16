@@ -32,6 +32,10 @@ public class ContentService extends BaseService<String, ContentEntity, ContentDT
         return getRepository().getSearchPagingList(pageable, condition);
     }
 
+    public List<String> getContentIdsByUsername(String username) {
+        return getRepository().getContentIdsByUsername(username);
+    }
+
     public ContentDTO findByContentId(String contentId) {
         return getRepository().findByContentId(contentId);
     }

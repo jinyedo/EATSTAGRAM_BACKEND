@@ -10,6 +10,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class FollowService extends BaseService<String, FollowEntity, FollowDTO, FollowRepository> {
 
+    public void deleteByUsername(String username) {
+        getRepository().deleteByUsername(username);
+    }
+
 /* 팔로우 : 해당 유저가 구독한 사람 */
     // 팔로우 페이징 리스트
     public Page<FollowDTO> getFollowPagingList(Pageable pageable, FollowDTO followDTO) {

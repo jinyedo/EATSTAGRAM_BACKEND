@@ -8,5 +8,5 @@ public interface ContentCategoryDslRepository {
 
     List<ContentCategoryDTO> getListByContentId(String contentId);
     List<String> getContentIdsByCategory(String category);
-    void deleteByContentId(String contentId);
+    void deleteByContentIds(List<String> contentIds);
 }

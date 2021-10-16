@@ -2,7 +2,9 @@ package daelim.project.eatstagram.service.contentSaved.dsl;
 
 import daelim.project.eatstagram.service.contentSaved.ContentSavedEntity;
 import daelim.project.eatstagram.service.contentSaved.QContentSavedEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -37,11 +39,19 @@ public class ContentSavedDslRepositoryImpl extends QuerydslRepositorySupport imp
         return result == null ? "N" : "Y";
     }
 
-
+    @Override
     public List<String> getContentIdsByUsername(String username) {
         return from(contentSavedEntity)
                 .where(contentSavedEntity.username.eq(username))
                 .select(contentSavedEntity.contentId)
                 .fetch();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByContentIds(List<String> contentIds) {
+        delete(contentSavedEntity)
+                .where(contentSavedEntity.contentId.in(contentIds))
+                .execute();
     }
 }

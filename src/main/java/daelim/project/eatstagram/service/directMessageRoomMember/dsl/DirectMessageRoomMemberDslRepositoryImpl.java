@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static daelim.project.eatstagram.service.directMessage.QDirectMessageEntity.*;
+import static daelim.project.eatstagram.service.directMessageRoom.QDirectMessageRoom.directMessageRoom;
 import static daelim.project.eatstagram.service.directMessageRoomMember.QDirectMessageRoomMemberEntity.directMessageRoomMemberEntity;
 import static daelim.project.eatstagram.service.member.QMember.member;
 
@@ -77,6 +78,14 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
                         directMessageRoomMemberEntity.directMessageRoomId,
                         directMessageRoomMemberEntity.directMessageRoomType
                 ))
+                .fetch();
+    }
+
+    @Override
+    public List<String> getDirectMessageRoomIdsByUsername(String username) {
+        return from(directMessageRoomMemberEntity)
+                .where(directMessageRoomMemberEntity.username.eq(username))
+                .select(directMessageRoomMemberEntity.directMessageRoomId)
                 .fetch();
     }
 
@@ -212,5 +221,13 @@ public class DirectMessageRoomMemberDslRepositoryImpl extends QuerydslRepository
                         directMessageRoomMemberEntity.alertYn.eq("Y")
                 )
                 .fetchCount();
+    }
+
+    @Override
+    @Transactional @Modifying
+    public void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds) {
+        delete(directMessageRoomMemberEntity)
+                .where(directMessageRoomMemberEntity.directMessageRoomId.in(directMessageRoomIds))
+                .execute();
     }
 }
