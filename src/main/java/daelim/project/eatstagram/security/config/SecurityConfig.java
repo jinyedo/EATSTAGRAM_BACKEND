@@ -27,11 +27,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthMemberDetailsService authMemberDetailsService;
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
     // 로그인 실패 핸들러
     @Bean
     AuthenticationFailureHandler loginFailureHandler() {

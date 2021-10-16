@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +31,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
 
     private final StorageRepository storageRepository;
     private static final String PROFILE_IMAGE_FOLDER_NAME = "profile";
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
     // 일반 회원가입
     public ValidationMemberDTO join(ValidationMemberDTO dto) {
@@ -119,6 +120,24 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         if (StringUtils.isNotEmpty(memberDTO.getIntroduce())) member.setIntroduce(memberDTO.getIntroduce());
         getRepository().save(member);
         return ModelMapperUtils.map(member, MemberDTO.class);
+    }
+
+    // 비밀번호 변경하기
+    public ResponseEntity<String> setPassword(String username, String password, String newPassword) {
+        try {
+            Member member = getRepository().findByUsername(username).orElseThrow();
+            boolean result = passwordEncoder.matches(password, member.getPassword());
+            if (result) {
+                member.setPassword(passwordEncoder.encode(newPassword));
+                getRepository().save(member);
+                return new ResponseEntity<>("{\"response\": \"true\", \"msg\": \"비밀번호 변경 완료\"}", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"비밀번호가 올바르지 않습니다.\"}", HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("{\"response\": \"error\", \"msg\": \"서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.\"}", HttpStatus.OK);
+        }
     }
 
     // 프로필 이미지 저장 및 삭제
