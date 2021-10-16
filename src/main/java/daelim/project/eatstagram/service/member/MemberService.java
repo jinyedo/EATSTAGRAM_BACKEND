@@ -36,6 +36,30 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     private static final String PROFILE_IMAGE_FOLDER_NAME = "profile";
     private final PasswordEncoder passwordEncoder;
 
+    // 검색시 사용자 리스트 가져오기
+    public List<MemberDTO> getSearchList(String username, String condition) {
+        return getRepository().getSearchList(username, condition);
+    }
+
+    // 아이디 중복 검사
+    public String checkUsername(String username) {
+        Optional<Member> result = getRepository().findByUsernameAndFormSocial(username,false);
+        if (result.isPresent()) {
+            return "fail";
+        }
+        return "ok";
+    }
+
+    // 닉네임 중복검사
+    public String checkNickname(String nickname) {
+        Optional<Member> result =  getRepository().findMemberByNickname(nickname);
+        if (result.isPresent()) {
+            return "fail";
+        } else {
+            return "ok";
+        }
+    }
+
     // 일반 회원가입
     public ValidationMemberDTO join(ValidationMemberDTO dto) {
         Optional<Member> result =  getRepository().findByUsernameAndFormSocial(dto.getUsername(), false);
@@ -86,46 +110,24 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         return new ResponseEntity<>(memberDTO, HttpStatus.OK);
     }
 
-    // 아이디 중복 검사
-    public String checkUsername(String username) {
-        Optional<Member> result = getRepository().findByUsernameAndFormSocial(username,false);
-        if (result.isPresent()) {
-            return "fail";
-        }
-        return "ok";
-    }
-
-    // 닉네임 중복검사
-    public String checkNickname(String nickname) {
-        Optional<Member> result =  getRepository().findMemberByNickname(nickname);
-        if (result.isPresent()) {
-            return "fail";
+    // 비밀번호 찾기
+    public ResponseEntity<String> findPassword(String username) {
+        Optional<Member> result = getRepository().findByUsername(username);
+        if (result.isEmpty()) {
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
         } else {
-            return "ok";
+            Member member = result.get();
+            if (member.isFormSocial())  return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(member.getEmail());
+            mailMessage.setSubject("eatstagram 비밀번호 변경");
+            mailMessage.setText("비밀번호 변경 링크 : " + "http://localhost:3000/FindPasswordLink?username=" + username);
+            emailAuthService.sendEmail(mailMessage);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"" + member.getEmail() + " 로 비밀번호 변경 링크를 보내드렸습니다.\"}", HttpStatus.OK);
         }
     }
 
-    // 검색시 사용자 리스트 가져오기
-    public List<MemberDTO> getSearchList(String username, String condition) {
-        return getRepository().getSearchList(username, condition);
-    }
-
-    // 사용자 정보 가져오기
-    public MemberDTO getMemberInfo(String username) {
-        return getRepository().getMemberInfo(username);
-    }
-
-    // 특정 사용자 정보 수정하기
-    public MemberDTO setMemberInfo(MemberDTO memberDTO) {
-        Member member = getRepository().findByUsername(memberDTO.getUsername()).orElseThrow();
-        if (StringUtils.isNotEmpty(memberDTO.getName())) member.setName(memberDTO.getName());
-        if (StringUtils.isNotEmpty(memberDTO.getNickname())) member.setNickname(memberDTO.getNickname());
-        if (StringUtils.isNotEmpty(memberDTO.getIntroduce())) member.setIntroduce(memberDTO.getIntroduce());
-        getRepository().save(member);
-        return ModelMapperUtils.map(member, MemberDTO.class);
-    }
-
-    // 비밀번호 변경하기
+    // 로그인 후 비밀번호 변경하기
     public ResponseEntity<String> setPassword(NewPasswordValidationDTO dto) {
         try {
             if (dto.getPassword().equals(dto.getNewPassword())) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"현재 비밀번호와 새 비밀번호가 동일합니다. 다른 비밀번호를 입력해주세요.\"}", HttpStatus.OK);
@@ -145,21 +147,19 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         }
     }
 
-    // 비밀번호 찾기
-    public ResponseEntity<String> findPassword(String username) {
-        Optional<Member> result = getRepository().findByUsername(username);
-        if (result.isEmpty()) {
-            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
-        } else {
-            Member member = result.get();
-            if (member.isFormSocial())  return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(member.getEmail());
-            mailMessage.setSubject("eatstagram 비밀번호 변경");
-            mailMessage.setText("비밀번호 변경 링크 : " + "http://localhost:3000/FindPasswordLink?username=" + username);
-            emailAuthService.sendEmail(mailMessage);
-            return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"" + member.getEmail() + " 로 비밀번호 변경 링크를 보내드렸습니다.\"}", HttpStatus.OK);
-        }
+    // 사용자 정보 가져오기
+    public MemberDTO getMemberInfo(String username) {
+        return getRepository().getMemberInfo(username);
+    }
+
+    // 특정 사용자 정보 수정하기
+    public MemberDTO setMemberInfo(MemberDTO memberDTO) {
+        Member member = getRepository().findByUsername(memberDTO.getUsername()).orElseThrow();
+        if (StringUtils.isNotEmpty(memberDTO.getName())) member.setName(memberDTO.getName());
+        if (StringUtils.isNotEmpty(memberDTO.getNickname())) member.setNickname(memberDTO.getNickname());
+        if (StringUtils.isNotEmpty(memberDTO.getIntroduce())) member.setIntroduce(memberDTO.getIntroduce());
+        getRepository().save(member);
+        return ModelMapperUtils.map(member, MemberDTO.class);
     }
 
     // 프로필 이미지 저장 및 삭제
