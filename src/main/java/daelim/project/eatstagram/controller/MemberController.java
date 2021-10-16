@@ -124,6 +124,13 @@ public class MemberController {
         return memberService.setPassword(newPasswordValidationDTO);
     }
 
+    // 비밀번호 찾기
+    @RequestMapping("/findPassword")
+    @ResponseBody
+    public ResponseEntity<String> findPassword(String username) {
+        return memberService.findPassword(username);
+    }
+
     // 특정 사용자 정보 가져오기
     @RequestMapping("/getMemberInfo")
     @ResponseBody

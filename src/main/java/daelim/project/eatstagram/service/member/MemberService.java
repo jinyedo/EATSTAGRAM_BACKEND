@@ -4,6 +4,7 @@ import daelim.project.eatstagram.security.dto.NewPasswordValidationDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
 import daelim.project.eatstagram.service.base.ModelMapperUtils;
+import daelim.project.eatstagram.service.emailAuth.EmailAuthService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -30,6 +31,7 @@ import java.util.UUID;
 @Slf4j
 public class MemberService extends BaseService<String, Member, MemberDTO, MemberRepository> {
 
+    private final EmailAuthService emailAuthService;
     private final StorageRepository storageRepository;
     private static final String PROFILE_IMAGE_FOLDER_NAME = "profile";
     private final PasswordEncoder passwordEncoder;
@@ -140,6 +142,23 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("{\"response\": \"error\", \"msg\": \"서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.\"}", HttpStatus.OK);
+        }
+    }
+
+    // 비밀번호 찾기
+    public ResponseEntity<String> findPassword(String username) {
+        Optional<Member> result = getRepository().findByUsername(username);
+        if (result.isEmpty()) {
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
+        } else {
+            Member member = result.get();
+            if (member.isFormSocial())  return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(member.getEmail());
+            mailMessage.setSubject("eatstagram 비밀번호 변경");
+            mailMessage.setText("비밀번호 변경 링크 : " + "http://localhost:3000/FindPasswordLink?username=" + username);
+            emailAuthService.sendEmail(mailMessage);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"" + member.getEmail() + " 로 비밀번호 변경 링크를 보내드렸습니다.\"}", HttpStatus.OK);
         }
     }
 
