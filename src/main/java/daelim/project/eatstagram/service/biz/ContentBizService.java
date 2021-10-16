@@ -11,6 +11,7 @@ import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.contentSaved.ContentSavedService;
+import daelim.project.eatstagram.service.follow.FollowEntity;
 import daelim.project.eatstagram.service.follow.FollowService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class ContentBizService {
     private final ContentLikeService contentLikeService;
     private final ContentReplyService contentReplyService;
     private final ContentSavedService contentSavedService;
+    private final FollowService followService;
     private final StorageRepository storageRepository;
 
     // 팔로우한 사람들의 콘텐츠 페이징 리스트
@@ -158,6 +160,8 @@ public class ContentBizService {
     // 콘텐츠와 관련된 데이터 가져오기
     private Page<ContentDTO> getDataRelatedToContent(Page<ContentDTO> contentList, String username) {
         for (ContentDTO contentDTO : contentList) {
+            String followYn = followService.followCheck(username, contentDTO.getUsername()) == null ? "N" : "Y";
+            String followerYn = followService.followerCheck(username, contentDTO.getUsername()) == null ? "N" : "Y";
             List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentDTO.getContentId());
             List<ContentHashtagDTO> contentHashtagList = contentHashtagService.getRepository().getListByContentId(contentDTO.getContentId());
             List<ContentCategoryDTO> contentCategoryList = contentCategoryService.getRepository().getListByContentId(contentDTO.getContentId());
@@ -165,6 +169,8 @@ public class ContentBizService {
             boolean likeCheck = contentLikeService.getRepository().findByUsernameAndContentId(username, contentDTO.getContentId()) != null;
             long replyCount = contentReplyService.getTotalCountByContentId(contentDTO.getContentId());
             String savedYn = contentSavedService.getSavedYn(username, contentDTO.getContentId());
+            contentDTO.setFollowYn(followYn);
+            contentDTO.setFollowerYn(followerYn);
             contentDTO.setContentFileDTOList(contentFileList);
             contentDTO.setContentHashtagDTOList(contentHashtagList);
             contentDTO.setContentCategoryDTOList(contentCategoryList);
@@ -172,7 +178,6 @@ public class ContentBizService {
             contentDTO.setLikeCheck(likeCheck);
             contentDTO.setReplyCount(replyCount);
             contentDTO.setSavedYn(savedYn);
-
         }
         return contentList;
     }

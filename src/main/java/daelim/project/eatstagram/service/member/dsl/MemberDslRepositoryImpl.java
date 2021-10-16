@@ -2,6 +2,7 @@ package daelim.project.eatstagram.service.member.dsl;
 
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.Expressions;
+import daelim.project.eatstagram.service.member.Member;
 import daelim.project.eatstagram.service.member.MemberDTO;
 import daelim.project.eatstagram.service.member.QMember;
 import org.springframework.data.domain.Page;
@@ -32,7 +33,8 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                         member.profileImgName,
                         followEntity.username.count().as("followerCount")
                 ))
-                .groupBy(member.username)
+                .groupBy(followEntity.follow)
+                .having(followEntity.username.count().gt(0))
                 .orderBy(Expressions.numberPath(
                         Long.class,
                         "followerCount").desc()
@@ -41,14 +43,15 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                 .limit(pageable.getPageSize())
                 .fetch();
 
-        long total = from(member)
+        List<Member> total = from(member)
                 .leftJoin(followEntity)
                 .on(followEntity.follow.eq(member.username))
                 .select(member)
-                .groupBy(member.username)
-                .fetchCount();
+                .groupBy(followEntity.follow)
+                .having(followEntity.username.count().gt(0))
+                .fetch();
 
-        return new PageImpl<>(content, pageable, total);
+        return new PageImpl<>(content, pageable, total.size());
     }
 
     @Override
