@@ -1,7 +1,8 @@
 package daelim.project.eatstagram.controller;
 
 import daelim.project.eatstagram.security.dto.AuthMemberDTO;
-import daelim.project.eatstagram.security.dto.NewPasswordValidationDTO;
+import daelim.project.eatstagram.security.dto.AfterLoggingInValidationDTO;
+import daelim.project.eatstagram.security.dto.BeforeLoggingInValidationDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.biz.MemberBizService;
 import daelim.project.eatstagram.service.emailAuth.EmailAuthDTO;
@@ -109,10 +110,17 @@ public class MemberController {
         return memberService.joinSocial(memberDTO);
     }
 
-    // 비밀번호 변경
-    @RequestMapping("/setPassword")
+    // 비밀번호 찾기
+    @RequestMapping("/sendFindPasswordLink")
     @ResponseBody
-    public ResponseEntity<String> setPassword(@ModelAttribute @Valid NewPasswordValidationDTO newPasswordValidationDTO, Errors errors) {
+    public ResponseEntity<String> sendFindPasswordLink(String username) {
+        return memberService.sendFindPasswordLink(username);
+    }
+
+    // 로그인 전 비밀번호 변경
+    @RequestMapping("/changePasswordBeforeLoggingIn")
+    @ResponseBody
+    public ResponseEntity<String> changePasswordBeforeLoggingIn(@ModelAttribute @Valid BeforeLoggingInValidationDTO beforeLoggingInValidationDTO, Errors errors) {
         if (errors.hasErrors()){
             log.info("-----비밀번호 변경 유효성 검사 오류 종류-----");
             for (FieldError error : errors.getFieldErrors()) {
@@ -121,14 +129,22 @@ public class MemberController {
             log.info("----------------------------------------");
             return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"입력값이 잘못되었습니다. 다시 확인해 주세요.\"}", HttpStatus.OK);
         }
-        return memberService.setPassword(newPasswordValidationDTO);
+        return memberService.changePasswordBeforeLoggingIn(beforeLoggingInValidationDTO);
     }
 
-    // 비밀번호 찾기
-    @RequestMapping("/findPassword")
+    // 로그인 후 비밀번호 변경
+    @RequestMapping("/changePasswordAfterLoggingIn")
     @ResponseBody
-    public ResponseEntity<String> findPassword(String username) {
-        return memberService.findPassword(username);
+    public ResponseEntity<String> changePasswordAfterLoggingIn(@ModelAttribute @Valid AfterLoggingInValidationDTO changePasswordValidationDTO, Errors errors) {
+        if (errors.hasErrors()){
+            log.info("-----비밀번호 변경 유효성 검사 오류 종류-----");
+            for (FieldError error : errors.getFieldErrors()) {
+                log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
+            }
+            log.info("----------------------------------------");
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"입력값이 잘못되었습니다. 다시 확인해 주세요.\"}", HttpStatus.OK);
+        }
+        return memberService.changePasswordAfterLoggingIn(changePasswordValidationDTO);
     }
 
     // 특정 사용자 정보 가져오기

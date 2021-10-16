@@ -8,7 +8,7 @@ import javax.validation.constraints.Pattern;
 @NoArgsConstructor @AllArgsConstructor
 @Getter @Setter
 @ToString
-public class NewPasswordValidationDTO {
+public class AfterLoggingInValidationDTO {
 
     @NotBlank(message = "회원 아이디는 필수 입력 정보입니다.")
     private String username;

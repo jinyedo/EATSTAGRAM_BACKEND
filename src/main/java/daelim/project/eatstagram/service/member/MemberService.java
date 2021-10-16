@@ -1,6 +1,7 @@
 package daelim.project.eatstagram.service.member;
 
-import daelim.project.eatstagram.security.dto.NewPasswordValidationDTO;
+import daelim.project.eatstagram.security.dto.AfterLoggingInValidationDTO;
+import daelim.project.eatstagram.security.dto.BeforeLoggingInValidationDTO;
 import daelim.project.eatstagram.security.dto.ValidationMemberDTO;
 import daelim.project.eatstagram.service.base.BaseService;
 import daelim.project.eatstagram.service.base.ModelMapperUtils;
@@ -110,8 +111,8 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         return new ResponseEntity<>(memberDTO, HttpStatus.OK);
     }
 
-    // 비밀번호 찾기
-    public ResponseEntity<String> findPassword(String username) {
+    // 비밀번호 찾기 링크 전송
+    public ResponseEntity<String> sendFindPasswordLink(String username) {
         Optional<Member> result = getRepository().findByUsername(username);
         if (result.isEmpty()) {
             return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
@@ -127,8 +128,22 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
         }
     }
 
+    // 로그인전 비밀번호 변경
+    public ResponseEntity<String> changePasswordBeforeLoggingIn(BeforeLoggingInValidationDTO dto) {
+        try {
+            if (!dto.getNewPassword().equals(dto.getNewPasswordConfirm())) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"새 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
+            Member member = getRepository().findByUsername(dto.getUsername()).orElseThrow();
+            member.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            getRepository().save(member);
+            return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"비밀번호 변경 완료\"}", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("{\"response\": \"error\", \"msg\": \"서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.\"}", HttpStatus.OK);
+        }
+    }
+
     // 로그인 후 비밀번호 변경하기
-    public ResponseEntity<String> setPassword(NewPasswordValidationDTO dto) {
+    public ResponseEntity<String> changePasswordAfterLoggingIn(AfterLoggingInValidationDTO dto) {
         try {
             if (dto.getPassword().equals(dto.getNewPassword())) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"현재 비밀번호와 새 비밀번호가 동일합니다. 다른 비밀번호를 입력해주세요.\"}", HttpStatus.OK);
             if (!dto.getNewPassword().equals(dto.getNewPasswordConfirm())) return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"새 비밀번호가 일치하지 않습니다.\"}", HttpStatus.OK);
