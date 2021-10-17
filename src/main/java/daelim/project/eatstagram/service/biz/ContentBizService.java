@@ -179,7 +179,7 @@ public class ContentBizService {
                 return new ResponseEntity<>("{\"response\": \"ok\", \"savedYn\": \"N\"}", HttpStatus.OK);
             }
         } else {
-            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 삭제되어 저장하실 수 없습니다.\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 존재하지 않습니다.\"}", HttpStatus.OK);
         }
     }
 
@@ -199,7 +199,7 @@ public class ContentBizService {
                 return new ResponseEntity<>("{\"response\": \"ok\", \"likeCheck\": \"" + false + "\", \"likeCount\": \"" + contentLikeService.getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
             }
         } else {
-            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 삭제되어 저장하실 수 없습니다.\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 존재하지 않습니다.\"}", HttpStatus.OK);
         }
     }
 
