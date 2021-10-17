@@ -135,8 +135,6 @@ public class WebsocketHandler extends TextWebSocketHandler {
                 } else {
                     obj.clear();
                     obj.put("type", "error");
-                    obj.put("msg", "해당 게시글이 삭제되어 이용하실 수 없습니다.");
-                    obj.put("username", requestUsername);
                     sendErrorMessage(requestRoomType, requestRoomId, obj);
                 }
             // 채팅을 위한 요청이라면
