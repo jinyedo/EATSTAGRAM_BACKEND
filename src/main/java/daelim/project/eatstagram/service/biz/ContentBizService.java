@@ -184,8 +184,6 @@ public class ContentBizService {
     // 콘텐츠와 관련된 데이터 가져오기
     private Page<ContentDTO> getDataRelatedToContent(Page<ContentDTO> contentList, String username) {
         for (ContentDTO contentDTO : contentList) {
-            String followYn = followService.followCheck(username, contentDTO.getUsername()) == null ? "N" : "Y";
-            String followerYn = followService.followerCheck(username, contentDTO.getUsername()) == null ? "N" : "Y";
             List<ContentFileDTO> contentFileList = contentFileService.getRepository().getListByContentId(contentDTO.getContentId());
             List<ContentHashtagDTO> contentHashtagList = contentHashtagService.getRepository().getListByContentId(contentDTO.getContentId());
             List<ContentCategoryDTO> contentCategoryList = contentCategoryService.getRepository().getListByContentId(contentDTO.getContentId());
@@ -193,8 +191,6 @@ public class ContentBizService {
             boolean likeCheck = contentLikeService.getRepository().findByUsernameAndContentId(username, contentDTO.getContentId()) != null;
             long replyCount = contentReplyService.getTotalCountByContentId(contentDTO.getContentId());
             String savedYn = contentSavedService.getSavedYn(username, contentDTO.getContentId());
-            contentDTO.setFollowYn(followYn);
-            contentDTO.setFollowerYn(followerYn);
             contentDTO.setContentFileDTOList(contentFileList);
             contentDTO.setContentHashtagDTOList(contentHashtagList);
             contentDTO.setContentCategoryDTOList(contentCategoryList);

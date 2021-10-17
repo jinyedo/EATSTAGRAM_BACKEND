@@ -18,8 +18,6 @@ public class ContentDTO extends Content {
     private String nickname;
     private String profileImgName;
     private String savedYn;
-    private String followYn;
-    private String followerYn;
     private long likeCount;
     private boolean likeCheck;
     private long replyCount;
