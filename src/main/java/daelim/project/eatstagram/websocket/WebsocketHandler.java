@@ -3,6 +3,7 @@ package daelim.project.eatstagram.websocket;
 import daelim.project.eatstagram.service.biz.ContentBizService;
 import daelim.project.eatstagram.service.biz.DirectMessageRoomBizService;
 import daelim.project.eatstagram.service.content.ContentDTO;
+import daelim.project.eatstagram.service.content.ContentService;
 import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyDTO;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
@@ -37,6 +38,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
     private final MemberService memberService;
 
     private final ContentBizService contentBizService;
+    private final ContentService contentService;
     private final ContentReplyService contentReplyService;
 
     private final DirectMessageService directMessageService;
@@ -118,18 +120,25 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
             // 댓글을 위한 요청이라면
             if (requestRoomType.equals("contentReply")) {
-                // DB에 댓글저장
-                contentReplyService.save(ContentReplyDTO.builder()
-                        .reply(requestMsg)
-                        .contentId(requestRoomId)
-                        .username(requestUsername)
-                        .build());
+                if (contentService.findByContentId(requestRoomId) != null) {
+                    // DB에 댓글저장
+                    contentReplyService.save(ContentReplyDTO.builder()
+                            .reply(requestMsg)
+                            .contentId(requestRoomId)
+                            .username(requestUsername)
+                            .build());
 
-                obj.put("profileImgName", memberService.getMemberInfo(requestUsername).getProfileImgName());
+                    obj.put("profileImgName", memberService.getMemberInfo(requestUsername).getProfileImgName());
 
-                // 댓글을 전송
-                sendMessage(requestRoomType, requestRoomId, requestMsgType, requestMsg, obj);
-
+                    // 댓글을 전송
+                    sendMessage(requestRoomType, requestRoomId, requestMsgType, requestMsg, obj);
+                } else {
+                    obj.clear();
+                    obj.put("type", "error");
+                    obj.put("msg", "해당 게시글이 삭제되어 이용하실 수 없습니다.");
+                    obj.put("username", requestUsername);
+                    sendErrorMessage(requestRoomType, requestRoomId, obj);
+                }
             // 채팅을 위한 요청이라면
             } else if (requestRoomType.equals("directMessage")) {
 
@@ -338,6 +347,33 @@ public class WebsocketHandler extends TextWebSocketHandler {
                     try {
                         if (requestMsgType.equals("file")) obj.put("msg", filename);
                         obj.put("regDate", LocalDateTime.now().toString());
+                        wss.sendMessage(new TextMessage(obj.toJSONString()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    private void sendErrorMessage(String requestRoomType, String requestRoomId, JSONObject obj) {
+        LinkedHashMap<String, Object> temp = new LinkedHashMap<>();
+        if (sessionList.size() > 0) {
+            for (int i = 0; i < sessionList.size(); i++) {
+                String roomType = (String) sessionList.get(i).get("roomType");
+                String roomId = (String) sessionList.get(i).get("roomId"); // 세션리스트의 저장된 방 번호를 가져와
+                if (roomType.equals(requestRoomType) && roomId.equals(requestRoomId)) { // 같은값이 방이 존재한다면
+                    temp = sessionList.get(i); // 해당 방번호의 세션리스트의 존재하는 모든 object 값을 가져온다.
+                    break;
+                }
+            }
+
+            // 해당 방의 세션들만 찾아서 메시지를 발송해준다.
+            for (String k : temp.keySet()) {
+                if (k.equals("roomType") || k.equals("roomId")) continue; // key 가 roomType 이거나 roomId 면 건너뛴다.
+                WebSocketSession wss = (WebSocketSession) temp.get(k);
+                if (wss != null) {
+                    try {
                         wss.sendMessage(new TextMessage(obj.toJSONString()));
                     } catch (Exception e) {
                         e.printStackTrace();

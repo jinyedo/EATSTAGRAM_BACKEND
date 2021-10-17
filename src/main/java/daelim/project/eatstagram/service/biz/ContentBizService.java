@@ -11,8 +11,9 @@ import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
+import daelim.project.eatstagram.service.contentSaved.ContentSavedDTO;
+import daelim.project.eatstagram.service.contentSaved.ContentSavedEntity;
 import daelim.project.eatstagram.service.contentSaved.ContentSavedService;
-import daelim.project.eatstagram.service.follow.FollowEntity;
 import daelim.project.eatstagram.service.follow.FollowService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
@@ -84,7 +85,7 @@ public class ContentBizService {
         return contentDTO;
     }
 
-    // 콘텐츠 저장
+    // 콘텐츠 추가
     @Transactional(rollbackFor = Exception.class)
     public ResponseEntity<String> add(ContentDTO contentDTO, MultipartFile[] uploadFiles) {
         if (uploadFiles.length <= 0 || contentDTO.getContentCategoryDTOList().size() <= 0 || StringUtils.isEmpty(contentDTO.getText()))
@@ -158,6 +159,25 @@ public class ContentBizService {
         } catch (Exception e) {
             e.printStackTrace();
             return new ResponseEntity<>("{\"response\": \"error\", \"msg\": \"서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.\"}", HttpStatus.OK);
+        }
+    }
+
+    public ResponseEntity<String> save(String username, String contentId) {
+        if (contentService.findByContentId(contentId) != null) {
+            ContentSavedEntity result = contentSavedService.getRepository().findByUsernameAndContentId(username, contentId);
+            if (result == null) {
+                ContentSavedDTO contentSavedDTO = ContentSavedDTO.builder()
+                        .username(username)
+                        .contentId(contentId)
+                        .build();
+                contentSavedService.save(contentSavedDTO);
+                return new ResponseEntity<>("{\"response\": \"ok\", \"savedYn\": \"Y\"}", HttpStatus.OK);
+            } else {
+                contentSavedService.getRepository().delete(result);
+                return new ResponseEntity<>("{\"response\": \"ok\", \"savedYn\": \"N\"}", HttpStatus.OK);
+            }
+        } else {
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 삭제되어 저장하실 수 없습니다.\"}", HttpStatus.OK);
         }
     }
 

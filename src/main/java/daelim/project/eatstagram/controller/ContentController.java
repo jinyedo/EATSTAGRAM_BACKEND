@@ -86,7 +86,7 @@ public class ContentController {
     @RequestMapping("/save")
     @ResponseBody
     public ResponseEntity<String> save(String username, String contentId) {
-        return contentSavedService.save(username, contentId);
+        return contentBizService.save(username, contentId);
     }
 
     // 콘텐츠가 존재하는지 체크
