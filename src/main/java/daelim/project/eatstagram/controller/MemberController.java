@@ -110,7 +110,7 @@ public class MemberController {
         return memberService.joinSocial(memberDTO);
     }
 
-    // 비밀번호 찾기
+    // 비밀번호 찾기 링크 전송
     @RequestMapping("/sendFindPasswordLink")
     @ResponseBody
     public ResponseEntity<String> sendFindPasswordLink(String username) {

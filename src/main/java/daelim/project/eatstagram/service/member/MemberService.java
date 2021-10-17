@@ -115,10 +115,10 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
     public ResponseEntity<String> sendFindPasswordLink(String username) {
         Optional<Member> result = getRepository().findByUsername(username);
         if (result.isEmpty()) {
-            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존재하지 않습니다.\"}", HttpStatus.OK);
         } else {
             Member member = result.get();
-            if (member.isFormSocial())  return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존제하지 않습니다.\"}", HttpStatus.OK);
+            if (member.isFormSocial())  return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"계정이 존재하지 않습니다.\"}", HttpStatus.OK);
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(member.getEmail());
             mailMessage.setSubject("eatstagram 비밀번호 변경");
