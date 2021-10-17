@@ -107,7 +107,7 @@ public class ContentController {
     @RequestMapping("/like/save")
     @ResponseBody
     public ResponseEntity<String> likeSave(@ModelAttribute ContentLikeDTO contentLikeDTO) {
-        return contentLikeService.save(contentLikeDTO);
+        return contentBizService.likeSave(contentLikeDTO);
     }
 
     // 댓글 페이징 리스트

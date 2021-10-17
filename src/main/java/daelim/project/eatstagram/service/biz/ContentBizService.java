@@ -9,6 +9,7 @@ import daelim.project.eatstagram.service.contentFile.ContentFileDTO;
 import daelim.project.eatstagram.service.contentFile.ContentFileService;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagDTO;
 import daelim.project.eatstagram.service.contentHashTag.ContentHashtagService;
+import daelim.project.eatstagram.service.contentLike.ContentLikeDTO;
 import daelim.project.eatstagram.service.contentLike.ContentLikeService;
 import daelim.project.eatstagram.service.contentReply.ContentReplyService;
 import daelim.project.eatstagram.service.contentSaved.ContentSavedDTO;
@@ -175,6 +176,26 @@ public class ContentBizService {
             } else {
                 contentSavedService.getRepository().delete(result);
                 return new ResponseEntity<>("{\"response\": \"ok\", \"savedYn\": \"N\"}", HttpStatus.OK);
+            }
+        } else {
+            return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 삭제되어 저장하실 수 없습니다.\"}", HttpStatus.OK);
+        }
+    }
+
+    // 콘텐츠 좋아요
+    public ResponseEntity<String> likeSave(ContentLikeDTO likeDTO) {
+        if (contentService.findByContentId(likeDTO.getContentId()) != null) {
+            ContentLikeDTO findLike = contentLikeService.getRepository().findByUsernameAndContentId(likeDTO.getUsername(), likeDTO.getContentId());
+            if(findLike == null) { // 좋아요를 누른적이 없다면 좋아요 추가
+                contentLikeService.save(ContentLikeDTO.builder()
+                        .username(likeDTO.getUsername())
+                        .contentId(likeDTO.getContentId())
+                        .build());
+                return new ResponseEntity<>("{\"response\": \"ok\", \"likeCheck\": \"" + true + "\", \"likeCount\": \"" + contentLikeService.getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
+
+            } else { // 좋아요를 누른적이 있따면 좋아요 취소
+                contentLikeService.getRepository().deleteById(findLike.getLikeId());
+                return new ResponseEntity<>("{\"response\": \"ok\", \"likeCheck\": \"" + false + "\", \"likeCount\": \"" + contentLikeService.getRepository().countByContentId(likeDTO.getContentId()) + "\"}", HttpStatus.OK);
             }
         } else {
             return new ResponseEntity<>("{\"response\": \"fail\", \"msg\": \"해당 게시글이 삭제되어 저장하실 수 없습니다.\"}", HttpStatus.OK);
