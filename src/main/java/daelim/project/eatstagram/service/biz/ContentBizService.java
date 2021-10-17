@@ -165,7 +165,7 @@ public class ContentBizService {
 
     // 관심 콘텐츠로 저장
     public ResponseEntity<String> save(String username, String contentId) {
-        if (contentService.findByContentId(contentId) != null) {
+        if (contentService.getRepository().contentCheck(contentId) != null) {
             ContentSavedEntity result = contentSavedService.getRepository().findByUsernameAndContentId(username, contentId);
             if (result == null) {
                 ContentSavedDTO contentSavedDTO = ContentSavedDTO.builder()
@@ -185,7 +185,7 @@ public class ContentBizService {
 
     // 콘텐츠 좋아요
     public ResponseEntity<String> likeSave(ContentLikeDTO likeDTO) {
-        if (contentService.findByContentId(likeDTO.getContentId()) != null) {
+        if (contentService.getRepository().contentCheck(likeDTO.getContentId()) != null) {
             ContentLikeDTO findLike = contentLikeService.getRepository().findByUsernameAndContentId(likeDTO.getUsername(), likeDTO.getContentId());
             if(findLike == null) { // 좋아요를 누른적이 없다면 좋아요 추가
                 contentLikeService.save(ContentLikeDTO.builder()

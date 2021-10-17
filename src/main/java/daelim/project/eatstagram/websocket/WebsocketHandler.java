@@ -120,7 +120,7 @@ public class WebsocketHandler extends TextWebSocketHandler {
 
             // 댓글을 위한 요청이라면
             if (requestRoomType.equals("contentReply")) {
-                if (contentService.findByContentId(requestRoomId) != null) {
+                if (contentService.getRepository().contentCheck(requestRoomId) != null) {
                     // DB에 댓글저장
                     contentReplyService.save(ContentReplyDTO.builder()
                             .reply(requestMsg)
