@@ -163,6 +163,7 @@ public class ContentBizService {
         }
     }
 
+    // 관심 콘텐츠로 저장
     public ResponseEntity<String> save(String username, String contentId) {
         if (contentService.findByContentId(contentId) != null) {
             ContentSavedEntity result = contentSavedService.getRepository().findByUsernameAndContentId(username, contentId);
