@@ -4,6 +4,7 @@ import com.querydsl.core.types.Projections;
 import daelim.project.eatstagram.service.content.ContentDTO;
 import daelim.project.eatstagram.service.content.ContentEntity;
 import daelim.project.eatstagram.service.content.QContentEntity;
+import daelim.project.eatstagram.service.contentCategory.QContentCategoryEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static daelim.project.eatstagram.service.content.QContentEntity.contentEntity;
+import static daelim.project.eatstagram.service.contentCategory.QContentCategoryEntity.contentCategoryEntity;
 import static daelim.project.eatstagram.service.contentHashTag.QContentHashtagEntity.contentHashtagEntity;
 import static daelim.project.eatstagram.service.follow.QFollowEntity.followEntity;
 import static daelim.project.eatstagram.service.member.QMember.member;
@@ -133,9 +135,11 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .where(
                         contentEntity.text.contains(condition)
                                 .or(contentEntity.location.contains(condition)
-                                        .or(contentHashtagEntity.hashtag.contains(condition)))
+                                        .or(contentHashtagEntity.hashtag.contains(condition)
+                                                .or(contentCategoryEntity.category.contains(condition))))
                 )
                 .leftJoin(contentHashtagEntity).on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .leftJoin(contentCategoryEntity).on(contentCategoryEntity.contentId.eq(contentEntity.contentId))
                 .leftJoin(member).on(member.username.eq(contentEntity.username))
                 .select(Projections.bean(ContentDTO.class,
                         contentEntity.contentId,
@@ -156,9 +160,11 @@ public class ContentDslRepositoryImpl extends QuerydslRepositorySupport implemen
                 .where(
                         contentEntity.text.contains(condition)
                                 .or(contentEntity.location.contains(condition)
-                                        .or(contentHashtagEntity.hashtag.contains(condition)))
+                                        .or(contentHashtagEntity.hashtag.contains(condition)
+                                                .or(contentCategoryEntity.category.contains(condition))))
                 )
                 .leftJoin(contentHashtagEntity).on(contentHashtagEntity.contentId.eq(contentEntity.contentId))
+                .leftJoin(contentCategoryEntity).on(contentCategoryEntity.contentId.eq(contentEntity.contentId))
                 .leftJoin(member).on(member.username.eq(contentEntity.username))
                 .select(contentEntity)
                 .distinct()

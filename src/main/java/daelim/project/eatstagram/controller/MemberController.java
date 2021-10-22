@@ -123,6 +123,9 @@ public class MemberController {
     public ResponseEntity<String> changePasswordBeforeLoggingIn(@ModelAttribute @Valid BeforeLoggingInValidationDTO beforeLoggingInValidationDTO, Errors errors) {
         if (errors.hasErrors()){
             log.info("-----비밀번호 변경 유효성 검사 오류 종류-----");
+            log.info("username : " + beforeLoggingInValidationDTO.getUsername());
+            log.info("newPassword : " + beforeLoggingInValidationDTO.getNewPassword());
+            log.info("newPasswordConfirm : " + beforeLoggingInValidationDTO.getNewPasswordConfirm());
             for (FieldError error : errors.getFieldErrors()) {
                 log.info(String.format("valid_%s", error.getField()) + " : " + error.getDefaultMessage());
             }

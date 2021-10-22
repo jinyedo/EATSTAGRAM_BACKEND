@@ -65,6 +65,8 @@ public class FollowService extends BaseService<String, FollowEntity, FollowDTO, 
     public Page<FollowDTO> getFollowerPagingList(Pageable pageable, FollowDTO followDTO) {
         Page<FollowDTO> followerPagingList = getRepository().getFollowerPagingList(pageable, followDTO.getTarget());
         for (FollowDTO dto : followerPagingList) {
+            System.out.println("---------------------");
+            System.out.println(dto.getFollower());
             String followYn = followCheck(followDTO.getUsername(), dto.getFollower()) == null ? "N" : "Y";
             String followerYn = followerCheck(followDTO.getUsername(), dto.getFollower()) == null ? "N" : "Y";
             dto.setFollowYn(followYn);

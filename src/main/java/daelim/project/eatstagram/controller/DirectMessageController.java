@@ -1,7 +1,7 @@
 package daelim.project.eatstagram.controller;
 
+import daelim.project.eatstagram.service.biz.DirectMessageBizService;
 import daelim.project.eatstagram.service.directMessage.DirectMessageDTO;
-import daelim.project.eatstagram.service.directMessage.DirectMessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DirectMessageController {
 
-    private final DirectMessageService directMessageService;
+    private final DirectMessageBizService directMessageBizService;
 
     // 채팅 페이징 리스트
     @RequestMapping("/getPagingList")
     @ResponseBody
     public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username) {
-        return directMessageService.getDirectMessagePagingList(pageable, directMessageRoomId, username);
+        return directMessageBizService.getDirectMessagePagingList(pageable, directMessageRoomId, username);
     }
 }

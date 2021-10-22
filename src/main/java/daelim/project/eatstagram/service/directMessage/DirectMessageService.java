@@ -3,8 +3,6 @@ package daelim.project.eatstagram.service.directMessage;
 import daelim.project.eatstagram.service.base.BaseService;
 import daelim.project.eatstagram.storage.StorageRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.BinaryMessage;
 
@@ -21,10 +19,6 @@ public class DirectMessageService extends BaseService<String, DirectMessageEntit
 
     private final StorageRepository storageRepository;
     public static final String DIRECT_MESSAGE_FILE_FOLDER_NAME = "dm";
-
-    public Page<DirectMessageDTO> getDirectMessagePagingList(Pageable pageable, String directMessageRoomId, String username) {
-        return getRepository().getDirectMessagePagingList(pageable, directMessageRoomId, username);
-    }
 
     public void deleteByDirectMessageRoomIds(List<String> directMessageRoomIds) {
         getRepository().deleteByDirectMessageRoomIds(directMessageRoomIds);

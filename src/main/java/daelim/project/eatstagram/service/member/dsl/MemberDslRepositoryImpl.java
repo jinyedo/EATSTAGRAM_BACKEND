@@ -33,7 +33,10 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                         member.profileImgName,
                         followEntity.username.count().as("followerCount")
                 ))
-                .groupBy(followEntity.follow)
+                .groupBy(
+                        member.username,
+                        followEntity.follow
+                )
                 .having(followEntity.username.count().gt(0))
                 .orderBy(Expressions.numberPath(
                         Long.class,
@@ -47,7 +50,10 @@ public class MemberDslRepositoryImpl extends QuerydslRepositorySupport implement
                 .leftJoin(followEntity)
                 .on(followEntity.follow.eq(member.username))
                 .select(member)
-                .groupBy(followEntity.follow)
+                .groupBy(
+                        member.username,
+                        followEntity.follow
+                )
                 .having(followEntity.username.count().gt(0))
                 .fetch();
 

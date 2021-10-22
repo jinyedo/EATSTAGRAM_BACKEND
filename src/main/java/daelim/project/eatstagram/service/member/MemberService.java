@@ -122,7 +122,7 @@ public class MemberService extends BaseService<String, Member, MemberDTO, Member
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             mailMessage.setTo(member.getEmail());
             mailMessage.setSubject("eatstagram 비밀번호 변경");
-            mailMessage.setText("비밀번호 변경 링크 : " + "http://localhost:3000/FindPasswordLink?username=" + username);
+            mailMessage.setText("비밀번호 변경 링크 : " + "http://www.whereyedo.com/FindPasswordLink?username=" + username);
             emailAuthService.sendEmail(mailMessage);
             return new ResponseEntity<>("{\"response\": \"ok\", \"msg\": \"" + member.getEmail() + " 로 비밀번호 변경 링크를 보내드렸습니다.\"}", HttpStatus.OK);
         }
